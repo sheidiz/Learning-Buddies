@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+org.springframework.ide.eclipse.boot.wizard.PopularityTracker.web=1
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.artifactId=learning-buddies-backend
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.bootVersion=3.3.1
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.description=REST API for Learning Buddies Project
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.groupId=com.sheiladiz
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.javaVersion=17
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.language=java
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.name=learning-buddies-backend
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.packageName=com.sheiladiz
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.packaging=jar
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.type=MAVEN
+org.springframework.ide.eclipse.boot.wizard.PreferredSelections.version=0.0.1-SNAPSHOT
+org.springframework.ide.eclipse.boot.wizard.initializr.url=https\://start.spring.io\n
