@@ -20,7 +20,7 @@ export default {
 				"dm-medium-green": "#4E5440",
 				"dm-light-green": "#8A8D6B",
 				"dm-brown": "#5C4B3F",
-				"dm-light-brown": "rgba(92, 75, 63, 0.5)",
+				"dm-light-brown": "#7A7069",
 			},
 			fontFamily: {
 				poppings: ["Poppins", "sans-serif", "ui-sans-serif"],

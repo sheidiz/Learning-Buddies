@@ -1,5 +1,4 @@
 import { FaUserLarge } from "react-icons/fa6";
-import LogoIcon from "../../assets/images/icons/logoicon.png";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
 
@@ -39,7 +38,7 @@ export const Header = () => {
                             <div className="ms-2 md:ms-0 flex flex-1 items-center justify-start md:items-stretch md:justify-start">
                                 <div className="flex flex-shrink-0 items-center">
                                     <MdMenuBook className="text-2xl md:text-4xl text-dark-green dark:text-dm-light-green" />
-                                    <span className="block ml-2 md:ml-1 text-2xl md:text-3xl text-dark-green dark:text-dm-light-green font-semibold">Learning Buddies</span>
+                                    <span className="block ml-2 md:ml-1 text-2xl lg:text-3xl text-dark-green dark:text-dm-light-green font-semibold">Learning Buddies</span>
                                 </div>
                                 <div className="hidden md:ml-2 lg:ml-20 md:block">
                                     <div className="flex space-x-2 lg:space-x-4">
