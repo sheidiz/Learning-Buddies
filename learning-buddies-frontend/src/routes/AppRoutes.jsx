@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Header } from '../components/layout/Header'
 import { Footer } from '../components/layout/Footer'
 import Home from '../pages/Home'
+import Login from '../pages/Login'
+import Registration from '../pages/Registration'
 
 export default function AppRoutes() {
     return (
@@ -11,6 +13,8 @@ export default function AppRoutes() {
                 <Routes>
                     <Route path="*" element={<Home />} />
                     <Route path="/" element={<Home />} />
+                    <Route path="/iniciar-sesion" element={<Login />} />
+                    <Route path="/registro" element={<Registration />} />
                 </Routes>
                 <Footer />
             </BrowserRouter>

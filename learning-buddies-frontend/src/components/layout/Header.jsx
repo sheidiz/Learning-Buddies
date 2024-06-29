@@ -2,7 +2,9 @@ import { FaUserLarge } from "react-icons/fa6";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
 
-const user = { name: 'Sheila' };
+//const user = { name: 'Sheila' };
+const user = null;
+
 let navigation = [
     { name: 'Inicio', href: '#', current: true, type: 'none' },
     { name: 'Buddies', href: '#', current: false, type: 'registered' },
@@ -85,7 +87,7 @@ export const Header = () => {
                                                 </MenuItem>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        <a href="#" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
+                                                        <a href="/cerrar-sesion" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
                                                             Cerrar sesión
                                                         </a>
                                                     )}
@@ -94,14 +96,14 @@ export const Header = () => {
                                             : <>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        <a href="#" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
+                                                        <a href="/iniciar-sesion" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
                                                             Iniciar sesión
                                                         </a>
                                                     )}
                                                 </MenuItem>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        <a href="#" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
+                                                        <a href="/registro" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
                                                             Registrarme
                                                         </a>
                                                     )}
@@ -136,14 +138,14 @@ export const Header = () => {
                                     (
                                         <>
                                             <a href="#" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Mi Perfil</a>
-                                            <a href="#" className="block px-3 py-2 text-base font-medium text-light-green">Cerrar sesión</a>
+                                            <a href="/cerrar-sesion" className="block px-3 py-2 text-base font-medium text-light-green">Cerrar sesión</a>
                                         </>
 
                                     ) :
                                     (
                                         <>
-                                            <a href="#" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Iniciar sesión</a>
-                                            <a href="#" className="block px-3 py-2 text-base font-medium text-light-green">Registrarme</a>
+                                            <a href="/iniciar-sesion" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Iniciar sesión</a>
+                                            <a href="/registro" className="block px-3 py-2 text-base font-medium text-light-green">Registrarme</a>
                                         </>
                                     )
                             }

@@ -25,7 +25,7 @@ export default {
 			fontFamily: {
 				poppings: ["Poppins", "sans-serif", "ui-sans-serif"],
 				raleway: ["Raleway", "sans-serif", "ui-sans-serif"]
-			}
+			},
 		},
 	},
 	plugins: [],
