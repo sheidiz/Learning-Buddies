@@ -1,0 +1,92 @@
+package com.sheiladiz.models;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "profiles")
+public class Profile {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private User user;
+
+	@NotEmpty(message = "Nombre requerido.")
+	private String firstName;
+
+	@NotEmpty(message = "Apellido requerido.")
+	private String lastName;
+
+	private String gender;
+
+	private String pronouns;
+
+	private String country;
+
+	@Size(max = 100, message = "Posición de trabajo tiene un limite de 100 caracteres.")
+	private String jobPosition;
+
+	@Size(max = 250, message = "Descripción tiene un limite de 250 caracteres.")
+	private String bio;
+
+	private String discordUrl;
+	private String githubUrl;
+	private String linkedinUrl;
+	private String whatsappNumber;
+	private String contactEmail;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "profile_has_learnedskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+	private List<Skill> skillsLearned;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+	private List<Skill> skillsToLearn;
+	@OneToMany(mappedBy = "profile1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Friendship> friendshipsInitiated;
+
+	@OneToMany(mappedBy = "profile2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Friendship> friendshipsReceived;
+	@Column(updatable = false)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date createdAt;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date updatedAt;
+
+	public Profile() {
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = new Date();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = new Date();
+	}
+}
