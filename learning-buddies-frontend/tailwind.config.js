@@ -7,6 +7,9 @@ export default {
 	darkMode: "media",
 	theme: {
 		extend: {
+			boxShadow: {
+				'inner-custom': 'inset 0 4px 4px 0 rgba(0,0,0,0.25)',
+			},
 			colors: {
 				"light": "#EFF1ED",
 				"dark": "#2A2A2A",

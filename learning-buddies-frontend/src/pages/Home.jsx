@@ -36,9 +36,9 @@ export default function Home() {
             </section>
             <section className="mx-2 my-10 py-10 rounded-3xl bg-light-green dark:bg-dm-light-green">
                 <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-                    <UserCardExample user={users[0]} />
-                    <UserCardExample user={users[1]} />
-                    <UserCardExample user={users[2]} />
+                    <UserCardExample user={users[0]} contactable={false} />
+                    <UserCardExample user={users[1]} contactable={false} />
+                    <UserCardExample user={users[2]} contactable={false} />
                 </div>
             </section>
         </main>

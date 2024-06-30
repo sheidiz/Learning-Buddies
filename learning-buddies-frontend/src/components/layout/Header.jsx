@@ -1,13 +1,12 @@
-import { FaUserLarge } from "react-icons/fa6";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
 
-//const user = { name: 'Sheila' };
-const user = null;
+const user = { name: 'Sheila' };
+//const user = null;
 
 let navigation = [
-    { name: 'Inicio', href: '#', current: true, type: 'none' },
-    { name: 'Buddies', href: '#', current: false, type: 'registered' },
+    { name: 'Inicio', href: '/', current: true, type: 'none' },
+    { name: 'Buddies', href: '/buddies', current: false, type: 'registered' },
     { name: 'Preguntas Frecuentes', href: '#', current: false, type: 'none' },
     { name: 'Recursos', href: '#', current: false, type: 'none' },
 ]

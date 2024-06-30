@@ -1,7 +1,7 @@
 import { FaGithub, FaLinkedin } from "react-icons/fa6";
 
 let navigation = [
-    { name: 'Inicio', href: '#', current: true, type: 'none' },
+    { name: 'Inicio', href: '/', current: true, type: 'none' },
     { name: 'Preguntas Frecuentes', href: '#', current: false, type: 'none' },
     { name: 'Recursos', href: '#', current: false, type: 'none' },
 ];
