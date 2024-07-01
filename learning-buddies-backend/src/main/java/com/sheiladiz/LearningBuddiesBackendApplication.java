@@ -21,7 +21,7 @@ public class LearningBuddiesBackendApplication {
 		SpringApplication.run(LearningBuddiesBackendApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	CommandLineRunner init(UserRepository userRepository) {
 		return args -> {
 			Permission createPermission = new Permission("CREATE");
@@ -44,6 +44,6 @@ public class LearningBuddiesBackendApplication {
 
 			userRepository.save(userSheila);
 		};
-	}
+	}*/
 
 }

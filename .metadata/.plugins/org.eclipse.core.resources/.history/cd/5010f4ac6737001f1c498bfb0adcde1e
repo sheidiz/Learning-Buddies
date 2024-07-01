@@ -1,0 +1,31 @@
+package com.sheiladiz.services;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sheiladiz.models.Friendship;
+import com.sheiladiz.models.Profile;
+import com.sheiladiz.repositories.FriendshipRepository;
+import com.sheiladiz.repositories.ProfileRepository;
+import com.sheiladiz.repositories.UserRepository;
+
+@Service
+public class FriendshipService {
+
+	@Autowired
+	private FriendshipRepository friendshipRepository;
+
+	@Autowired
+	private ProfileRepository profileRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	public Optional<Friendship> findFriendship(Profile profile, Profile friendProfile) {
+        return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile);
+    }
+	
+	
+}

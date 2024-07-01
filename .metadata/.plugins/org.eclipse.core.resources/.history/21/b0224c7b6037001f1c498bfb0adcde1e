@@ -1,0 +1,68 @@
+package com.sheiladiz.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sheiladiz.models.Skill;
+import com.sheiladiz.models.SkillCategory;
+import com.sheiladiz.repositories.SkillCategoryRepository;
+import com.sheiladiz.repositories.SkillRepository;
+
+@Service
+public class SkillService {
+
+	@Autowired
+	private SkillRepository skillRepository;
+
+	@Autowired
+	private SkillCategoryRepository categoryRepository;
+
+	public SkillCategory saveCategory(SkillCategory category) {
+		if (categoryRepository.findByName(category.getName()).isPresent()) {
+			return category;
+		}
+		return categoryRepository.save(category);
+	}
+
+	public Skill saveSkill(Skill skill) {
+		if (skillRepository.findByName(skill.getName()).isPresent()) {
+			return skill;
+		}
+		return skillRepository.save(skill);
+	}
+
+	public List<SkillCategory> allCategories() {
+		return categoryRepository.findAll();
+	}
+
+	public List<Skill> allSkills() {
+		return skillRepository.findAll();
+	}
+
+	public SkillCategory updateCategory(SkillCategory category) {
+		if (categoryRepository.existsById(category.getId())) {
+			return categoryRepository.save(category);
+		} else {
+			throw new IllegalArgumentException("Categoria de habilidad no encontrada");
+		}
+	}
+
+	public Skill updateSkill(Skill skill) {
+		if (skillRepository.existsById(skill.getId())) {
+			return skillRepository.save(skill);
+		} else {
+			throw new IllegalArgumentException("Habilidad no encontrada");
+		}
+	}
+
+	public void deleteCategory(Long id) {
+		categoryRepository.deleteById(id);
+	}
+
+	public void deleteSkill(Long id) {
+		skillRepository.deleteById(id);
+	}
+
+}

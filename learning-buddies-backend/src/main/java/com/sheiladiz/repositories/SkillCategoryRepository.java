@@ -1,6 +1,7 @@
 package com.sheiladiz.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,6 @@ public interface SkillCategoryRepository extends CrudRepository<SkillCategory, L
 
 	List<SkillCategory> findAll();
 	
-	SkillCategory findByName(String name);
+	Optional<SkillCategory> findByName(String name);
+	
 }

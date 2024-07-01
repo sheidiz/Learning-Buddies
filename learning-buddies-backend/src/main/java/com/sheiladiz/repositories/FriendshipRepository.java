@@ -1,21 +1,21 @@
 package com.sheiladiz.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.sheiladiz.models.Friendship;
-import com.sheiladiz.models.FriendshipStatus;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.Profile;
 
 @Repository
 public interface FriendshipRepository extends CrudRepository<Friendship, Long> {
 
-	//List<Friendship> findByUser1AndStatus(User user1, FriendshipStatus status);
+	List<Friendship> findByProfile(Profile profile);
 
-	//List<Friendship> findByUser2AndStatus(User user2, FriendshipStatus status);
+	Optional<Friendship> findByProfileAndFriendProfile(Profile profile, Profile friendProfile);
 
-	//List<Friendship> findByUser1AndUser2AndStatus(User user1, User user2, FriendshipStatus status);
+	boolean existsByProfileAndFriendProfile(Profile profile, Profile friendProfile);
 
 }

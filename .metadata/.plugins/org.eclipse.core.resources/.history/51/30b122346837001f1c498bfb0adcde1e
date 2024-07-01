@@ -1,0 +1,8 @@
+spring.application.name=learning-buddies-backend
+
+#create-drop
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.datasource.url=jdbc:mysql://localhost:3306/learning_buddies?useSSL=false&createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=${MYSQL_PASSWORD}
+spring.mvc.hiddenmethod.filter.enabled=true

@@ -1,0 +1,57 @@
+package com.sheiladiz.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sheiladiz.models.Friendship;
+import com.sheiladiz.models.FriendshipStatus;
+import com.sheiladiz.models.Profile;
+import com.sheiladiz.repositories.FriendshipRepository;
+import com.sheiladiz.repositories.ProfileRepository;
+import com.sheiladiz.repositories.UserRepository;
+
+@Service
+public class FriendshipService {
+
+	@Autowired
+	private FriendshipRepository friendshipRepository;
+
+	@Autowired
+	private ProfileRepository profileRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	public Friendship sendFriendRequest(Long profile1Id, Long profile2Id) {
+		Profile profile1 = profileRepository.findById(profile1Id).orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado"));
+		Profile profile2 = profileRepository.findById(profile2Id).orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado"));
+		
+		Friendship friendship = new Friendship();
+		friendship.setProfile1(profile1);
+		friendship.setProfile2(profile2);
+		friendship.setStatus(FriendshipStatus.PENDING);
+		return friendshipRepository.save(friendship);
+	}
+	
+	public List<Friendship> getFriendRequests(Long id){
+		Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado"));
+		
+		return friendshipRepository.findByProfile2AndStatus(profile, FriendshipStatus.PENDING);
+	}
+	
+	public Friendship acceptFriendRequest(Long friendshipId) {
+		Friendship friendship = friendshipRepository.findById(friendshipId).orElseThrow(() -> new IllegalArgumentException("No se encontro la solicitud de amistad"));
+		
+		friendship.setStatus(FriendshipStatus.ACCEPTED);
+		return friendshipRepository.save(friendship);
+	}
+	
+	public List<Friendship> getFriends(Long id){
+		Profile profile = profileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Perfil no encontrado"));
+		
+		return friendshipRepository.findByProfile1AndStatus(profile, FriendshipStatus.ACCEPTED);
+	}
+
+}

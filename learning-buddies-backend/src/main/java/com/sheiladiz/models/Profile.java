@@ -66,11 +66,9 @@ public class Profile {
 	@JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private List<Skill> skillsToLearn;
 
-	@OneToMany(mappedBy = "profile1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Friendship> friendshipsInitiated;
-
-	@OneToMany(mappedBy = "profile2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Friendship> friendshipsReceived;
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "friend_profile_id"))
+	private List<Profile> friends;
 
 	@Column(updatable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -210,20 +208,12 @@ public class Profile {
 		this.skillsToLearn = skillsToLearn;
 	}
 
-	public List<Friendship> getFriendshipsInitiated() {
-		return friendshipsInitiated;
+	public List<Profile> getFriends() {
+		return friends;
 	}
 
-	public void setFriendshipsInitiated(List<Friendship> friendshipsInitiated) {
-		this.friendshipsInitiated = friendshipsInitiated;
-	}
-
-	public List<Friendship> getFriendshipsReceived() {
-		return friendshipsReceived;
-	}
-
-	public void setFriendshipsReceived(List<Friendship> friendshipsReceived) {
-		this.friendshipsReceived = friendshipsReceived;
+	public void setFriends(List<Profile> friends) {
+		this.friends = friends;
 	}
 
 	public Date getCreatedAt() {

@@ -26,12 +26,12 @@ public class Friendship {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "profile_id_1", nullable = false)
-	private Profile profile1;
+	@JoinColumn(name = "profile_id")
+	private Profile profile;
 
 	@ManyToOne
-	@JoinColumn(name = "profile_id_2", nullable = false)
-	private Profile profile2;
+	@JoinColumn(name = "friend_profile_id")
+	private Profile friendProfile;
 
 	@Enumerated(EnumType.STRING)
 	private FriendshipStatus status;
@@ -47,6 +47,12 @@ public class Friendship {
 		this.status = FriendshipStatus.PENDING;
 	}
 
+	public Friendship(Profile profile, Profile friendProfile, FriendshipStatus status) {
+		this.profile = profile;
+		this.friendProfile = friendProfile;
+		this.status = status;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -55,20 +61,20 @@ public class Friendship {
 		this.id = id;
 	}
 
-	public Profile getProfile1() {
-		return profile1;
+	public Profile getProfile() {
+		return profile;
 	}
 
-	public void setProfile1(Profile profile1) {
-		this.profile1 = profile1;
+	public void setProfile(Profile profile) {
+		this.profile = profile;
 	}
 
-	public Profile getProfile2() {
-		return profile2;
+	public Profile getFriendProfile() {
+		return friendProfile;
 	}
 
-	public void setProfile2(Profile profile2) {
-		this.profile2 = profile2;
+	public void setFriendProfile(Profile friendProfile) {
+		this.friendProfile = friendProfile;
 	}
 
 	public FriendshipStatus getStatus() {
@@ -105,4 +111,3 @@ public class Friendship {
 		this.updatedAt = new Date();
 	}
 }
-

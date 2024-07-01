@@ -1,0 +1,21 @@
+package com.sheiladiz.repositories;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.sheiladiz.models.Friendship;
+import com.sheiladiz.models.FriendshipStatus;
+import com.sheiladiz.models.Profile;
+
+@Repository
+public interface FriendshipRepository extends CrudRepository<Friendship, Long> {
+
+	List<Friendship> findByProfile1AndStatus(Profile profile1, FriendshipStatus status);
+
+	List<Friendship> findByProfile2AndStatus(Profile profile2, FriendshipStatus status);
+	
+	List<Friendship> findByProfile1AndProfile2AndStatus(Profile profile1, Profile profile2, FriendshipStatus status);
+
+}
