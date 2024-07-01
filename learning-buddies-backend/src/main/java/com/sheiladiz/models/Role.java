@@ -16,7 +16,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -29,39 +35,16 @@ public class Role {
 	@Enumerated(EnumType.STRING)
 	private RoleEnum roleEnum;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-	private Set<Permission> permissionList = new HashSet<>();
+	private Set<Permission> permissionList;
 
 	public Role() {
+		permissionList = new HashSet<>();
 	}
 
 	public Role(RoleEnum roleEnum, Set<Permission> permissionList) {
 		this.roleEnum = roleEnum;
-		this.permissionList = permissionList;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public RoleEnum getRoleEnum() {
-		return roleEnum;
-	}
-
-	public void setRoleEnum(RoleEnum roleEnum) {
-		this.roleEnum = roleEnum;
-	}
-
-	public Set<Permission> getPermissionList() {
-		return permissionList;
-	}
-
-	public void setPermissionList(Set<Permission> permissionList) {
 		this.permissionList = permissionList;
 	}
 

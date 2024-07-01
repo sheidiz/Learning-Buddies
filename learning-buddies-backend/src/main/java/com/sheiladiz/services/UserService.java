@@ -1,7 +1,7 @@
 package com.sheiladiz.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.models.UserEntity;
@@ -13,21 +13,24 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	//@Autowired
+	//private PasswordEncoder passwordEncoder;
 
 	public UserEntity registerUser(UserEntity user) {
-		if (userRepository.findByEmail(user.getEmail()) != null) {
-			throw new IllegalArgumentException("El usuario ya existe");
+		UserEntity foundUser = userRepository.findByEmail(user.getEmail()).orElse(null);
+		
+		if (foundUser!=null) {
+			throw new IllegalArgumentException("El usuario ya existe".concat(foundUser.toString()));
 		}
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		//user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
 	}
 
 	public UserEntity loginUser(String email, String password) {
 		UserEntity user = userRepository.findByEmail(email).orElse(null);
 
-		if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+		//if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+		if (user == null || !password.equals(user.getPassword())) {
 			throw new IllegalArgumentException("Usuario y/o contraseña invalidos.");
 		}
 

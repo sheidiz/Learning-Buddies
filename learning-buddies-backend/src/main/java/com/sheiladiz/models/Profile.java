@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,14 +18,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "profiles")
 public class Profile {
@@ -31,6 +41,7 @@ public class Profile {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonManagedReference(value = "profile-json")
 	@OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserEntity user;
 
@@ -58,14 +69,17 @@ public class Profile {
 	private String whatsappNumber;
 	private String contactEmail;
 
+	@JsonManagedReference(value = "skills-learned-json")
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "profile_has_learnedskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private List<Skill> skillsLearned;
 
+	@JsonManagedReference(value = "skills-to-learn-json")
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private List<Skill> skillsToLearn;
 
+	@JsonIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "friend_profile_id"))
 	private List<Profile> friends;
@@ -76,161 +90,6 @@ public class Profile {
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date updatedAt;
-
-	public Profile() {
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public UserEntity getUser() {
-		return user;
-	}
-
-	public void setUser(UserEntity user) {
-		this.user = user;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getPronouns() {
-		return pronouns;
-	}
-
-	public void setPronouns(String pronouns) {
-		this.pronouns = pronouns;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
-	public String getJobPosition() {
-		return jobPosition;
-	}
-
-	public void setJobPosition(String jobPosition) {
-		this.jobPosition = jobPosition;
-	}
-
-	public String getBio() {
-		return bio;
-	}
-
-	public void setBio(String bio) {
-		this.bio = bio;
-	}
-
-	public String getDiscordUrl() {
-		return discordUrl;
-	}
-
-	public void setDiscordUrl(String discordUrl) {
-		this.discordUrl = discordUrl;
-	}
-
-	public String getGithubUrl() {
-		return githubUrl;
-	}
-
-	public void setGithubUrl(String githubUrl) {
-		this.githubUrl = githubUrl;
-	}
-
-	public String getLinkedinUrl() {
-		return linkedinUrl;
-	}
-
-	public void setLinkedinUrl(String linkedinUrl) {
-		this.linkedinUrl = linkedinUrl;
-	}
-
-	public String getWhatsappNumber() {
-		return whatsappNumber;
-	}
-
-	public void setWhatsappNumber(String whatsappNumber) {
-		this.whatsappNumber = whatsappNumber;
-	}
-
-	public String getContactEmail() {
-		return contactEmail;
-	}
-
-	public void setContactEmail(String contactEmail) {
-		this.contactEmail = contactEmail;
-	}
-
-	public List<Skill> getSkillsLearned() {
-		return skillsLearned;
-	}
-
-	public void setSkillsLearned(List<Skill> skillsLearned) {
-		this.skillsLearned = skillsLearned;
-	}
-
-	public List<Skill> getSkillsToLearn() {
-		return skillsToLearn;
-	}
-
-	public void setSkillsToLearn(List<Skill> skillsToLearn) {
-		this.skillsToLearn = skillsToLearn;
-	}
-
-	public List<Profile> getFriends() {
-		return friends;
-	}
-
-	public void setFriends(List<Profile> friends) {
-		this.friends = friends;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 
 	@PrePersist
 	protected void onCreate() {

@@ -16,7 +16,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "friendships")
 public class Friendship {
@@ -43,62 +51,11 @@ public class Friendship {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date updatedAt;
 
-	public Friendship() {
-		this.status = FriendshipStatus.PENDING;
-	}
-
 	public Friendship(Profile profile, Profile friendProfile, FriendshipStatus status) {
+		super();
 		this.profile = profile;
 		this.friendProfile = friendProfile;
 		this.status = status;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Profile getProfile() {
-		return profile;
-	}
-
-	public void setProfile(Profile profile) {
-		this.profile = profile;
-	}
-
-	public Profile getFriendProfile() {
-		return friendProfile;
-	}
-
-	public void setFriendProfile(Profile friendProfile) {
-		this.friendProfile = friendProfile;
-	}
-
-	public FriendshipStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(FriendshipStatus status) {
-		this.status = status;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
 	}
 
 	@PrePersist
@@ -110,4 +67,5 @@ public class Friendship {
 	protected void onUpdate() {
 		this.updatedAt = new Date();
 	}
+
 }
