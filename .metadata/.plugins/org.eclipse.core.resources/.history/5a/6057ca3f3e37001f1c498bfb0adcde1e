@@ -1,0 +1,34 @@
+package com.sheiladiz.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sheiladiz.models.Skill;
+import com.sheiladiz.models.SkillCategory;
+import com.sheiladiz.repositories.SkillCategoryRepository;
+import com.sheiladiz.repositories.SkillRepository;
+
+@Service
+public class SkillService {
+
+	@Autowired
+	private SkillRepository skillRepository;
+
+	@Autowired
+	private SkillCategoryRepository categoryRepository;
+
+	public SkillCategory saveCategory(SkillCategory category) {
+		if (categoryRepository.findByName(category.getName()) != null) {
+			return category;
+		}
+		return categoryRepository.save(category);
+	}
+
+	public Skill saveSkill(Skill skill) {
+		if (skillRepository.findByName(skill.getName()) != null) {
+			return skill;
+		}
+		return skillRepository.save(skill);
+	}
+
+}

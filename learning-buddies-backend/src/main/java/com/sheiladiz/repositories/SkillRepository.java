@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface SkillRepository extends CrudRepository<SkillRepository, Long> {
+import com.sheiladiz.models.Skill;
 
-	List<SkillRepository> findAll();
+@Repository
+public interface SkillRepository extends CrudRepository<Skill, Long> {
+
+	List<Skill> findAll();
 	
-	SkillRepository findByName(String name);
+	Skill findByName(String name);
 	
 }

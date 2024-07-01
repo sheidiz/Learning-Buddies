@@ -9,6 +9,8 @@
     </listAttribute>
     <mapAttribute key="org.eclipse.debug.core.environmentVariables">
         <mapEntry key="MYSQL_PASSWORD" value="secret"/>
+        <mapEntry key="SPRING_EMAIL" value="sheila@gmail.com"/>
+        <mapEntry key="SPRING_PASS" value="$2a$10$iYAVBgok1Sv0.JxNeGXpoeULBMbYNsHrp/Go8AEYvHexYyxto4kmm"/>
     </mapAttribute>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>

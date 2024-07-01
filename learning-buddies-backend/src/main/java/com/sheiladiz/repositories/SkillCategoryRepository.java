@@ -12,4 +12,5 @@ public interface SkillCategoryRepository extends CrudRepository<SkillCategory, L
 
 	List<SkillCategory> findAll();
 	
+	SkillCategory findByName(String name);
 }

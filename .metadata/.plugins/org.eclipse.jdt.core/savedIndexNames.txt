@@ -38,7 +38,6 @@ INDEX VERSION 1.134+D:\ESTUDIOS\Portfolio\LearningBuddies\.metadata\.plugins\org
 1582110328.index
 1771659054.index
 92938461.index
-1334607422.index
 1310654950.index
 1418430915.index
 4293334291.index
@@ -57,6 +56,7 @@ INDEX VERSION 1.134+D:\ESTUDIOS\Portfolio\LearningBuddies\.metadata\.plugins\org
 3583110790.index
 2917050407.index
 651743022.index
+2516985101.index
 1419595030.index
 1323749202.index
 516192213.index
@@ -70,6 +70,7 @@ INDEX VERSION 1.134+D:\ESTUDIOS\Portfolio\LearningBuddies\.metadata\.plugins\org
 1850977008.index
 2227369044.index
 571354888.index
+3794305720.index
 1894022408.index
 1025628416.index
 712867741.index
@@ -79,7 +80,8 @@ INDEX VERSION 1.134+D:\ESTUDIOS\Portfolio\LearningBuddies\.metadata\.plugins\org
 3671685000.index
 3385860110.index
 2998726015.index
-2068232574.index
+31929463.index
+2815884852.index
 223766741.index
 3840393383.index
 2931521124.index

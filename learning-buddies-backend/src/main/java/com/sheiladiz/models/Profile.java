@@ -32,7 +32,7 @@ public class Profile {
 	private Long id;
 
 	@OneToOne(mappedBy = "profile", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private User user;
+	private UserEntity user;
 
 	@NotEmpty(message = "Nombre requerido.")
 	private String firstName;
@@ -90,11 +90,11 @@ public class Profile {
 		this.id = id;
 	}
 
-	public User getUser() {
+	public UserEntity getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserEntity user) {
 		this.user = user;
 	}
 

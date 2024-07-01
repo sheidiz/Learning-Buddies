@@ -1,0 +1,33 @@
+package com.sheiladiz.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sheiladiz.models.Profile;
+import com.sheiladiz.models.User;
+import com.sheiladiz.repositories.ProfileRepository;
+
+@Service
+public class ProfileService {
+
+	@Autowired
+	private ProfileRepository profileRepository;
+
+	public Profile saveProfile(Profile newProfile) {
+		return profileRepository.save(newProfile);
+	}
+
+	public List<Profile> allProfiles() {
+		return profileRepository.findAll();
+	}
+
+	public Profile findByUser(User user) {
+		return profileRepository.findByUser(user);
+	}
+
+	public List<Profile> listProfilesByJobPositionContaining(String job) {
+		return profileRepository.findByJobPositionContaining(job);
+	}
+}
