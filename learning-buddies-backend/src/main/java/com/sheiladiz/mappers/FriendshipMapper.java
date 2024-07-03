@@ -1,28 +1,48 @@
 package com.sheiladiz.mappers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.FriendshipDTO;
 import com.sheiladiz.models.Friendship;
+import com.sheiladiz.models.Profile;
+import com.sheiladiz.services.ProfileService;
 
-@Mapper
-public interface FriendshipMapper {
+@Component
+public class FriendshipMapper {
 
-	FriendshipMapper INSTANCE = Mappers.getMapper(FriendshipMapper.class);
+	@Autowired
+	private ProfileService profileService;
 
-	@Mapping(source = "profile.id", target = "profileId")
-	@Mapping(source = "friendProfile.id", target = "friendProfileId")
-	FriendshipDTO friendshipToFriendshipDTO(Friendship friendship);
+	FriendshipDTO friendshipToFriendshipDTO(Friendship friendship) {
+		FriendshipDTO friendshipDTO = new FriendshipDTO();
+		friendshipDTO.setId(friendship.getId());
+		friendshipDTO.setProfileId(friendship.getProfile().getId());
+		friendshipDTO.setFriendProfileId(friendship.getFriendProfile().getId());
+		friendshipDTO.setStatus(friendship.getStatus());
+		return friendshipDTO;
+	}
 
-	@Mapping(source = "profileId", target = "profile.id")
-	@Mapping(source = "friendProfileId", target = "friendProfile.id")
-	Friendship friendshipDTOToFriendship(FriendshipDTO friendshipDTO);
-	
-	List<FriendshipDTO> friendshipsToFrienshipDTOs(List<Friendship> friendships);
-	
-	List<Friendship> friendshipDTOsToFriendships(List<FriendshipDTO> friendshipDTOs);
+	Friendship friendshipDTOToFriendship(FriendshipDTO friendshipDTO) {
+		Profile profile = profileService.findById(friendshipDTO.getProfileId());
+		Profile friendProfile = profileService.findById(friendshipDTO.getFriendProfileId());
+
+		Friendship friendship = new Friendship();
+		friendship.setId(friendshipDTO.getId());
+		friendship.setProfile(profile);
+		friendship.setFriendProfile(friendProfile);
+		friendship.setStatus(friendshipDTO.getStatus());
+		return friendship;
+	}
+
+	List<FriendshipDTO> friendshipsToFrienshipDTOs(List<Friendship> friendships) {
+		return friendships.stream().map(this::friendshipToFriendshipDTO).collect(Collectors.toList());
+	}
+
+	List<Friendship> friendshipDTOsToFriendships(List<FriendshipDTO> friendships) {
+		return friendships.stream().map(this::friendshipDTOToFriendship).collect(Collectors.toList());
+	}
 }

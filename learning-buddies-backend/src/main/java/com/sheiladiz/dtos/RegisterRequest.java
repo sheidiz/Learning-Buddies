@@ -24,4 +24,5 @@ public class RegisterRequest {
 	@Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
 	private String password;
 
+	private String authProvider;
 }

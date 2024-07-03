@@ -46,10 +46,7 @@ public class Profile {
 	private UserEntity user;
 
 	@NotEmpty(message = "Nombre requerido.")
-	private String firstName;
-
-	@NotEmpty(message = "Apellido requerido.")
-	private String lastName;
+	private String name;
 
 	private String gender;
 
@@ -66,7 +63,6 @@ public class Profile {
 	private String discordUrl;
 	private String githubUrl;
 	private String linkedinUrl;
-	private String whatsappNumber;
 	private String contactEmail;
 
 	@JsonManagedReference(value = "skills-learned-json")

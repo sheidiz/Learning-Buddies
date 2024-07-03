@@ -16,7 +16,7 @@ public class SkillDTO {
 	private Long id;
 	private String skillType;
 	private String name;
-	private List<Long> categories;
-	private List<Long> usersWhoLearnedThisSkillIds;
-	private List<Long> usersLearningThisSkillIds;
+	private List<String> categories;
+	private List<Long> profilesWhoLearnedThisSkillIds;
+	private List<Long> profilesLearningThisSkillIds;
 }

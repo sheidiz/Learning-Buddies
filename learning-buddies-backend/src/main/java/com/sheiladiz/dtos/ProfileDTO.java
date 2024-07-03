@@ -1,5 +1,7 @@
 package com.sheiladiz.dtos;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,9 +17,7 @@ public class ProfileDTO {
 
     private Long userId;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private String gender;
 
@@ -35,8 +35,12 @@ public class ProfileDTO {
 
     private String linkedinUrl;
 
-    private String whatsappNumber;
-
     private String contactEmail;
+    
+    private List<String> skillsLearned;
+    
+    private List<String> skillsToLearn;
+    
+    private List<Long> friendIds;
 
 }

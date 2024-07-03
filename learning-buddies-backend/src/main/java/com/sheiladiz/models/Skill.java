@@ -50,11 +50,11 @@ public class Skill {
 
 	@JsonBackReference(value = "skills-learned-json")
 	@ManyToMany(mappedBy = "skillsLearned", fetch = FetchType.LAZY)
-	private List<Profile> usersWhoLearnedThisSkill;
+	private List<Profile> profilesWhoLearnedThisSkill;
 
 	@JsonBackReference(value = "skills-to-learn-json")
 	@ManyToMany(mappedBy = "skillsToLearn", fetch = FetchType.LAZY)
-	private List<Profile> usersLearningThisSkill;
+	private List<Profile> profilesLearningThisSkill;
 
 	@Column(updatable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")

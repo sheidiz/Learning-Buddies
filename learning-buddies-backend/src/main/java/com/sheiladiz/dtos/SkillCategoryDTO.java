@@ -15,5 +15,5 @@ public class SkillCategoryDTO {
 	
 	private Long id;
 	private String name;
-	private List<Long> skillIds;
+	private List<String> skillNames;
 }
