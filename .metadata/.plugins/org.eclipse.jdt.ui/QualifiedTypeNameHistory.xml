@@ -25,10 +25,7 @@
     <fullyQualifiedTypeName name="com.sheiladiz.models.SkillCategory"/>
     <fullyQualifiedTypeName name="com.sheiladiz.models.Profile"/>
     <fullyQualifiedTypeName name="com.sheiladiz.models.Friendship"/>
-    <fullyQualifiedTypeName name="java.util.List"/>
-    <fullyQualifiedTypeName name="java.util.Optional"/>
     <fullyQualifiedTypeName name="com.sheiladiz.models.FriendshipStatus"/>
-    <fullyQualifiedTypeName name="org.springframework.http.ResponseEntity"/>
     <fullyQualifiedTypeName name="java.lang.IllegalArgumentException"/>
     <fullyQualifiedTypeName name="com.sheiladiz.models.LoginRequest"/>
     <fullyQualifiedTypeName name="org.springframework.security.config.Customizer"/>
@@ -47,8 +44,6 @@
     <fullyQualifiedTypeName name="com.sheiladiz.models.Role"/>
     <fullyQualifiedTypeName name="java.util.Set"/>
     <fullyQualifiedTypeName name="com.sheiladiz.models.Permission"/>
-    <fullyQualifiedTypeName name="java.util.Map"/>
-    <fullyQualifiedTypeName name="java.util.Date"/>
     <fullyQualifiedTypeName name="java.security.Key"/>
     <fullyQualifiedTypeName name="org.springframework.security.authentication.UsernamePasswordAuthenticationToken"/>
     <fullyQualifiedTypeName name="com.sheiladiz.dtos.AuthResponse"/>
@@ -60,4 +55,9 @@
     <fullyQualifiedTypeName name="lombok.AllArgsConstructor"/>
     <fullyQualifiedTypeName name="lombok.NoArgsConstructor"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonManagedReference"/>
+    <fullyQualifiedTypeName name="java.util.Optional"/>
+    <fullyQualifiedTypeName name="org.springframework.http.ResponseEntity"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="java.util.Date"/>
 </qualifiedTypeNameHistroy>

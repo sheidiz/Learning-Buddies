@@ -1,44 +1,27 @@
 package com.sheiladiz.dtos;
 
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class RegisterRequest {
 
-	String email;
-	String password;
-	String authProvider;
+	@NotEmpty(message = "Email requerido.")
+	@Email(message = "Email invalido.")
+	@Column(unique = true)
+	private String email;
 
-	public RegisterRequest() {
-
-	}
-
-	public RegisterRequest(String email, String password) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.authProvider = "local";
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getAuthProvider() {
-		return authProvider;
-	}
-
-	public void setAuthProvider(String authProvider) {
-		this.authProvider = authProvider;
-	}
+	@NotEmpty(message = "Contraseña requerida.")
+	@Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
+	private String password;
 
 }
