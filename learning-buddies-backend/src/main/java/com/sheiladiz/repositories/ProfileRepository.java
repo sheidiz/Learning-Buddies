@@ -13,6 +13,8 @@ import com.sheiladiz.models.UserEntity;
 public interface ProfileRepository extends CrudRepository<Profile, Long> {
 
 	List<Profile> findAll();
+	
+	boolean existsByUser(UserEntity user);
 
 	Optional<Profile> findByUser(UserEntity user);
 	

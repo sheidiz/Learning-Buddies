@@ -3,27 +3,20 @@ package com.sheiladiz.mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
-import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.UserEntity;
-import com.sheiladiz.services.ProfileService;
 
 @Component
 public class UserMapper {
-
-	@Autowired
-	private ProfileService profileService;
 
 	public UserDTO userEntityToUserDTO(UserEntity userEntity) {
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(userEntity.getId());
 		userDTO.setEmail(userEntity.getEmail());
 		userDTO.setAuthProvider(userEntity.getAuthProvider());
-		userDTO.setProfileId(userEntity.getProfile() != null ? userEntity.getProfile().getId() : null);
 		return userDTO;
 	}
 
@@ -32,11 +25,7 @@ public class UserMapper {
 		
 		if (userDTO.getId() != null)
 			userEntity.setId(userDTO.getId());
-		
-		Profile profile = null;
-		if (userDTO.getProfileId() != null) {
-			profile = profileService.findProfileById(userDTO.getProfileId());
-		}
+
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setAuthProvider(userDTO.getAuthProvider());
 		return userEntity;

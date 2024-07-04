@@ -11,6 +11,7 @@ public interface ProfileService {
 	Profile saveProfile(Profile newProfile);
 	
 	// READ
+	void isProfileExistsByUser(UserEntity user);
 	List<Profile> allProfiles();
 	Profile findProfileByUser(UserEntity user);
 	Profile findProfileById(Long id);

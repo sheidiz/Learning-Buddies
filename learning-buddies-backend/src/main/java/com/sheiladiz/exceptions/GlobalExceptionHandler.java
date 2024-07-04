@@ -8,6 +8,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.sheiladiz.exceptions.friendship.FriendshipNotFoundException;
 import com.sheiladiz.exceptions.profile.InvalidProfileDataException;
+import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.exceptions.skill.InvalidSkillException;
 import com.sheiladiz.exceptions.skill.SkillAlreadyCreatedException;
@@ -45,6 +46,11 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
+	@ExceptionHandler(ProfileAlreadyCreatedException.class)
+	public ResponseEntity<?> handleProfileAlreadyCreatedException(ProfileAlreadyCreatedException ex, WebRequest request) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+	}
+
 	@ExceptionHandler(InvalidProfileDataException.class)
 	public ResponseEntity<?> handleInvalidProfileDataException(InvalidProfileDataException ex, WebRequest request) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -77,7 +83,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handleInvalidSkillException(InvalidSkillException ex, WebRequest request) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
-	
+
 	// Friendship Exceptions
 	@ExceptionHandler(FriendshipNotFoundException.class)
 	public ResponseEntity<?> handleFriendshipNotFoundException(FriendshipNotFoundException ex, WebRequest request) {

@@ -31,18 +31,43 @@ public class ProfileMapper {
 		profileDTO.setId(profile.getId());
 		profileDTO.setUserId(profile.getUser().getId());
 		profileDTO.setName(profile.getName());
-		profileDTO.setGender(profile.getGender());
-		profileDTO.setPronouns(profile.getPronouns());
-		profileDTO.setCountry(profile.getCountry());
-		profileDTO.setJobPosition(profile.getJobPosition());
-		profileDTO.setBio(profile.getBio());
-		profileDTO.setDiscordUrl(profile.getDiscordUrl());
-		profileDTO.setGithubUrl(profile.getGithubUrl());
-		profileDTO.setLinkedinUrl(profile.getLinkedinUrl());
-		profileDTO.setContactEmail(profile.getContactEmail());
-		profileDTO.setSkillsLearned(mapSkills(profile.getSkillsLearned()));
-		profileDTO.setSkillsLearned(mapSkills(profile.getSkillsToLearn()));
-		profileDTO.setFriendIds(mapFriends(profile.getFriends()));
+
+		if (profile.getGender() != null) {
+			profileDTO.setGender(profile.getGender());
+		}
+		if (profile.getPronouns() != null) {
+			profileDTO.setPronouns(profile.getPronouns());
+		}
+		if (profile.getCountry() != null) {
+			profileDTO.setCountry(profile.getCountry());
+		}
+		if (profile.getJobPosition() != null) {
+			profileDTO.setJobPosition(profile.getJobPosition());
+		}
+		if (profile.getBio() != null) {
+			profileDTO.setBio(profile.getBio());
+		}
+		if (profile.getDiscordUrl() != null) {
+			profileDTO.setDiscordUrl(profile.getDiscordUrl());
+		}
+		if (profile.getGithubUrl() != null) {
+			profileDTO.setGithubUrl(profile.getGithubUrl());
+		}
+		if (profile.getLinkedinUrl() != null) {
+			profileDTO.setLinkedinUrl(profile.getLinkedinUrl());
+		}
+		if (profile.getContactEmail() != null) {
+			profileDTO.setContactEmail(profile.getContactEmail());
+		}
+		if (profile.getSkillsLearned() != null) {
+			profileDTO.setSkillsLearned(mapSkills(profile.getSkillsLearned()));
+		}
+		if (profile.getSkillsToLearn() != null) {
+			profileDTO.setSkillsLearned(mapSkills(profile.getSkillsToLearn()));
+		}
+		if (profile.getFriends() != null) {
+			profileDTO.setFriendIds(mapFriends(profile.getFriends()));
+		}
 		return profileDTO;
 	}
 
@@ -53,18 +78,42 @@ public class ProfileMapper {
 		profile.setId(profileDTO.getId());
 		profile.setUser(user);
 		profile.setName(profileDTO.getName());
-		profile.setGender(profileDTO.getGender());
-		profile.setPronouns(profileDTO.getPronouns());
-		profile.setCountry(profileDTO.getCountry());
-		profile.setJobPosition(profileDTO.getJobPosition());
-		profile.setBio(profileDTO.getBio());
-		profile.setDiscordUrl(profileDTO.getDiscordUrl());
-		profile.setGithubUrl(profileDTO.getGithubUrl());
-		profile.setLinkedinUrl(profileDTO.getLinkedinUrl());
-		profile.setContactEmail(profileDTO.getContactEmail());
-		profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
-		profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsToLearn()));
-		profile.setFriends(mapFriendsIds(profileDTO.getFriendIds()));
+		if (profileDTO.getGender() != null) {
+			profile.setGender(profileDTO.getGender());
+		}
+		if (profileDTO.getPronouns() != null) {
+			profile.setPronouns(profileDTO.getPronouns());
+		}
+		if (profileDTO.getCountry() != null) {
+			profile.setCountry(profileDTO.getCountry());
+		}
+		if (profileDTO.getJobPosition() != null) {
+			profile.setJobPosition(profileDTO.getJobPosition());
+		}
+		if (profileDTO.getBio() != null) {
+			profile.setBio(profileDTO.getBio());
+		}
+		if (profileDTO.getDiscordUrl() != null) {
+			profile.setDiscordUrl(profileDTO.getDiscordUrl());
+		}
+		if (profileDTO.getGithubUrl() != null) {
+			profile.setGithubUrl(profileDTO.getGithubUrl());
+		}
+		if (profileDTO.getLinkedinUrl() != null) {
+			profile.setLinkedinUrl(profileDTO.getLinkedinUrl());
+		}
+		if (profileDTO.getContactEmail() != null) {
+			profile.setContactEmail(profileDTO.getContactEmail());
+		}
+		if (profileDTO.getSkillsLearned() != null) {
+			profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
+		}
+		if (profileDTO.getSkillsToLearn() != null) {
+			profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsToLearn()));
+		}
+		if (profileDTO.getFriendIds() != null) {
+			profile.setFriends(mapFriendsIds(profileDTO.getFriendIds()));
+		}
 		return profile;
 	}
 

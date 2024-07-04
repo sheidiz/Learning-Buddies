@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +20,10 @@ public class ProfileDTO {
 	
 	private Long id;
 
+	@NotNull(message = "User Id requerido.")
     private Long userId;
 
+	@NotBlank(message = "Nombre requerido.")
     private String name;
 
     private String gender;
