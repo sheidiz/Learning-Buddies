@@ -47,7 +47,7 @@ public class ProfileMapper {
 	}
 
 	public Profile profileDTOToProfile(ProfileDTO profileDTO) {
-		UserEntity user = userService.findUserById(profileDTO.getUserId()).get();
+		UserEntity user = userService.findUserById(profileDTO.getUserId());
 
 		Profile profile = new Profile();
 		profile.setId(profileDTO.getId());
@@ -73,7 +73,7 @@ public class ProfileMapper {
 	}
 
 	public List<Skill> mapSkillNames(List<String> skillNames) {
-		return skillNames.stream().map(skillService::getSkillByName).collect(Collectors.toList());
+		return skillNames.stream().map(skillService::findSkillByName).collect(Collectors.toList());
 	}
 
 	private List<Long> mapFriends(List<Profile> friends) {
@@ -81,7 +81,7 @@ public class ProfileMapper {
 	}
 
 	private List<Profile> mapFriendsIds(List<Long> friends) {
-		return friends.stream().map(profileService::findById).collect(Collectors.toList());
+		return friends.stream().map(profileService::findProfileById).collect(Collectors.toList());
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {

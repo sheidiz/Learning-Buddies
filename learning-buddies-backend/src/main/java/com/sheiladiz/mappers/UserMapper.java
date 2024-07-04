@@ -28,13 +28,15 @@ public class UserMapper {
 	}
 
 	public UserEntity userDTOToUserEntity(UserDTO userDTO) {
-		Profile profile = profileService.findById(userDTO.getProfileId());
-
 		UserEntity userEntity = new UserEntity();
+		
 		if (userDTO.getId() != null)
 			userEntity.setId(userDTO.getId());
-		if (profile != null)
-			userEntity.setProfile(profile);
+		
+		Profile profile = null;
+		if (userDTO.getProfileId() != null) {
+			profile = profileService.findProfileById(userDTO.getProfileId());
+		}
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setAuthProvider(userDTO.getAuthProvider());
 		return userEntity;

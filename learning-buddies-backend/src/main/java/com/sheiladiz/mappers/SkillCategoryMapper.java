@@ -38,7 +38,7 @@ public class SkillCategoryMapper {
 	}
 
 	private List<Skill> mapSkillsNames(List<String> skills) {
-		return skills.stream().map(skillService::getSkillByName).collect(Collectors.toList());
+		return skills.stream().map(skillService::findSkillByName).collect(Collectors.toList());
 	}
 
 	public List<SkillCategoryDTO> skillCategoriesToSkillCategoryDTOs(List<SkillCategory> categories) {

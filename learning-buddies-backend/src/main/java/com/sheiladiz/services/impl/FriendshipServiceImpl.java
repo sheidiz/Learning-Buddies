@@ -1,10 +1,9 @@
 package com.sheiladiz.services.impl;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sheiladiz.exceptions.friendship.FriendshipNotFoundException;
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.FriendshipStatus;
 import com.sheiladiz.models.Profile;
@@ -19,14 +18,15 @@ public class FriendshipServiceImpl implements FriendshipService {
 	@Autowired
 	private FriendshipRepository friendshipRepository;
 
-	//@Autowired
-	//private ProfileRepository profileRepository;
+	// @Autowired
+	// private ProfileRepository profileRepository;
 
-	//@Autowired
-	//private UserRepository userRepository;
+	// @Autowired
+	// private UserRepository userRepository;
 
-	public Optional<Friendship> findFriendship(Profile profile, Profile friendProfile) {
-		return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile);
+	public Friendship findFriendship(Profile profile, Profile friendProfile) {
+		return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile)
+				.orElseThrow(() -> new FriendshipNotFoundException("No se encontro la solicitud de amistad"));
 	}
 
 	public boolean friendshipExists(Profile profile, Profile friendProfile) {
@@ -47,9 +47,9 @@ public class FriendshipServiceImpl implements FriendshipService {
 	}
 
 	public String acceptFriendRequest(Profile profile, Profile friendProfile) {
-		Optional<Friendship> friendship = findFriendship(friendProfile, profile);
-		if (friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.PENDING) {
-			Friendship existingFriendship = friendship.get();
+		Friendship friendship = findFriendship(friendProfile, profile);
+		if (friendship.getStatus() == FriendshipStatus.PENDING) {
+			Friendship existingFriendship = friendship;
 			existingFriendship.setStatus(FriendshipStatus.ACCEPTED);
 			friendshipRepository.save(existingFriendship);
 			return "Solicitud de amistad aceptada.";
@@ -59,9 +59,9 @@ public class FriendshipServiceImpl implements FriendshipService {
 	}
 
 	public String rejectFriendRequest(Profile profile, Profile friendProfile) {
-		Optional<Friendship> friendship = findFriendship(friendProfile, profile);
-		if (friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.PENDING) {
-			friendshipRepository.delete(friendship.get());
+		Friendship friendship = findFriendship(friendProfile, profile);
+		if (friendship.getStatus() == FriendshipStatus.PENDING) {
+			friendshipRepository.delete(friendship);
 			return "Solicitud de amistad rechazada y eliminada.";
 		}
 
@@ -69,9 +69,9 @@ public class FriendshipServiceImpl implements FriendshipService {
 	}
 
 	public String removeFriend(Profile profile, Profile friendProfile) {
-		Optional<Friendship> friendship = findFriendship(profile, friendProfile);
-		if (friendship.isPresent()) {
-			friendshipRepository.delete(friendship.get());
+		Friendship friendship = findFriendship(friendProfile, profile);
+		if (friendship != null) {
+			friendshipRepository.delete(friendship);
 			return "Amistad eliminada.";
 		}
 

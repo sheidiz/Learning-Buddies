@@ -49,7 +49,7 @@ public class SkillMapper {
 	}
 
 	private List<SkillCategory> mapCategoriesNames(List<String> categories) {
-		return categories.stream().map(skillService::getCategoryByName).collect(Collectors.toList());
+		return categories.stream().map(skillService::findCategoryByName).collect(Collectors.toList());
 	}
 
 	private List<Long> mapUsers(List<Profile> profiles) {
@@ -57,7 +57,7 @@ public class SkillMapper {
 	}
 
 	private List<Profile> mapUsersIds(List<Long> profiles) {
-		return profiles.stream().map(profileService::findById).collect(Collectors.toList());
+		return profiles.stream().map(profileService::findProfileById).collect(Collectors.toList());
 	}
 
 	public List<SkillDTO> skillsToSkillDTOs(List<Skill> skills) {

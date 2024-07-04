@@ -1,7 +1,5 @@
 package com.sheiladiz.services;
 
-import java.util.Optional;
-
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.Profile;
 
@@ -11,7 +9,7 @@ public interface FriendshipService {
 	String sendFriendRequest(Profile profile, Profile friendProfile);
 
 	// READ
-	Optional<Friendship> findFriendship(Profile profile, Profile friendProfile);
+	Friendship findFriendship(Profile profile, Profile friendProfile);
 	boolean friendshipExists(Profile profile, Profile friendProfile);
 
 	// UPDATE

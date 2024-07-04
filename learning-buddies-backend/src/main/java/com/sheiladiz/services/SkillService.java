@@ -7,21 +7,17 @@ import com.sheiladiz.models.SkillCategory;
 
 public interface SkillService {
 	
-	// CREATE
+	// CREATE / UPDATE
 	SkillCategory saveCategory(SkillCategory newCategory);
 	Skill saveSkill(Skill newSkill);
 	
 	// READ
 	List<SkillCategory> allCategories();
 	List<Skill> allSkills();
-	Skill getSkillById(Long id);
-	Skill getSkillByName(String name);
-	SkillCategory getCategoryById(Long id);
-	SkillCategory getCategoryByName(String name);
-	
-	// UPDATE
-	SkillCategory updateCategory(SkillCategory category);
-	Skill updateSkill(Skill skill);
+	Skill findSkillById(Long id);
+	Skill findSkillByName(String name);
+	SkillCategory findCategoryById(Long id);
+	SkillCategory findCategoryByName(String name);
 	
 	// DELETE
 	void deleteCategory(Long id);
