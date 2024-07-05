@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
+import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.UserEntity;
 import com.sheiladiz.repositories.ProfileRepository;
@@ -19,35 +20,49 @@ public class ProfileServiceImpl implements ProfileService {
 	@Autowired
 	private ProfileRepository profileRepository;
 
+	@Autowired
+	private ProfileMapper profileMapper;
+
 	public void isProfileExistsByUser(UserEntity user) {
 		if (profileRepository.existsByUser(user)) {
 			throw new ProfileAlreadyCreatedException("Perfil ya existe");
 		}
 	}
 
-	public Profile saveProfile(Profile newProfile) {
-		return profileRepository.save(newProfile);
+	public ProfileDTO saveProfile(ProfileDTO newProfile, UserEntity existingUser) {
+		Profile profile = profileMapper.profileDTOToProfile(newProfile);
+		profile.setUser(existingUser);
+		Profile savedProfile = profileRepository.save(profile);
+		return profileMapper.profileToProfileDTO(savedProfile);
 	}
 
-	public List<Profile> allProfiles() {
-		return profileRepository.findAll();
+	public List<ProfileDTO> allProfiles() {
+		return profileMapper.profilesToProfileDTOs(profileRepository.findAll());
 	}
 
-	public Profile findProfileByUser(UserEntity user) {
-		return profileRepository.findByUser(user).orElseThrow(
+	public ProfileDTO getProfileByUser(UserEntity user) {
+		Profile profile = profileRepository.findByUser(user).orElseThrow(
 				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con email: " + user.getEmail()));
+		return profileMapper.profileToProfileDTO(profile);
 	}
 
-	public Profile findProfileById(Long id) {
+	public ProfileDTO getProfileById(Long id) {
+		Profile profile = profileRepository.findById(id)
+				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
+		return profileMapper.profileToProfileDTO(profile);
+	}
+
+	public Profile getProfileEntityById(Long id) {
 		return profileRepository.findById(id)
 				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
 	}
 
-	public List<Profile> listProfilesByJobPositionContaining(String job) {
-		return profileRepository.findByJobPositionContaining(job);
+	public List<ProfileDTO> listProfilesByJobPositionContaining(String job) {
+		List<Profile> profiles = profileRepository.findByJobPositionContaining(job);
+		return profileMapper.profilesToProfileDTOs(profiles);
 	}
 
-	public Profile updateProfile(Long profileId, ProfileDTO profileDTO) {
+	public ProfileDTO updateProfile(Long profileId, ProfileDTO profileDTO) {
 		Profile existingProfile = profileRepository.findById(profileId).orElseThrow(
 				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + profileId));
 
@@ -84,11 +99,13 @@ public class ProfileServiceImpl implements ProfileService {
 
 		Profile updatedProfile = profileRepository.save(existingProfile);
 
-		return updatedProfile;
+		return profileMapper.profileToProfileDTO(updatedProfile);
 	}
 
 	public void deleteProfile(Long id) {
-		Profile profile = findProfileById(id);
+		Profile profile = profileRepository.findById(id)
+				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
 		profileRepository.delete(profile);
 	}
+
 }

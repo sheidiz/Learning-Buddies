@@ -20,8 +20,6 @@ import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
-import com.sheiladiz.mappers.ProfileMapper;
-import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.UserEntity;
 import com.sheiladiz.services.ProfileService;
 import com.sheiladiz.services.UserService;
@@ -38,51 +36,41 @@ public class ProfileController {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private ProfileMapper profileMapper;
 
 	@PostMapping("{userId}")
 	public ResponseEntity<?> createProfile(@PathVariable("userId") Long userId,
-			@Valid @RequestBody ProfileDTO profileDTO, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			List<String> errors = bindingResult.getAllErrors().stream().map(error -> error.getDefaultMessage())
+			@Valid @RequestBody ProfileDTO profileDTO, BindingResult result) {
+		if (result.hasErrors()) {
+			List<String> errors = result.getAllErrors().stream().map(error -> error.getDefaultMessage())
 					.collect(Collectors.toList());
 			return ResponseEntity.badRequest().body(errors);
 		}
 
 		try {
 			UserEntity user = userService.getUserEntityById(userId);
-			
+
 			if (user.getProfile() != null) {
-	            throw new ProfileAlreadyCreatedException("El perfil para este usuario ya existe");
-	        }
-			
-			Profile profile = profileMapper.profileDTOToProfile(profileDTO);
-			profile.setUser(user);
-			
-			Profile savedProfile = profileService.saveProfile(profile);
-			ProfileDTO savedProfileDTO = profileMapper.profileToProfileDTO(savedProfile);
-	        return ResponseEntity.status(HttpStatus.CREATED).body(savedProfileDTO);
+				throw new ProfileAlreadyCreatedException("El perfil para este usuario ya existe");
+			}
+			ProfileDTO savedProfileDTO = profileService.saveProfile(profileDTO, user);
+			return ResponseEntity.status(HttpStatus.CREATED).body(savedProfileDTO);
 		} catch (UserNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		} catch (ProfileAlreadyCreatedException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
-
 	}
 
 	@GetMapping()
 	public ResponseEntity<List<ProfileDTO>> getAllProfiles() {
-		List<Profile> profiles = profileService.allProfiles();
-		List<ProfileDTO> profileDTOs = profileMapper.profilesToProfileDTOs(profiles);
+		List<ProfileDTO> profileDTOs = profileService.allProfiles();
 		return ResponseEntity.ok(profileDTOs);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getProfileById(@PathVariable("id") Long id) {
 		try {
-			Profile profile = profileService.findProfileById(id);
-			ProfileDTO profileDto = profileMapper.profileToProfileDTO(profile);
+			ProfileDTO profileDto = profileService.getProfileById(id);
 			return ResponseEntity.ok(profileDto);
 		} catch (ProfileNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -92,8 +80,7 @@ public class ProfileController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateProfile(@PathVariable("id") Long id, @RequestBody ProfileDTO profileDTO) {
 		try {
-			Profile updatedProfile = profileService.updateProfile(id, profileDTO);
-			ProfileDTO updateProfileDTO = profileMapper.profileToProfileDTO(updatedProfile);
+			ProfileDTO updateProfileDTO = profileService.updateProfile(id, profileDTO);
 			return ResponseEntity.ok(updateProfileDTO);
 		} catch (ProfileNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());

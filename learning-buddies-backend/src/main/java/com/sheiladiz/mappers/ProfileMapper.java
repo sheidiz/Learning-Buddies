@@ -9,22 +9,16 @@ import org.springframework.stereotype.Component;
 import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.Skill;
-import com.sheiladiz.services.ProfileService;
 import com.sheiladiz.services.SkillService;
 
 @Component
 public class ProfileMapper {
 
 	@Autowired
-	private ProfileService profileService;
-
-	@Autowired
 	private SkillService skillService;
 
 	public ProfileDTO profileToProfileDTO(Profile profile) {
-		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder()
-				.id(profile.getId())
-				.name(profile.getName());
+		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder().id(profile.getId()).name(profile.getName());
 
 		if (profile.getGender() != null) {
 			builder.gender(profile.getGender());
@@ -70,17 +64,11 @@ public class ProfileMapper {
 			builder.skillsToLearn(mapSkills(profile.getSkillsToLearn()));
 		}
 
-		if (profile.getFriends() != null) {
-			builder.friendIds(mapFriends(profile.getFriends()));
-		}
-
 		return builder.build();
 	}
 
 	public Profile profileDTOToProfile(ProfileDTO profileDTO) {
-		Profile.ProfileBuilder builder = Profile.builder()
-				.id(profileDTO.getId())
-				.name(profileDTO.getName());
+		Profile.ProfileBuilder builder = Profile.builder().id(profileDTO.getId()).name(profileDTO.getName());
 
 		if (profileDTO.getGender() != null) {
 			builder.gender(profileDTO.getGender());
@@ -126,10 +114,6 @@ public class ProfileMapper {
 			builder.skillsToLearn(mapSkillNames(profileDTO.getSkillsToLearn()));
 		}
 
-		if (profileDTO.getFriendIds() != null) {
-			builder.friends(mapFriendsIds(profileDTO.getFriendIds()));
-		}
-
 		return builder.build();
 	}
 
@@ -138,15 +122,7 @@ public class ProfileMapper {
 	}
 
 	public List<Skill> mapSkillNames(List<String> skillNames) {
-		return skillNames.stream().map(skillService::findSkillByName).collect(Collectors.toList());
-	}
-
-	private List<Long> mapFriends(List<Profile> friends) {
-		return friends.stream().map(Profile::getId).collect(Collectors.toList());
-	}
-
-	private List<Profile> mapFriendsIds(List<Long> friends) {
-		return friends.stream().map(profileService::findProfileById).collect(Collectors.toList());
+		return skillNames.stream().map(skillService::getSkillByName).collect(Collectors.toList());
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {
