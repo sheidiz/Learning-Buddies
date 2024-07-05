@@ -15,10 +15,6 @@ import com.sheiladiz.dtos.LoginRequest;
 import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
-import com.sheiladiz.exceptions.user.InvalidUserCredentialsException;
-import com.sheiladiz.exceptions.user.UserNotFoundException;
-import com.sheiladiz.mappers.UserMapper;
-import com.sheiladiz.models.UserEntity;
 import com.sheiladiz.services.UserService;
 
 import jakarta.validation.Valid;
@@ -27,9 +23,6 @@ import jakarta.validation.Valid;
 public class AuthController {
 	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private UserMapper userMapper;
 
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest,
@@ -46,33 +39,16 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
 
-		if (registerRequest.getAuthProvider() == null) {
-			registerRequest.setAuthProvider("local");
-		}
-		UserEntity userEntity = userMapper.registerRequestToUserEntity(registerRequest);
-		UserEntity savedUser = userService.saveUser(userEntity);
-		UserDTO savedUserDto = userMapper.userEntityToUserDTO(savedUser);
+		UserDTO savedUserDto = userService.registerUser(registerRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedUserDto);
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			List<String> errors = bindingResult.getAllErrors().stream().map(error -> error.getDefaultMessage())
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
-
 		try {
-			UserEntity existingUser = userService.findUserByEmail(loginRequest.getEmail());
-			userService.validateCredentials(existingUser, loginRequest.getPassword());
-
-			UserDTO userDTO = userMapper.userEntityToUserDTO(existingUser);
-			return ResponseEntity.ok(userDTO);
-		} catch (UserNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		} catch (InvalidUserCredentialsException ex) {
+			UserDTO userDto = userService.loginUser(loginRequest);
+			return ResponseEntity.ok(userDto);
+		} catch (Exception ex) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
 		}
 	}

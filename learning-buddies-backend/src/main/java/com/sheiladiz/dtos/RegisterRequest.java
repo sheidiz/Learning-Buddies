@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
@@ -27,5 +28,14 @@ public class RegisterRequest {
 	@Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
 	private String password;
 
-	private String authProvider;
+	@Builder.Default
+	@Setter
+	private String authProvider = "local";
+
+	public String getAuthProvider() {
+		if (authProvider == null || authProvider.isEmpty()) {
+			return "local";
+		}
+		return authProvider;
+	}
 }

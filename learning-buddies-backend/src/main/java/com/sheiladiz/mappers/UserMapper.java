@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
+import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.UserEntity;
 
 @Component
@@ -23,7 +24,7 @@ public class UserMapper {
 				.authProvider(userEntity.getAuthProvider());
 		
 		if (userEntity.getProfile() != null) {
-			builder.profileDTO(profileMapper.profileToProfileDTO(userEntity.getProfile()));
+			builder.profile(profileMapper.profileToProfileDTO(userEntity.getProfile()));
 		}
 
 		return builder.build();
@@ -35,10 +36,12 @@ public class UserMapper {
 				.email(userDTO.getEmail())
 				.authProvider(userDTO.getAuthProvider());
 		
-		if (userDTO.getProfileDTO() != null) {
-			builder.profile(profileMapper.profileDTOToProfile(userDTO.getProfileDTO()));
-		}
-
+		 if (userDTO.getProfile() != null) {
+			 Profile profile = profileMapper.profileDTOToProfile(userDTO.getProfile());
+	         profile.setUser(builder.build());
+	         builder.profile(profile);
+	      }
+		 
 		return builder.build();
 	}
 
