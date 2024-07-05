@@ -26,95 +26,122 @@ public class ProfileMapper {
 	@Autowired
 	private SkillService skillService;
 
+	@Autowired
+	private UserMapper userMapper;
+
 	public ProfileDTO profileToProfileDTO(Profile profile) {
-		ProfileDTO profileDTO = new ProfileDTO();
-		profileDTO.setId(profile.getId());
-		profileDTO.setUserId(profile.getUser().getId());
-		profileDTO.setName(profile.getName());
+		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder()
+				.id(profile.getId())
+				.name(profile.getName());
 
 		if (profile.getGender() != null) {
-			profileDTO.setGender(profile.getGender());
+			builder.gender(profile.getGender());
 		}
+		
 		if (profile.getPronouns() != null) {
-			profileDTO.setPronouns(profile.getPronouns());
+			builder.pronouns(profile.getPronouns());
 		}
+		
 		if (profile.getCountry() != null) {
-			profileDTO.setCountry(profile.getCountry());
+			builder.country(profile.getCountry());
 		}
+		
 		if (profile.getJobPosition() != null) {
-			profileDTO.setJobPosition(profile.getJobPosition());
+			builder.jobPosition(profile.getJobPosition());
 		}
+		
 		if (profile.getBio() != null) {
-			profileDTO.setBio(profile.getBio());
+			builder.bio(profile.getBio());
 		}
+		
 		if (profile.getDiscordUrl() != null) {
-			profileDTO.setDiscordUrl(profile.getDiscordUrl());
+			builder.discordUrl(profile.getDiscordUrl());
 		}
+		
 		if (profile.getGithubUrl() != null) {
-			profileDTO.setGithubUrl(profile.getGithubUrl());
+			builder.githubUrl(profile.getGithubUrl());
 		}
+		
 		if (profile.getLinkedinUrl() != null) {
-			profileDTO.setLinkedinUrl(profile.getLinkedinUrl());
+			builder.linkedinUrl(profile.getLinkedinUrl());
 		}
+		
 		if (profile.getContactEmail() != null) {
-			profileDTO.setContactEmail(profile.getContactEmail());
+			builder.contactEmail(profile.getContactEmail());
 		}
+		
 		if (profile.getSkillsLearned() != null) {
-			profileDTO.setSkillsLearned(mapSkills(profile.getSkillsLearned()));
+			builder.skillsLearned(mapSkills(profile.getSkillsLearned()));
 		}
+		
 		if (profile.getSkillsToLearn() != null) {
-			profileDTO.setSkillsLearned(mapSkills(profile.getSkillsToLearn()));
+			builder.skillsLearned(mapSkills(profile.getSkillsToLearn()));
 		}
+		
 		if (profile.getFriends() != null) {
-			profileDTO.setFriendIds(mapFriends(profile.getFriends()));
+			builder.friendIds(mapFriends(profile.getFriends()));
 		}
-		return profileDTO;
+		
+		return builder.build();
 	}
 
 	public Profile profileDTOToProfile(ProfileDTO profileDTO) {
-		UserEntity user = userService.findUserById(profileDTO.getUserId());
+		UserEntity user = userMapper.userDTOToUserEntity(userService.getUserById(profileDTO.getId()));
 
-		Profile profile = new Profile();
-		profile.setId(profileDTO.getId());
-		profile.setUser(user);
-		profile.setName(profileDTO.getName());
+		Profile.ProfileBuilder builder = Profile.builder()
+				.id(profileDTO.getId())
+				.user(user)
+				.name(profileDTO.getName());
+
 		if (profileDTO.getGender() != null) {
-			profile.setGender(profileDTO.getGender());
+			builder.gender(profileDTO.getGender());
 		}
+		
 		if (profileDTO.getPronouns() != null) {
-			profile.setPronouns(profileDTO.getPronouns());
+			builder.pronouns(profileDTO.getPronouns());
 		}
+		
 		if (profileDTO.getCountry() != null) {
-			profile.setCountry(profileDTO.getCountry());
+			builder.country(profileDTO.getCountry());
 		}
+		
 		if (profileDTO.getJobPosition() != null) {
-			profile.setJobPosition(profileDTO.getJobPosition());
+			builder.jobPosition(profileDTO.getJobPosition());
 		}
+		
 		if (profileDTO.getBio() != null) {
-			profile.setBio(profileDTO.getBio());
+			builder.bio(profileDTO.getBio());
 		}
+		
 		if (profileDTO.getDiscordUrl() != null) {
-			profile.setDiscordUrl(profileDTO.getDiscordUrl());
+			builder.discordUrl(profileDTO.getDiscordUrl());
 		}
+		
 		if (profileDTO.getGithubUrl() != null) {
-			profile.setGithubUrl(profileDTO.getGithubUrl());
+			builder.githubUrl(profileDTO.getGithubUrl());
 		}
+		
 		if (profileDTO.getLinkedinUrl() != null) {
-			profile.setLinkedinUrl(profileDTO.getLinkedinUrl());
+			builder.linkedinUrl(profileDTO.getLinkedinUrl());
 		}
+		
 		if (profileDTO.getContactEmail() != null) {
-			profile.setContactEmail(profileDTO.getContactEmail());
+			builder.contactEmail(profileDTO.getContactEmail());
 		}
+		
 		if (profileDTO.getSkillsLearned() != null) {
-			profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
+			builder.skillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
 		}
+		
 		if (profileDTO.getSkillsToLearn() != null) {
-			profile.setSkillsLearned(mapSkillNames(profileDTO.getSkillsToLearn()));
+			builder.skillsLearned(mapSkillNames(profileDTO.getSkillsToLearn()));
 		}
+		
 		if (profileDTO.getFriendIds() != null) {
-			profile.setFriends(mapFriendsIds(profileDTO.getFriendIds()));
+			builder.friends(mapFriendsIds(profileDTO.getFriendIds()));
 		}
-		return profile;
+		
+		return builder.build();
 	}
 
 	private List<String> mapSkills(List<Skill> skills) {

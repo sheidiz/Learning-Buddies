@@ -18,24 +18,23 @@ public class FriendshipMapper {
 	private ProfileService profileService;
 
 	FriendshipDTO friendshipToFriendshipDTO(Friendship friendship) {
-		FriendshipDTO friendshipDTO = new FriendshipDTO();
-		friendshipDTO.setId(friendship.getId());
-		friendshipDTO.setProfileId(friendship.getProfile().getId());
-		friendshipDTO.setFriendProfileId(friendship.getFriendProfile().getId());
-		friendshipDTO.setStatus(friendship.getStatus());
-		return friendshipDTO;
+		return FriendshipDTO.builder().id(friendship.getId())
+			.profileId(friendship.getProfile().getId())
+			.friendProfileId(friendship.getFriendProfile().getId())
+			.status(friendship.getStatus())
+			.build();
 	}
 
 	Friendship friendshipDTOToFriendship(FriendshipDTO friendshipDTO) {
 		Profile profile = profileService.findProfileById(friendshipDTO.getProfileId());
 		Profile friendProfile = profileService.findProfileById(friendshipDTO.getFriendProfileId());
 
-		Friendship friendship = new Friendship();
-		friendship.setId(friendshipDTO.getId());
-		friendship.setProfile(profile);
-		friendship.setFriendProfile(friendProfile);
-		friendship.setStatus(friendshipDTO.getStatus());
-		return friendship;
+		return Friendship.builder()
+			.id(friendshipDTO.getId())
+			.profile(profile)
+			.friendProfile(friendProfile)
+			.status(friendshipDTO.getStatus())
+			.build();
 	}
 
 	List<FriendshipDTO> friendshipsToFrienshipDTOs(List<Friendship> friendships) {

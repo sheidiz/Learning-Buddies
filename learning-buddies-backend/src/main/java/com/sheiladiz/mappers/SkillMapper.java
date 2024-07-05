@@ -23,25 +23,25 @@ public class SkillMapper {
 	private ProfileService profileService;
 
 	public SkillDTO skillToSkillDTO(Skill skill) {
-		SkillDTO skillDTO = new SkillDTO();
-		skillDTO.setId(skill.getId());
-		skillDTO.setSkillType(skill.getSkillType());
-		skillDTO.setName(skill.getName());
-		skillDTO.setCategories(mapCategories(skill.getCategories()));
-		skillDTO.setProfilesWhoLearnedThisSkillIds(mapUsers(skill.getProfilesWhoLearnedThisSkill()));
-		skillDTO.setProfilesLearningThisSkillIds(mapUsers(skill.getProfilesLearningThisSkill()));
-		return skillDTO;
+		return SkillDTO.builder()
+				.id(skill.getId())
+				.skillType(skill.getSkillType())
+				.name(skill.getName())
+				.categories(mapCategories(skill.getCategories()))
+				.profilesWhoLearnedThisSkillIds(mapUsers(skill.getProfilesWhoLearnedThisSkill()))
+				.profilesLearningThisSkillIds(mapUsers(skill.getProfilesLearningThisSkill()))
+				.build();
 	}
 
 	public Skill skillDTOToSkill(SkillDTO skillDTO) {
-		Skill skill = new Skill();
-		skill.setId(skillDTO.getId());
-		skill.setSkillType(skillDTO.getSkillType());
-		skill.setName(skillDTO.getName());
-		skill.setCategories(mapCategoriesNames(skillDTO.getCategories()));
-		skill.setProfilesWhoLearnedThisSkill(mapUsersIds(skillDTO.getProfilesWhoLearnedThisSkillIds()));
-		skill.setProfilesLearningThisSkill(mapUsersIds(skillDTO.getProfilesLearningThisSkillIds()));
-		return skill;
+		return Skill.builder()
+				.id(skillDTO.getId())
+				.skillType(skillDTO.getSkillType())
+				.name(skillDTO.getName())
+				.categories(mapCategoriesNames(skillDTO.getCategories()))
+				.profilesWhoLearnedThisSkill(mapUsersIds(skillDTO.getProfilesWhoLearnedThisSkillIds()))
+				.profilesLearningThisSkill(mapUsersIds(skillDTO.getProfilesLearningThisSkillIds()))
+		.build();
 	}
 
 	private List<String> mapCategories(List<SkillCategory> categories) {

@@ -18,19 +18,19 @@ public class SkillCategoryMapper {
 	private SkillService skillService;
 
 	public SkillCategoryDTO skillCategoryToSkillCategoryDTO(SkillCategory category) {
-		SkillCategoryDTO categoryDTO = new SkillCategoryDTO();
-		categoryDTO.setId(category.getId());
-		categoryDTO.setName(category.getName());
-		categoryDTO.setSkillNames(mapSkills(category.getSkills()));
-		return categoryDTO;
+		return SkillCategoryDTO.builder()
+				.id(category.getId())
+				.name(category.getName())
+				.skillNames(mapSkills(category.getSkills()))
+				.build();
 	}
-
+ 
 	public SkillCategory skillCategoryDTOToSkillCategory(SkillCategoryDTO categoryDTO) {
-		SkillCategory category = new SkillCategory();
-		category.setId(categoryDTO.getId());
-		category.setName(categoryDTO.getName());
-		category.setSkills(mapSkillsNames(categoryDTO.getSkillNames()));
-		return category;
+		return SkillCategory.builder()
+				.id(categoryDTO.getId())
+				.name(categoryDTO.getName())
+				.skills(mapSkillsNames(categoryDTO.getSkillNames()))
+				.build();
 	}
 
 	private List<String> mapSkills(List<Skill> skills) {

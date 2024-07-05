@@ -3,6 +3,7 @@ package com.sheiladiz.mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.RegisterRequest;
@@ -11,24 +12,42 @@ import com.sheiladiz.models.UserEntity;
 
 @Component
 public class UserMapper {
+	
+	@Autowired
+	private ProfileMapper profileMapper;
 
 	public UserDTO userEntityToUserDTO(UserEntity userEntity) {
-		UserDTO userDTO = new UserDTO();
-		userDTO.setId(userEntity.getId());
-		userDTO.setEmail(userEntity.getEmail());
-		userDTO.setAuthProvider(userEntity.getAuthProvider());
-		return userDTO;
+		UserDTO.UserDTOBuilder builder = UserDTO.builder()
+				.id(userEntity.getId())
+				.email(userEntity.getEmail())
+				.authProvider(userEntity.getAuthProvider());
+		
+		if (userEntity.getProfile() != null) {
+			builder.profileDTO(profileMapper.profileToProfileDTO(userEntity.getProfile()));
+		}
+
+		return builder.build();
 	}
 
 	public UserEntity userDTOToUserEntity(UserDTO userDTO) {
-		UserEntity userEntity = new UserEntity();
+		UserEntity.UserEntityBuilder builder = UserEntity.builder()
+				.id(userDTO.getId() != null ? userDTO.getId() : null)
+				.email(userDTO.getEmail())
+				.authProvider(userDTO.getAuthProvider());
 		
-		if (userDTO.getId() != null)
-			userEntity.setId(userDTO.getId());
+		if (userDTO.getProfileDTO() != null) {
+			builder.profile(profileMapper.profileDTOToProfile(userDTO.getProfileDTO()));
+		}
 
-		userEntity.setEmail(userDTO.getEmail());
-		userEntity.setAuthProvider(userDTO.getAuthProvider());
-		return userEntity;
+		return builder.build();
+	}
+
+	public UserEntity registerRequestToUserEntity(RegisterRequest registerRequest) {
+		return UserEntity.builder()
+				.email(registerRequest.getEmail())
+				.password(registerRequest.getPassword())
+				.authProvider(registerRequest.getAuthProvider())
+				.build();
 	}
 
 	public List<UserDTO> userEntitiesToUserDTOs(List<UserEntity> userEntities) {
@@ -39,12 +58,4 @@ public class UserMapper {
 		return userDTOs.stream().map(this::userDTOToUserEntity).collect(Collectors.toList());
 	}
 
-	public UserEntity registerRequestToUserEntity(RegisterRequest registerRequest) {
-
-		UserEntity userEntity = new UserEntity();
-		userEntity.setEmail(registerRequest.getEmail());
-		userEntity.setPassword(registerRequest.getPassword());
-		userEntity.setAuthProvider(registerRequest.getAuthProvider());
-		return userEntity;
-	}
 }
