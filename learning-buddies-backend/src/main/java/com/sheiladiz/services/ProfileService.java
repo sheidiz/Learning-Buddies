@@ -15,6 +15,7 @@ public interface ProfileService {
 	Profile getProfileEntityById(Long id);
 	List<ProfileDTO> listProfilesByJobPositionContaining(String job);
 	ProfileDTO updateProfile(Long profileId, ProfileDTO profileDTO);
+	ProfileDTO addProfileSkills(String type, Long profileId, List<String> skillNames);
 	void deleteProfile(Long id);
 	void isProfileExistsByUser(UserEntity user);
 }

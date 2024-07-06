@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +39,6 @@ public class Skill {
 
 	private String skillType; // programacion u otros
 
-	@JsonManagedReference(value = "skills-json")
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_have_categories", joinColumns = @JoinColumn(name = "skill_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private List<SkillCategory> categories;

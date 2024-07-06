@@ -26,8 +26,8 @@ public class FriendshipMapper {
 	}
 
 	Friendship friendshipDTOToFriendship(FriendshipDTO friendshipDTO) {
-		Profile profile = profileService.findProfileById(friendshipDTO.getProfileId());
-		Profile friendProfile = profileService.findProfileById(friendshipDTO.getFriendProfileId());
+		Profile profile = profileService.getProfileEntityById(friendshipDTO.getProfileId());
+		Profile friendProfile = profileService.getProfileEntityById(friendshipDTO.getFriendProfileId());
 
 		return Friendship.builder()
 			.id(friendshipDTO.getId())

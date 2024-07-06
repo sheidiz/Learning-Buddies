@@ -10,15 +10,20 @@ import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
+import com.sheiladiz.models.Skill;
 import com.sheiladiz.models.UserEntity;
 import com.sheiladiz.repositories.ProfileRepository;
 import com.sheiladiz.services.ProfileService;
+import com.sheiladiz.services.SkillService;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
 	@Autowired
 	private ProfileRepository profileRepository;
+
+	@Autowired
+	private SkillService skillService;
 
 	@Autowired
 	private ProfileMapper profileMapper;
@@ -100,6 +105,26 @@ public class ProfileServiceImpl implements ProfileService {
 		Profile updatedProfile = profileRepository.save(existingProfile);
 
 		return profileMapper.profileToProfileDTO(updatedProfile);
+	}
+
+	public ProfileDTO addProfileSkills(String type, Long profileId, List<String> skillNames) {
+		Profile profile = getProfileEntityById(profileId);
+
+		for (String name : skillNames) {
+			Skill skill = skillService.getSkillEntityByName(name);
+
+			if (type.equals("learned")) {
+				if (!profile.getSkillsLearned().contains(skill)) {
+					profile.getSkillsLearned().add(skill);
+				}
+			} else {
+				if (!profile.getSkillsToLearn().contains(skill)) {
+					profile.getSkillsToLearn().add(skill);
+				}
+			}
+		}
+		Profile savedProfile = profileRepository.save(profile);
+		return profileMapper.profileToProfileDTO(savedProfile);
 	}
 
 	public void deleteProfile(Long id) {

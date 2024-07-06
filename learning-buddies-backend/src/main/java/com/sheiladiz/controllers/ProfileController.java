@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sheiladiz.dtos.ProfileDTO;
+import com.sheiladiz.dtos.SkillsRequest;
 import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
+import com.sheiladiz.exceptions.skill.SkillNotFoundException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.models.UserEntity;
 import com.sheiladiz.services.ProfileService;
@@ -35,7 +37,6 @@ public class ProfileController {
 
 	@Autowired
 	private UserService userService;
-
 
 	@PostMapping("{userId}")
 	public ResponseEntity<?> createProfile(@PathVariable("userId") Long userId,
@@ -83,6 +84,26 @@ public class ProfileController {
 			ProfileDTO updateProfileDTO = profileService.updateProfile(id, profileDTO);
 			return ResponseEntity.ok(updateProfileDTO);
 		} catch (ProfileNotFoundException ex) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+		}
+	}
+
+	@PutMapping("/{id}/addSkills")
+	public ResponseEntity<?> addLearnedSkillsToProfile(@PathVariable("id") Long id,
+			@RequestBody SkillsRequest request) {
+		try {
+			ProfileDTO updateProfileDTO = null;
+			if (request.getSkillsLearned() != null) {
+				updateProfileDTO = profileService.addProfileSkills("learned", id, request.getSkillsLearned());
+			}
+			if (request.getSkillsToLearn() != null) {
+				updateProfileDTO = profileService.addProfileSkills("learning", id, request.getSkillsToLearn());
+			}
+
+			return ResponseEntity.ok(updateProfileDTO);
+		} catch (ProfileNotFoundException ex) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+		} catch (SkillNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
 	}

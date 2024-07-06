@@ -3,6 +3,7 @@ package com.sheiladiz.mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import com.sheiladiz.services.SkillService;
 public class ProfileMapper {
 
 	@Autowired
+	@Lazy
 	private SkillService skillService;
 
 	public ProfileDTO profileToProfileDTO(Profile profile) {
@@ -122,7 +124,7 @@ public class ProfileMapper {
 	}
 
 	public List<Skill> mapSkillNames(List<String> skillNames) {
-		return skillNames.stream().map(skillService::getSkillByName).collect(Collectors.toList());
+		return skillNames.stream().map(skillService::getSkillEntityByName).collect(Collectors.toList());
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {
