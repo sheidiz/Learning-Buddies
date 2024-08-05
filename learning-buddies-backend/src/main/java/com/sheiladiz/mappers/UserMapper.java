@@ -17,7 +17,7 @@ public class UserMapper {
 	@Autowired
 	private ProfileMapper profileMapper;
 
-	public UserDTO userEntityToUserDTO(UserEntity userEntity) {
+	public UserDTO toDTO(UserEntity userEntity) {
 		UserDTO.UserDTOBuilder builder = UserDTO.builder()
 				.id(userEntity.getId())
 				.email(userEntity.getEmail())
@@ -30,7 +30,7 @@ public class UserMapper {
 		return builder.build();
 	}
 
-	public UserEntity userDTOToUserEntity(UserDTO userDTO) {
+	public UserEntity toEntity(UserDTO userDTO) {
 		UserEntity.UserEntityBuilder builder = UserEntity.builder()
 				.id(userDTO.getId() != null ? userDTO.getId() : null)
 				.email(userDTO.getEmail())
@@ -45,7 +45,7 @@ public class UserMapper {
 		return builder.build();
 	}
 
-	public UserEntity registerRequestToUserEntity(RegisterRequest registerRequest) {
+	public UserEntity registerRequestToEntity(RegisterRequest registerRequest) {
 		return UserEntity.builder()
 				.email(registerRequest.getEmail())
 				.password(registerRequest.getPassword())
@@ -54,11 +54,11 @@ public class UserMapper {
 	}
 
 	public List<UserDTO> userEntitiesToUserDTOs(List<UserEntity> userEntities) {
-		return userEntities.stream().map(this::userEntityToUserDTO).collect(Collectors.toList());
+		return userEntities.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
 	public List<UserEntity> userDTOsToUserEntities(List<UserDTO> userDTOs) {
-		return userDTOs.stream().map(this::userDTOToUserEntity).collect(Collectors.toList());
+		return userDTOs.stream().map(this::toEntity).collect(Collectors.toList());
 	}
 
 }

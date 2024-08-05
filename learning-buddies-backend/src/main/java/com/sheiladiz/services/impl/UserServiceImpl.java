@@ -32,25 +32,25 @@ public class UserServiceImpl implements UserService {
 
 	public UserDTO registerUser(RegisterRequest registerRequest) {
 		// registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		UserEntity userEntity = userMapper.registerRequestToUserEntity(registerRequest);
+		UserEntity userEntity = userMapper.registerRequestToEntity(registerRequest);
 		UserEntity savedUser = userRepository.save(userEntity);
-		return userMapper.userEntityToUserDTO(savedUser);
+		return userMapper.toDTO(savedUser);
 	}
 
 	public UserDTO loginUser(LoginRequest loginRequest) {
 		Optional<UserEntity> userEntity = userRepository.findByEmail(loginRequest.getEmail());
 		// !(passwordEncoder.matches(loginRequest, user.getPassword())) invalid
 		if (userEntity.isPresent() && userEntity.get().getPassword().equals(loginRequest.getPassword())) {
-			return userMapper.userEntityToUserDTO(userEntity.get());
+			return userMapper.toDTO(userEntity.get());
 		} else {
 			throw new InvalidUserCredentialsException("Email o contraseña incorrectos.");
 		}
 	}
 
 	public UserDTO saveUser(UserDTO newUser) {
-		UserEntity userEntity = userMapper.userDTOToUserEntity(newUser);
+		UserEntity userEntity = userMapper.toEntity(newUser);
 		UserEntity savedUser = userRepository.save(userEntity);
-		return userMapper.userEntityToUserDTO(savedUser);
+		return userMapper.toDTO(savedUser);
 	}
 
 	public List<UserDTO> allUsers() {
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserById(Long id) {
 		UserEntity userEntity = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-		return userMapper.userEntityToUserDTO(userEntity);
+		return userMapper.toDTO(userEntity);
 	}
 
 	public UserEntity getUserEntityById(Long id) {
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserByProfileId(Long id) {
 		UserEntity userEntity = userRepository.findByProfileId(id)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-		return userMapper.userEntityToUserDTO(userEntity);
+		return userMapper.toDTO(userEntity);
 	}
 
 	public UserEntity getUserEntityByProfileId(Long id) {
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserByEmail(String email) {
 		UserEntity userEntity = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con email [" + email + "] no encontrado"));
-		return userMapper.userEntityToUserDTO(userEntity);
+		return userMapper.toDTO(userEntity);
 	}
 
 	public UserDTO updateUser(Long id, UserDTO userDTO) {
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		UserEntity updatedUser = userRepository.save(existingUser);
-		return userMapper.userEntityToUserDTO(updatedUser);
+		return userMapper.toDTO(updatedUser);
 	}
 
 	/*
