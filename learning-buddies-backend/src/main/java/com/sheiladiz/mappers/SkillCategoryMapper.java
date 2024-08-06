@@ -12,7 +12,7 @@ import com.sheiladiz.models.SkillCategory;
 @Component
 public class SkillCategoryMapper {
 
-	public SkillCategoryDTO skillCategoryToSkillCategoryDTO(SkillCategory category) {
+	public SkillCategoryDTO toDTO(SkillCategory category) {
 		return SkillCategoryDTO.builder().id(category.getId()).name(category.getName())
 				.skillNames(mapSkills(category.getSkills())).build();
 	}
@@ -22,7 +22,7 @@ public class SkillCategoryMapper {
 	}
 
 	public List<SkillCategoryDTO> skillCategoriesToSkillCategoryDTOs(List<SkillCategory> categories) {
-		return categories.stream().map(this::skillCategoryToSkillCategoryDTO).collect(Collectors.toList());
+		return categories.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
 }

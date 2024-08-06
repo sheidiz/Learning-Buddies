@@ -73,7 +73,7 @@ public class ProfileControllerTest {
 	}
 
 	@Test
-    public void testCreateProfile_Success() throws Exception {
+    public void testCreateProfile_ShouldReturnCreatedProfileDTO() throws Exception {
         when(userService.getUserEntityById(anyLong())).thenReturn(user);
         when(profileService.saveProfile(any(ProfileDTO.class), any(UserEntity.class))).thenReturn(profileDTO);
 
@@ -85,7 +85,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-    public void testCreateProfile_UserNotFound() throws Exception {
+    public void testCreateProfile_ShouldReturnNotFoundWhenUserNotFound() throws Exception {
         when(userService.getUserEntityById(anyLong())).thenThrow(new UserNotFoundException("User not found"));
 
         mockMvc.perform(post("/api/v1/profiles/1")
@@ -96,7 +96,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-    public void testGetProfileById_Success() throws Exception {
+    public void testGetProfileById_ShouldReturnProfileDTO() throws Exception {
         when(profileService.getProfileById(anyLong())).thenReturn(profileDTO);
 
         mockMvc.perform(get("/api/v1/profiles/1"))
@@ -105,7 +105,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-    public void testGetProfileById_NotFound() throws Exception {
+    public void testGetProfileById_ShouldReturnNotFoundWhenProfileNotFound() throws Exception {
         when(profileService.getProfileById(anyLong())).thenThrow(new ProfileNotFoundException("Profile not found"));
 
         mockMvc.perform(get("/api/v1/profiles/1"))
@@ -114,7 +114,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-    public void testUpdateProfile_Success() throws Exception {
+    public void testUpdateProfile_ShouldReturnUpdatedProfileDTO() throws Exception {
         when(profileService.updateProfile(anyLong(), any(ProfileDTO.class))).thenReturn(profileDTO);
 
         mockMvc.perform(put("/api/v1/profiles/1")
@@ -125,7 +125,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-    public void testAddSkillsToProfile_Success() throws Exception {
+    public void testAddSkillsToProfile_ShouldReturnProfileWithUpdatedSkills() throws Exception {
         when(profileService.addProfileSkills(anyString(), anyLong(), anyList())).thenReturn(profileDTO);
 
         mockMvc.perform(put("/api/v1/profiles/1/addSkills")
@@ -136,7 +136,7 @@ public class ProfileControllerTest {
     }
 
 	@Test
-	public void testDeleteProfile_Success() throws Exception {
+	public void testDeleteProfile_ShouldReturnSuccessMessage() throws Exception {
 		doNothing().when(profileService).deleteProfile(anyLong());
 
 		mockMvc.perform(delete("/api/v1/profiles/1")).andExpect(status().isOk())

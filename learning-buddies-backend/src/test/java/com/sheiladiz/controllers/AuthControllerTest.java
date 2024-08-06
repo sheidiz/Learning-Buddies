@@ -40,7 +40,7 @@ public class AuthControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	public void whenValidRegisterRequest_thenReturns201() throws Exception {
+	public void testRegisterUser_ShouldReturnCreatedUserDTO() throws Exception {
 		RegisterRequest registerRequest = new RegisterRequest("test@example.com", "password123", "local");
 
 		UserDTO userDTO = new UserDTO();
@@ -53,7 +53,7 @@ public class AuthControllerTest {
 	}
 
 	@Test
-	public void whenRegisterWithExistingEmail_thenReturns409() throws Exception {
+	public void testRegisterUser_ShouldReturnConflictWhenEmailAlreadyRegistered() throws Exception {
 		RegisterRequest registerRequest = new RegisterRequest("test@example.com", "password123", "local");
 
 		doThrow(new EmailAlreadyRegisteredException("Email already registered")).when(userService)
@@ -64,7 +64,7 @@ public class AuthControllerTest {
 	}
 
 	@Test
-	public void whenInvalidRegisterRequest_thenReturn400() throws Exception {
+	public void testRegisterUser_ShouldReturnBadRequestWhenInvalidRequest() throws Exception {
 		RegisterRequest registerRequest = new RegisterRequest("", "password123", "local");
 
 		mockMvc.perform(post("/register").contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ public class AuthControllerTest {
 	}
 
 	@Test
-	public void whenValidLoginRequest_thenReturns200() throws Exception {
+	public void testLoginUser_ShouldReturnUserDTO() throws Exception {
 		LoginRequest loginRequest = new LoginRequest("test@example.com", "password123");
 
 		UserDTO userDTO = new UserDTO();
@@ -85,7 +85,7 @@ public class AuthControllerTest {
 	}
 
 	@Test
-	public void whenInvalidLoginRequest_thenReturns401() throws Exception {
+	public void testLoginUser_ShouldReturnUnauthorizedWhenInvalidCredentials() throws Exception {
 		LoginRequest loginRequest = new LoginRequest();
 		loginRequest.setEmail("test@example.com");
 		loginRequest.setPassword("wrongpassword");

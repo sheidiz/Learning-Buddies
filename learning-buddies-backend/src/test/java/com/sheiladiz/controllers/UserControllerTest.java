@@ -45,7 +45,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-    public void whenGetUserById_thenReturns200() throws Exception {
+    public void testGetUserById_ShouldReturnUserDTO() throws Exception {
         when(userService.getUserById(1L)).thenReturn(userDTO);
 
         mockMvc.perform(get("/api/v1/users/1").contentType(MediaType.APPLICATION_JSON))
@@ -54,7 +54,7 @@ public class UserControllerTest {
     }
 
 	@Test
-    public void whenUpdateUser_thenReturns200() throws Exception {
+    public void testUpdateUser_ShouldReturnUpdatedUserDTO() throws Exception {
         when(userService.updateUser(any(Long.class), any(UserDTO.class))).thenReturn(userDTO);
 
         mockMvc.perform(put("/api/v1/users/1")
@@ -65,13 +65,13 @@ public class UserControllerTest {
     }
 
 	@Test
-	public void whenDeleteUser_thenReturns200() throws Exception {
+	public void testDeleteUser_ShouldReturnSuccessMessage() throws Exception {
 		mockMvc.perform(delete("/api/v1/users/1")).andExpect(status().isOk())
 				.andExpect(content().string("User deleted successfully"));
 	}
 
 	@Test
-    public void whenGetUserByIdNotFound_thenReturns404() throws Exception {
+    public void testGetUserById_ShouldReturnNotFoundWhenUserNotFound() throws Exception {
         when(userService.getUserById(1L)).thenThrow(new UserNotFoundException("User not found"));
 
         mockMvc.perform(get("/api/v1/users/1"))

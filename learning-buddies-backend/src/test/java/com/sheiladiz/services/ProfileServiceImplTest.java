@@ -66,43 +66,43 @@ public class ProfileServiceImplTest {
 	}
 
 	@Test
-	    public void whenProfileExistsByUser_thenThrowException() {
-	        when(profileRepository.existsByUser(user)).thenReturn(true);
+    public void whenProfileExistsByUser_thenThrowException() {
+        when(profileRepository.existsByUser(user)).thenReturn(true);
 
-	        assertThrows(ProfileAlreadyCreatedException.class, () -> {
-	            profileService.isProfileExistsByUser(user);
-	        });
-	    }
-
-	@Test
-	    public void whenSaveProfile_thenReturnProfileDTO() {
-	        when(profileMapper.toEntity(profileDTO)).thenReturn(profile);
-	        when(profileRepository.save(profile)).thenReturn(profile);
-	        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
-
-	        ProfileDTO result = profileService.saveProfile(profileDTO, user);
-
-	        assertEquals(profileDTO, result);
-	    }
+        assertThrows(ProfileAlreadyCreatedException.class, () -> {
+            profileService.isProfileExistsByUser(user);
+        });
+    }
 
 	@Test
-	    public void whenGetProfileByUser_thenReturnProfileDTO() {
-	        when(profileRepository.findByUser(user)).thenReturn(Optional.of(profile));
-	        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
+    public void whenSaveProfile_thenReturnProfileDTO() {
+        when(profileMapper.toEntity(profileDTO)).thenReturn(profile);
+        when(profileRepository.save(profile)).thenReturn(profile);
+        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
 
-	        ProfileDTO result = profileService.getProfileByUser(user);
+        ProfileDTO result = profileService.saveProfile(profileDTO, user);
 
-	        assertEquals(profileDTO, result);
-	    }
+        assertEquals(profileDTO, result);
+    }
 
 	@Test
-	    public void whenProfileNotFoundByUserId_thenThrowException() {
-	        when(profileRepository.findByUser(user)).thenReturn(Optional.empty());
+    public void whenGetProfileByUser_thenReturnProfileDTO() {
+        when(profileRepository.findByUser(user)).thenReturn(Optional.of(profile));
+        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
 
-	        assertThrows(ProfileNotFoundException.class, () -> {
-	            profileService.getProfileByUser(user);
-	        });
-	    }
+        ProfileDTO result = profileService.getProfileByUser(user);
+
+        assertEquals(profileDTO, result);
+    }
+
+	@Test
+    public void whenProfileNotFoundByUserId_thenThrowException() {
+        when(profileRepository.findByUser(user)).thenReturn(Optional.empty());
+
+        assertThrows(ProfileNotFoundException.class, () -> {
+            profileService.getProfileByUser(user);
+        });
+    }
 
 	@Test
 	public void whenUpdateProfile_thenReturnUpdatedProfileDTO() {
