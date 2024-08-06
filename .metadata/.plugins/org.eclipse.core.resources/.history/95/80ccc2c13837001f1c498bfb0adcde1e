@@ -1,7 +1,0 @@
-package com.sheiladiz.repositories;
-
-import org.springframework.data.repository.CrudRepository;
-
-public interface SkillCategoryRepository extends CrudRepository<SkillCategory, Long> {
-
-}

@@ -1,8 +1,0 @@
-package com.sheiladiz.services;
-
-import org.springframework.stereotype.Service;
-
-@Serv
-public class UserService {
-
-}
