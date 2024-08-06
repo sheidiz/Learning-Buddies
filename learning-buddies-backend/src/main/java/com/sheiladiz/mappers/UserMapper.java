@@ -24,7 +24,7 @@ public class UserMapper {
 				.authProvider(userEntity.getAuthProvider());
 		
 		if (userEntity.getProfile() != null) {
-			builder.profile(profileMapper.profileToProfileDTO(userEntity.getProfile()));
+			builder.profile(profileMapper.toDTO(userEntity.getProfile()));
 		}
 
 		return builder.build();
@@ -37,7 +37,7 @@ public class UserMapper {
 				.authProvider(userDTO.getAuthProvider());
 		
 		 if (userDTO.getProfile() != null) {
-			 Profile profile = profileMapper.profileDTOToProfile(userDTO.getProfile());
+			 Profile profile = profileMapper.toEntity(userDTO.getProfile());
 	         profile.setUser(builder.build());
 	         builder.profile(profile);
 	      }

@@ -35,10 +35,10 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	public ProfileDTO saveProfile(ProfileDTO newProfile, UserEntity existingUser) {
-		Profile profile = profileMapper.profileDTOToProfile(newProfile);
+		Profile profile = profileMapper.toEntity(newProfile);
 		profile.setUser(existingUser);
 		Profile savedProfile = profileRepository.save(profile);
-		return profileMapper.profileToProfileDTO(savedProfile);
+		return profileMapper.toDTO(savedProfile);
 	}
 
 	public List<ProfileDTO> allProfiles() {
@@ -48,13 +48,13 @@ public class ProfileServiceImpl implements ProfileService {
 	public ProfileDTO getProfileByUser(UserEntity user) {
 		Profile profile = profileRepository.findByUser(user).orElseThrow(
 				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con email: " + user.getEmail()));
-		return profileMapper.profileToProfileDTO(profile);
+		return profileMapper.toDTO(profile);
 	}
 
 	public ProfileDTO getProfileById(Long id) {
 		Profile profile = profileRepository.findById(id)
 				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
-		return profileMapper.profileToProfileDTO(profile);
+		return profileMapper.toDTO(profile);
 	}
 
 	public Profile getProfileEntityById(Long id) {
@@ -104,7 +104,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 		Profile updatedProfile = profileRepository.save(existingProfile);
 
-		return profileMapper.profileToProfileDTO(updatedProfile);
+		return profileMapper.toDTO(updatedProfile);
 	}
 
 	public ProfileDTO addProfileSkills(String type, Long profileId, List<String> skillNames) {
@@ -124,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
 			}
 		}
 		Profile savedProfile = profileRepository.save(profile);
-		return profileMapper.profileToProfileDTO(savedProfile);
+		return profileMapper.toDTO(savedProfile);
 	}
 
 	public void deleteProfile(Long id) {

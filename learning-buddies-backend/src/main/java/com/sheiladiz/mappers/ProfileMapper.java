@@ -19,7 +19,7 @@ public class ProfileMapper {
 	@Lazy
 	private SkillService skillService;
 
-	public ProfileDTO profileToProfileDTO(Profile profile) {
+	public ProfileDTO toDTO(Profile profile) {
 		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder().id(profile.getId()).name(profile.getName());
 
 		if (profile.getGender() != null) {
@@ -69,7 +69,7 @@ public class ProfileMapper {
 		return builder.build();
 	}
 
-	public Profile profileDTOToProfile(ProfileDTO profileDTO) {
+	public Profile toEntity(ProfileDTO profileDTO) {
 		Profile.ProfileBuilder builder = Profile.builder().id(profileDTO.getId()).name(profileDTO.getName());
 
 		if (profileDTO.getGender() != null) {
@@ -128,7 +128,7 @@ public class ProfileMapper {
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {
-		return profiles.stream().map(this::profileToProfileDTO).collect(Collectors.toList());
+		return profiles.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
 }
