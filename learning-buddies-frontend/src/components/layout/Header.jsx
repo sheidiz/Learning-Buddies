@@ -1,8 +1,11 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
+import { profiles } from "../../utils/sampleData";
 
 const user = { name: 'Sheila' };
+const profile = profiles[1];
 //const user = null;
+//const profile = null;
 
 let navigation = [
     { name: 'Inicio', href: '/', current: true, type: 'none' },
@@ -79,9 +82,9 @@ export const Header = () => {
                                             <>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        <a href="#" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
-                                                            Tu Perfil
-                                                        </a>
+                                                        profile == null ?
+                                                            <a href="/creacion-perfil" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}> Crear Perfil </a>
+                                                            : <a href="/mi-perfil" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}> Tu Perfil </a>
                                                     )}
                                                 </MenuItem>
                                                 <MenuItem>
@@ -136,7 +139,10 @@ export const Header = () => {
                                 user != null ?
                                     (
                                         <>
-                                            <a href="#" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Mi Perfil</a>
+                                            {profile == null ?
+                                                <a href="/creacion-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Crear Perfil</a>
+                                                : <a href="/mi-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Mi Perfil</a>
+                                            }
                                             <a href="/cerrar-sesion" className="block px-3 py-2 text-base font-medium text-light-green">Cerrar sesión</a>
                                         </>
 

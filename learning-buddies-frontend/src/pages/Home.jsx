@@ -29,7 +29,7 @@ export default function Home() {
                     <img src={HomeImg} alt="Personas compartiendo conocimiento" className="xl:me-20" />
                 </div>
             </section>
-            <section className="px-4 md:px-0 py-10 md:py-16 bg-medium-green dark:bg-dm-medium-green flex flex-col items-center gap-3">
+            <section className="px-4 md:px-0 py-10 md:py-16 bg-medium-green dark:bg-dm-dark-green flex flex-col items-center gap-3">
                 <h2 className="font-semibold text-light text-4xl">Comunidad</h2>
                 <p className="md:max-w-4xl font-medium text-light text-center md:text-xl">Learning Buddies es tu puerta de entrada a una experiencia colaborativa y enriquecedora de aprendizaje en TI. Ya sea que estés dando tus primeros pasos o buscando perfeccionar tus habilidades en distintas áreas.</p>
                 <SkillsSlider />

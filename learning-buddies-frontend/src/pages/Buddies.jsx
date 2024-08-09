@@ -39,16 +39,16 @@ export default function Buddies() {
         <main className="my-3 p-4 md:p-2 lg:max-w-screen-xl lg:mx-auto font-raleway">
             <h2 className={`md:mb-1 text-medium-green dark:text-dm-light-green text-2xl font-semibold text-center ${openFiltersModal && 'blur-sm'}`}>Encontrá a tu próximo compañero de estudios</h2>
             <div className={`flex flex-col md:flex-row gap-2 ${openFiltersModal && 'blur-sm'}`}>
-                <div>
+                <div className="md:w-1/2">
                     <h3 className="hidden md:block text-dark dark:text-light font-semibold text-xl">Filtros</h3>
                     <form className="py-3 md:py-2 flex items-center gap-2">
-                        <input type="text" name="inputSearch" className="w-full md:w-fit px-5 py-1 rounded-3xl text-center" placeholder="Buscar por rol" />
+                        <input type="text" name="inputSearch" className="w-full px-5 py-1 rounded-3xl text-center" placeholder="Buscar por rol" />
                         <button type="button" onClick={openModal}><MdFilterAlt className="mb-1 text-dark dark:text-light text-3xl" /> </button>
                     </form>
                     <p className='mt-2 font-medium text-brown dark:text-dm-light-brown'>CONOCIMIENTOS:</p>
                     <div className="py-1 flex flex-wrap gap-3">
                         {skills1.map((item, index) => (
-                            <div key={index} className='px-2 flex gap-1 items-center border-2 bg-light-brown dark:bg-light border-brown dark:border-dm-brown text-dark rounded-md'>
+                            <div key={index} className='px-2 flex gap-1 items-center border-2 bg-light-brown dark:bg-light border-brown dark:border-dm-brown rounded-md text-dark font-medium'>
                                 {item}
                                 <MdClose className="ml-1 text-sm cursor-pointer" onClick={() => handleRemoveSkill1(item)} />
                             </div>
@@ -57,7 +57,7 @@ export default function Buddies() {
                     <p className='mt-2 font-medium text-brown dark:text-dm-light-brown'>APRENDIENDO:</p>
                     <div className="py-1 flex flex-wrap gap-3">
                         {skills2.map((item, index) => (
-                            <div key={index} className='px-2 flex gap-1 items-center border-2 bg-light-brown dark:bg-light border-brown dark:border-dm-brown text-dark rounded-md'>
+                            <div key={index} className='px-2 flex gap-1 items-center border-2 bg-light-brown dark:bg-light border-brown dark:border-dm-brown rounded-md text-dark font-medium'>
                                 {item}
                                 <MdClose className="ml-1 text-sm cursor-pointer" onClick={() => handleRemoveSkill2(item)} />
                             </div>

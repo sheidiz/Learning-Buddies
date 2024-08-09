@@ -6,6 +6,8 @@ import Login from '../pages/Login'
 import Registration from '../pages/Registration'
 import AuthGuard from './AuthGuard'
 import Buddies from '../pages/Buddies'
+import ProfileCreation from '../pages/ProfileCreation'
+import Profile from '../pages/Profile'
 
 export default function AppRoutes() {
     return (
@@ -19,6 +21,8 @@ export default function AppRoutes() {
                     <Route path="/registro" element={<Registration />} />
                     <Route element={<AuthGuard />}>
                         <Route path="/buddies" element={<Buddies />} />
+                        <Route path="/creacion-perfil" element={<ProfileCreation />} />
+                        <Route path="/mi-perfil" element={<Profile />} />
                     </Route>
                 </Routes>
                 <Footer />

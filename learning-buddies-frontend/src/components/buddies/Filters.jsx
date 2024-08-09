@@ -60,7 +60,7 @@ export const Filters = ({ setOpenModal, skills1, skills2, setSkills1, setSkills2
                 <div className="flex flex-wrap gap-2 md:gap-3 text-dark text-sm md:text-base">
                     {skills.map((item, index) => (
                         <div key={index} onClick={() => handleSkill2(item)}
-                            className={`px-2 py-1 border-2 border-light-green dark:border-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom ${localSkills2.includes(item) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
+                            className={`px-2 py-1 border-2 border-light-green dark:border-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom dark:text-light ${localSkills2.includes(item) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
                             {item}
                         </div>
                     ))}
@@ -68,7 +68,6 @@ export const Filters = ({ setOpenModal, skills1, skills2, setSkills1, setSkills2
                 <div className="flex justify-evenly">
                     <button type="button" onClick={removeFilters} className="mt-4 lg:mt-6 py-1 px-4 md:px-6 border-2 border-brown dark:border-dm-brown text-brown dark:text-dm-brown rounded-full font-bold hover:scale-110">Quitar filtros</button>
                     <button type="button" onClick={saveFilters} className="mt-4 lg:mt-6 py-1 px-4 md:px-6 bg-brown dark:bg-dm-brown text-light rounded-full font-bold hover:scale-110">Ver resultados</button>
-
                 </div>
             </form>
         </div>
