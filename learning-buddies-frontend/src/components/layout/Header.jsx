@@ -1,31 +1,48 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
-import { profiles } from "../../utils/sampleData";
-
-const user = { name: 'Sheila' };
-const profile = profiles[1];
-//const user = null;
-//const profile = null;
-
-let navigation = [
-    { name: 'Inicio', href: '/', current: true, type: 'none' },
-    { name: 'Buddies', href: '/buddies', current: false, type: 'registered' },
-    { name: 'Preguntas Frecuentes', href: '#', current: false, type: 'none' },
-    { name: 'Recursos', href: '#', current: false, type: 'none' },
-]
-if (user == null) navigation = navigation.filter((nav) => nav.type.includes("none"));
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useUser } from "../../contexts/UserContext";
+import { loadFromLocalStorage, removeFromLocalStorage } from "../../utils/storageUtils";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 export const Header = () => {
+    const navigate = useNavigate();
+    const { user, setUser, profile, setProfile } = useUser();
+
+    useEffect(() => {
+        const storedUser = loadFromLocalStorage("user");
+        const storedProfile = loadFromLocalStorage("profile");
+        if (storedUser) setUser(storedUser);
+        if (storedProfile) setProfile(storedProfile);
+    }, [setUser, setProfile]);
+
+    const handleLogOut = () => {
+        removeFromLocalStorage("user");
+        removeFromLocalStorage("profile");
+        setUser(null);
+        setProfile(null);
+        navigate("/iniciar-sesion");
+    }
+
+    const navigation = [
+        { name: 'Inicio', href: '/', current: true, type: 'none' },
+        { name: 'Buddies', href: '/buddies', current: false, type: 'registered' },
+        { name: 'Preguntas Frecuentes', href: '#', current: false, type: 'none' },
+        { name: 'Recursos', href: '#', current: false, type: 'none' },
+    ].filter((nav) => {
+        if (user) return true;
+        return nav.type === 'none';
+    });
+
     return (
         <Disclosure as="nav" className="bg-light dark:bg-dark">
             {({ open }) => (
                 <>
                     <div className="mx-auto xl:max-w-7xl px-2 lg:px-8">
-
                         <div className="relative flex h-16 items-center justify-between">
                             <div className="absolute -inset-y-0 right-0 flex items-center md:hidden">
                                 {/* Mobile menu button*/}
@@ -67,11 +84,11 @@ export const Header = () => {
                                 {/* Profile dropdown */}
                                 <Menu as="div" className="hidden md:block relative ml-3">
                                     <div>
-                                        <MenuButton className="relative flex rounded-full px-2 py-1 focus:outline-none border-light-green border-2 hover:bg-white">
+                                        <MenuButton className={`relative flex rounded-full px-2 py-1 focus:outline-none ${user == null ? 'border-light-green border-2 hover:bg-white': 'bg-light-green'}`}>
                                             <span className="absolute -inset-1.5" />
                                             <span className="sr-only">Open user menu</span>
-                                            <MdMenu className="me-1 my-auto h-full text-2xl text-light-green dark:text-dm-light-green" />
-                                            <MdAccountCircle className="m-auto h-full text-3xl text-light-green dark:text-dm-light-green" />
+                                            <MdMenu className={`me-1 my-auto h-full text-2xl ${user == null? 'text-light-green dark:text-dm-light-green':'text-medium-green dark:text-dm-dark-green'}`}/>
+                                            <MdAccountCircle className={`m-auto h-full text-3xl ${user == null? 'text-light-green dark:text-dm-light-green':'text-medium-green dark:text-dm-dark-green'}`}/>
                                         </MenuButton>
                                     </div>
                                     <MenuItems
@@ -89,9 +106,9 @@ export const Header = () => {
                                                 </MenuItem>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        <a href="/cerrar-sesion" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}>
+                                                        <button onClick={handleLogOut} className={classNames(focus ? 'bg-gray-100' : '', 'w-full text-start block px-4 py-2 text-md text-gray-700')}>
                                                             Cerrar sesión
-                                                        </a>
+                                                        </button>
                                                     )}
                                                 </MenuItem>
                                             </>
@@ -143,7 +160,7 @@ export const Header = () => {
                                                 <a href="/creacion-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Crear Perfil</a>
                                                 : <a href="/mi-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Mi Perfil</a>
                                             }
-                                            <a href="/cerrar-sesion" className="block px-3 py-2 text-base font-medium text-light-green">Cerrar sesión</a>
+                                            <button onClick={handleLogOut} className="w-full text-start block px-3 py-2 text-base font-medium text-light-green">Cerrar sesión</button>
                                         </>
 
                                     ) :

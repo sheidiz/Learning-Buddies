@@ -3,10 +3,18 @@ import { profiles } from '../utils/sampleData'
 import { TextLabel } from '../components/user/TextLabel';
 import { BiTrash } from 'react-icons/bi';
 import { MdCancel, MdCheck } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
 
 export default function Profile() {
 
-    const { id, userId, name, profilePic, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discord, github, linkedIn, email } = profiles[1];
+    const navigate = useNavigate();
+
+    const { profile, setProfile } = useUser();
+    console.log(profile)
+    if (profile == null) navigate('/creacion-perfil');
+
+    const { name, /*profilePic, */gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
@@ -23,10 +31,10 @@ export default function Profile() {
                 <h2 className="mt-3 font-bold text-2xl">Datos de contacto</h2>
                 <h3 className="text-dark-green dark:text-dm-light-green font-semibold text-sm">Estos datos se mostraran solo a tus conexiones</h3>
                 <div className="mt-2 grid grid-cols-2 gap-4">
-                    <TextLabel label="Discord" inputPlaceholder={discord == null ? '-' : discord} />
-                    <TextLabel label="GitHub" inputPlaceholder={github == null ? '-' : github} />
-                    <TextLabel label="LinkedIn" inputPlaceholder={linkedIn == null ? '-' : linkedIn} />
-                    <TextLabel label="Email" inputPlaceholder={email == null ? '-' : email} />
+                    <TextLabel label="Discord" inputPlaceholder={discordUrl == null ? '-' : discordUrl} />
+                    <TextLabel label="GitHub" inputPlaceholder={githubUrl == null ? '-' : githubUrl} />
+                    <TextLabel label="LinkedIn" inputPlaceholder={linkedinUrl == null ? '-' : linkedinUrl} />
+                    <TextLabel label="Email" inputPlaceholder={contactEmail == null ? '-' : contactEmail} />
                 </div>
                 <h2 className="mt-6 font-bold text-2xl">Tus habilidades</h2>
                 <p className='my-2 font-medium'>CONOCIMIENTOS:</p>
