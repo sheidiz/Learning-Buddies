@@ -34,7 +34,7 @@ export default function Login() {
                     localStorage.setItem('profile', JSON.stringify(profile));
                     navigate('/mi-perfil');
                 } else {
-                    navigate('/crear-perfil');
+                    navigate('/creacion-perfil');
                 }
             } catch (err) {
                 console.error("Error al obtener el perfil:", err);

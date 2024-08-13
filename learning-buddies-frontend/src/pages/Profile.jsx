@@ -1,27 +1,46 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { profiles } from '../utils/sampleData'
 import { TextLabel } from '../components/user/TextLabel';
 import { BiTrash } from 'react-icons/bi';
 import { MdCancel, MdCheck } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import { getProfile } from '../services/profilesService';
+import { loadFromLocalStorage } from '../utils/storageUtils';
 
 export default function Profile() {
-
+    const [profile, setProfile] = useState(null);
+    const { user } = useUser();
     const navigate = useNavigate();
 
-    const { profile, setProfile } = useUser();
-    console.log(profile)
-    if (profile == null) navigate('/creacion-perfil');
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const storedUser = loadFromLocalStorage("user");
+                const data = await getProfile(storedUser.email);
+                setProfile(data);
+                localStorage.setItem('profile', JSON.stringify(data));
+            } catch (error) {
+                navigate("/creacion-perfil")
+            }
+        };
 
-    const { name, /*profilePic, */gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
+        loadProfile();
+    }, [user, profile, navigate]);
+
+    //MODIFY WITH LOADER
+    if (!profile) {
+        return <div>Cargando...</div>;
+    }
+
+    const { name, profilePicture, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
             <section className="md:w-2/3 lg:w-1/2 px-3 md:p-6 lg:px-10 lg:max-w-5xl lg:mx-auto md:bg-white md:dark:bg-dm-dark-green md:rounded-md">
                 <div className="mb-2 flex flex-col justify-center items-center">
                     <div className="rounded-full overflow-hidden">
-                        <img src={profilePic} alt="Avatar" className="h-28 md:h-32 rounded-full bg-zinc-400 dark:bg-zinc-700" />
+                        <img src={profilePicture} alt="Avatar" className="h-28 md:h-32 rounded-full bg-zinc-400 dark:bg-zinc-700" />
                     </div>
                     <h1 className='font-bold text-2xl'>{name}</h1>
                     <h3>{jobPosition} | {gender} </h3>
@@ -31,10 +50,10 @@ export default function Profile() {
                 <h2 className="mt-3 font-bold text-2xl">Datos de contacto</h2>
                 <h3 className="text-dark-green dark:text-dm-light-green font-semibold text-sm">Estos datos se mostraran solo a tus conexiones</h3>
                 <div className="mt-2 grid grid-cols-2 gap-4">
-                    <TextLabel label="Discord" inputPlaceholder={discordUrl == null ? '-' : discordUrl} />
-                    <TextLabel label="GitHub" inputPlaceholder={githubUrl == null ? '-' : githubUrl} />
-                    <TextLabel label="LinkedIn" inputPlaceholder={linkedinUrl == null ? '-' : linkedinUrl} />
-                    <TextLabel label="Email" inputPlaceholder={contactEmail == null ? '-' : contactEmail} />
+                    <TextLabel label="Discord" inputPlaceholder={discordUrl} />
+                    <TextLabel label="GitHub" inputPlaceholder={githubUrl} />
+                    <TextLabel label="LinkedIn" inputPlaceholder={linkedinUrl} />
+                    <TextLabel label="Email" inputPlaceholder={contactEmail} />
                 </div>
                 <h2 className="mt-6 font-bold text-2xl">Tus habilidades</h2>
                 <p className='my-2 font-medium'>CONOCIMIENTOS:</p>
@@ -42,7 +61,7 @@ export default function Profile() {
                     {skillsLearned.map((item, index) => (
                         <p key={index}
                             className={`md:text-sm lg:text-base px-2 bg-light-green dark:bg-dm-light-green rounded-md shadow-inner-custom`}>
-                            {item.name}
+                            {item}
                         </p>
                     ))}
                 </div>
@@ -51,7 +70,7 @@ export default function Profile() {
                     {skillsToLearn.map((item, index) => (
                         <p key={index}
                             className={`md:text-sm lg:text-base px-2 border-2 bg-light border-light-green dark:border-dm-light-green rounded-md shadow-inner-custom`}>
-                            {item.name}
+                            {item}
                         </p>
                     ))}
                 </div>

@@ -1,4 +1,7 @@
 export const TextLabel = ({ label, inputPlaceholder, className }) => {
+
+    if (inputPlaceholder.trim().length == 0) inputPlaceholder = "-";
+
     return (
         <div className={`${className} w-full`}>
             <p className="w-full font-semibold">{label}</p>

@@ -15,3 +15,16 @@ export const getProfile = async (email) => {
         }
     }
 };
+
+export const createProfile = async (id, profileData) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/v1/profiles/${id}`, profileData);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data || 'Error en la creación del perfil.');
+        } else {
+            throw new Error("Ocurrio un error al crear el perfil.");
+        }
+    }
+};

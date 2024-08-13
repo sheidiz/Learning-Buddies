@@ -12,7 +12,7 @@ let navigation = [
 
 export const Footer = () => {
     return (
-        <div className="p-8 bg-light-brown dark:bg-dm-brown text-brown dark:text-light text-center">
+        <div className="p-8 bg-light-brown dark:bg-dm-brown/50 text-brown dark:text-light text-center">
             <h5 className="mb-5 text-2xl md:text-3xl font-semibold">Learning Buddies</h5>
             <div className="mb-5 flex flex-col md:flex-row gap-2 md:gap-5 justify-center">
                 {
