@@ -53,4 +53,8 @@ public class SkillCategory {
 	protected void onUpdate() {
 		this.updatedAt = new Date();
 	}
+
+	public SkillCategory(String name) {
+		this.name = name;
+	}
 }

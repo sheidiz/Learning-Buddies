@@ -70,4 +70,9 @@ public class Skill {
 	protected void onUpdate() {
 		this.updatedAt = new Date();
 	}
+
+	public Skill(String name, List<SkillCategory> categories) {
+		this.name = name;
+		this.categories = categories;
+	}
 }

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SkillsRequest {
-
 	private List<String> skillsLearned;
 	private List<String> skillsToLearn;	
 }
