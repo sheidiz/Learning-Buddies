@@ -6,22 +6,14 @@ import com.sheiladiz.dtos.ChangePasswordRequest;
 import com.sheiladiz.dtos.LoginRequest;
 import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 
 public interface UserService {
-
-	UserDTO registerUser(RegisterRequest registerRequest);
-	UserDTO loginUser(LoginRequest loginRequest);
-
-	UserDTO saveUser(UserDTO newUser);
-	List<UserDTO> allUsers();
-	UserDTO getUserById(Long id);
-	UserEntity getUserEntityById(Long id);
-	UserDTO getUserByProfileId(Long id);
-	UserEntity getUserEntityByProfileId(Long id);
-	UserDTO getUserByEmail(String email);
-	UserDTO updateUser(Long id, UserDTO userDTO);
-	//UserDTO changePassword(Long id, ChangePasswordRequest changePasswordRequest);
+	List<User> allUsers();
+	User getUserById(Long id);
+	User getUserByEmail(String email);
+	User getUserByProfileId(Long id);
+	User updateUser(Long id, UserDTO userDTO);
 	void deleteUser(Long id);
 	void isUserExistsByEmail(String email);
 }

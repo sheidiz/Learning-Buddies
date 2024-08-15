@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+import com.sheiladiz.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,16 +38,20 @@ public class UserControllerTest {
 	private ObjectMapper objectMapper;
 
 	private UserDTO userDTO;
+	private User user;
 
 	@BeforeEach
 	public void setup() {
+		user = new User();
+		user.setEmail("test@example.com");
+
 		userDTO = new UserDTO();
 		userDTO.setEmail("test@example.com");
 	}
 
 	@Test
     public void testGetUserById_ShouldReturnUserDTO() throws Exception {
-        when(userService.getUserById(1L)).thenReturn(userDTO);
+        when(userService.getUserById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/users/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -55,7 +60,7 @@ public class UserControllerTest {
 
 	@Test
     public void testUpdateUser_ShouldReturnUpdatedUserDTO() throws Exception {
-        when(userService.updateUser(any(Long.class), any(UserDTO.class))).thenReturn(userDTO);
+        when(userService.updateUser(any(Long.class), any(UserDTO.class))).thenReturn(user);
 
         mockMvc.perform(put("/api/v1/users/1")
                 .contentType(MediaType.APPLICATION_JSON)

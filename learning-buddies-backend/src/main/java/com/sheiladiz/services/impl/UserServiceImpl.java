@@ -14,7 +14,7 @@ import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
 import com.sheiladiz.exceptions.user.InvalidUserCredentialsException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.mappers.UserMapper;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.UserService;
 
@@ -27,66 +27,30 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserMapper userMapper;
 
-	// @Autowired
-	// private PasswordEncoder passwordEncoder;
-
-	public UserDTO registerUser(RegisterRequest registerRequest) {
-		// registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-		UserEntity userEntity = userMapper.registerRequestToEntity(registerRequest);
-		UserEntity savedUser = userRepository.save(userEntity);
-		return userMapper.toDTO(savedUser);
+	public List<User> allUsers() {
+		return userRepository.findAll();
 	}
 
-	public UserDTO loginUser(LoginRequest loginRequest) {
-		Optional<UserEntity> userEntity = userRepository.findByEmail(loginRequest.getEmail());
-		// !(passwordEncoder.matches(loginRequest, user.getPassword())) invalid
-		if (userEntity.isPresent() && userEntity.get().getPassword().equals(loginRequest.getPassword())) {
-			return userMapper.toDTO(userEntity.get());
-		} else {
-			throw new InvalidUserCredentialsException("Email o contraseña incorrectos.");
-		}
-	}
-
-	public UserDTO saveUser(UserDTO newUser) {
-		UserEntity userEntity = userMapper.toEntity(newUser);
-		UserEntity savedUser = userRepository.save(userEntity);
-		return userMapper.toDTO(savedUser);
-	}
-
-	public List<UserDTO> allUsers() {
-		return userMapper.userEntitiesToUserDTOs(userRepository.findAll());
-	}
-
-	public UserDTO getUserById(Long id) {
-		UserEntity userEntity = userRepository.findById(id)
+	public User getUserById(Long id) {
+		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-		return userMapper.toDTO(userEntity);
+		return user;
 	}
 
-	public UserEntity getUserEntityById(Long id) {
-		return userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-	}
-
-	public UserDTO getUserByProfileId(Long id) {
-		UserEntity userEntity = userRepository.findByProfileId(id)
-				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-		return userMapper.toDTO(userEntity);
-	}
-
-	public UserEntity getUserEntityByProfileId(Long id) {
-		return userRepository.findByProfileId(id)
-				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-	}
-
-	public UserDTO getUserByEmail(String email) {
-		UserEntity userEntity = userRepository.findByEmail(email)
+	public User getUserByEmail(String email) {
+		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con email [" + email + "] no encontrado"));
-		return userMapper.toDTO(userEntity);
+		return user;
 	}
 
-	public UserDTO updateUser(Long id, UserDTO userDTO) {
-		UserEntity existingUser = userRepository.findById(id)
+	public User getUserByProfileId(Long id) {
+		User user = userRepository.findByProfileId(id)
+				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
+		return user;
+	}
+
+	public User updateUser(Long id, UserDTO userDTO) {
+		User existingUser = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
 
 		if (userDTO.getEmail() != null) {
@@ -97,31 +61,14 @@ public class UserServiceImpl implements UserService {
 			existingUser.setAuthProvider(userDTO.getAuthProvider());
 		}
 
-		UserEntity updatedUser = userRepository.save(existingUser);
-		return userMapper.toDTO(updatedUser);
+		User updatedUser = userRepository.save(existingUser);
+		return updatedUser;
 	}
 
-	/*
-	 * public void changePassword(Long id, ChangePasswordRequest
-	 * changePasswordRequest) throws UserNotFoundException,
-	 * InvalidUserCredentialsException { UserEntity user =
-	 * userRepository.findById(id) .orElseThrow(() -> new
-	 * UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-	 * 
-	 * // Validar la contraseña actual /*if
-	 * (!passwordEncoder.matches(changePasswordRequest.getOldPassword(),
-	 * user.getPassword())) { throw new
-	 * InvalidUserCredentialsException("Credenciales invalidas."); }
-	 * 
-	 * // Actualizar la contraseña
-	 * user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword(
-	 * ))); userRepository.save(user); }
-	 */
-
 	public void deleteUser(Long id) {
-		UserEntity userEntity = userRepository.findById(id)
+		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("Usuario con id [" + id + "] no encontrado"));
-		userRepository.delete(userEntity);
+		userRepository.delete(user);
 	}
 
 	public void isUserExistsByEmail(String email) {

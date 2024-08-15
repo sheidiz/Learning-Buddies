@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.models.Profile;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 
 @Component
 public class UserMapper {
@@ -17,21 +17,21 @@ public class UserMapper {
 	@Autowired
 	private ProfileMapper profileMapper;
 
-	public UserDTO toDTO(UserEntity userEntity) {
+	public UserDTO toDTO(User user) {
 		UserDTO.UserDTOBuilder builder = UserDTO.builder()
-				.id(userEntity.getId())
-				.email(userEntity.getEmail())
-				.authProvider(userEntity.getAuthProvider());
+				.id(user.getId())
+				.email(user.getEmail())
+				.authProvider(user.getAuthProvider());
 		
-		if (userEntity.getProfile() != null) {
-			builder.profile(profileMapper.toDTO(userEntity.getProfile()));
+		if (user.getProfile() != null) {
+			builder.profile(profileMapper.toDTO(user.getProfile()));
 		}
 
 		return builder.build();
 	}
 
-	public UserEntity toEntity(UserDTO userDTO) {
-		UserEntity.UserEntityBuilder builder = UserEntity.builder()
+	public User toEntity(UserDTO userDTO) {
+		User.UserBuilder builder = User.builder()
 				.id(userDTO.getId() != null ? userDTO.getId() : null)
 				.email(userDTO.getEmail())
 				.authProvider(userDTO.getAuthProvider());
@@ -45,19 +45,19 @@ public class UserMapper {
 		return builder.build();
 	}
 
-	public UserEntity registerRequestToEntity(RegisterRequest registerRequest) {
-		return UserEntity.builder()
+	public User registerRequestToEntity(RegisterRequest registerRequest) {
+		return User.builder()
 				.email(registerRequest.getEmail())
 				.password(registerRequest.getPassword())
 				.authProvider(registerRequest.getAuthProvider())
 				.build();
 	}
 
-	public List<UserDTO> userEntitiesToUserDTOs(List<UserEntity> userEntities) {
+	public List<UserDTO> userEntitiesToUserDTOs(List<User> userEntities) {
 		return userEntities.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	public List<UserEntity> userDTOsToUserEntities(List<UserDTO> userDTOs) {
+	public List<User> userDTOsToUserEntities(List<UserDTO> userDTOs) {
 		return userDTOs.stream().map(this::toEntity).collect(Collectors.toList());
 	}
 

@@ -2,6 +2,8 @@ package com.sheiladiz.controllers;
 
 import java.util.List;
 
+import com.sheiladiz.mappers.UserMapper;
+import com.sheiladiz.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +28,25 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+	private final UserService userService;
+	private final UserMapper userMapper;
 
-	@Autowired
-	private UserService userService;
+	public UserController(UserService userService, UserMapper userMapper) {
+		this.userService = userService;
+		this.userMapper = userMapper;
+	}
 
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<List<UserDTO>> getAllUsers() {
-		List<UserDTO> userDTOs = userService.allUsers();
-		return ResponseEntity.ok(userDTOs);
+		List<User> users = userService.allUsers();
+		return ResponseEntity.ok(userMapper.userEntitiesToUserDTOs(users));
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
 		try {
-			UserDTO userDto = userService.getUserById(id);
-			return ResponseEntity.ok(userDto);
+			User user = userService.getUserById(id);
+			return ResponseEntity.ok(userMapper.toDTO(user));
 		} catch (UserNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
@@ -49,25 +55,12 @@ public class UserController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
 		try {
-			UserDTO updatedUserDto = userService.updateUser(id, userDTO);
-			return ResponseEntity.ok(updatedUserDto);
+			User updatedUser = userService.updateUser(id, userDTO);
+			return ResponseEntity.ok(userMapper.toDTO(updatedUser));
 		} catch (UserNotFoundException | EmailAlreadyRegisteredException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
 	}
-
-	/*@PutMapping("/change-password/{id}")
-	public ResponseEntity<?> updateUser(@PathVariable("id") Long id,
-			@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-		try {
-			userService.changePassword(id, changePasswordRequest);
-			return ResponseEntity.ok("Contraseña actualizada correctamente");
-		} catch (UserNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		} catch (InvalidUserCredentialsException ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-		}
-	}*/
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {

@@ -17,7 +17,7 @@ import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.mappers.UserMapper;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.impl.UserServiceImpl;
 
@@ -34,30 +34,19 @@ public class UserServiceImplTest {
 	private UserServiceImpl userService;
 
 	private RegisterRequest registerRequest;
-	private UserEntity user;
+	private User user;
 	private UserDTO userDTO;
 
 	@BeforeEach
 	public void setup() {
 		registerRequest = new RegisterRequest("test@example.com", "password123", "local");
 
-		user = new UserEntity();
+		user = new User();
 		user.setEmail("test@example.com");
 		user.setPassword("password123");
 
 		userDTO = new UserDTO();
 		userDTO.setEmail("test@example.com");
-	}
-
-	@Test
-	public void whenValidRegisterRequest_thenUserIsRegistered() {
-		when(userRepository.save(any(UserEntity.class))).thenReturn(user);
-		when(userMapper.registerRequestToEntity(any(RegisterRequest.class))).thenReturn(user);
-		when(userMapper.toDTO(any(UserEntity.class))).thenReturn(userDTO);
-		
-		UserDTO result = userService.registerUser(registerRequest);
-		
-		assertEquals("test@example.com", result.getEmail());
 	}
 
 	@Test

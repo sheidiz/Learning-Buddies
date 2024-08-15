@@ -25,75 +25,75 @@ public class GlobalExceptionHandler {
 	// User Exceptions
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(EmailAlreadyRegisteredException.class)
 	public ResponseEntity<?> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException ex,
 			WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(InvalidUserCredentialsException.class)
 	public ResponseEntity<?> handleInvalidUserCredentialsException(InvalidUserCredentialsException ex,
 			WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
 	}
 
 	// Profile Exceptions
 	@ExceptionHandler(ProfileNotFoundException.class)
 	public ResponseEntity<?> handleProfileNotFoundException(ProfileNotFoundException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(ProfileAlreadyCreatedException.class)
 	public ResponseEntity<?> handleProfileAlreadyCreatedException(ProfileAlreadyCreatedException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(InvalidProfileDataException.class)
 	public ResponseEntity<?> handleInvalidProfileDataException(InvalidProfileDataException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 
 	// Skill Exceptions
 	@ExceptionHandler(SkillNotFoundException.class)
 	public ResponseEntity<?> handleSkillNotFoundException(SkillNotFoundException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(SkillCategoryNotFoundException.class)
 	public ResponseEntity<?> handleSkillCategoryNotFoundException(SkillCategoryNotFoundException ex,
 			WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(SkillAlreadyCreatedException.class)
 	public ResponseEntity<?> handleSkillAlreadyCreatedException(SkillAlreadyCreatedException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(SkillCategoryAlreadyCreatedException.class)
 	public ResponseEntity<?> handleSkillCategoryAlreadyCreatedException(SkillCategoryAlreadyCreatedException ex,
 			WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(InvalidSkillException.class)
 	public ResponseEntity<?> handleInvalidSkillException(InvalidSkillException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 
 	// Friendship Exceptions
 	@ExceptionHandler(FriendshipNotFoundException.class)
 	public ResponseEntity<?> handleFriendshipNotFoundException(FriendshipNotFoundException ex, WebRequest request) {
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	// General Exception
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
-		return new ResponseEntity<>("An unexpected error occurred: " + ex.getMessage(),
+		return new ResponseEntity<>(new ErrorResponse("An unexpected error occurred: " + ex.getMessage()),
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
