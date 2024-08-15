@@ -21,7 +21,7 @@ import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.Skill;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.ProfileRepository;
 import com.sheiladiz.services.impl.ProfileServiceImpl;
 
@@ -40,14 +40,14 @@ public class ProfileServiceImplTest {
 	@InjectMocks
 	private ProfileServiceImpl profileService;
 
-	private UserEntity user;
+	private User user;
 	private Profile profile;
 	private ProfileDTO profileDTO;
 	private Skill skill;
 
 	@BeforeEach
 	public void setup() {
-		user = new UserEntity("test@example.com", "password123", "local");
+		user = new User("test@example.com", "password123", "local");
 		user.setId(1L);
 
 		profile = new Profile();
@@ -75,24 +75,22 @@ public class ProfileServiceImplTest {
     }
 
 	@Test
-    public void whenSaveProfile_thenReturnProfileDTO() {
+    public void whenSaveProfile_thenReturnProfile() {
         when(profileMapper.toEntity(profileDTO)).thenReturn(profile);
         when(profileRepository.save(profile)).thenReturn(profile);
-        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
 
-        ProfileDTO result = profileService.saveProfile(profileDTO, user);
+        Profile result = profileService.saveProfile(profileDTO, user);
 
-        assertEquals(profileDTO, result);
+        assertEquals(profile, result);
     }
 
 	@Test
     public void whenGetProfileByUser_thenReturnProfileDTO() {
         when(profileRepository.findByUser(user)).thenReturn(Optional.of(profile));
-        when(profileMapper.toDTO(profile)).thenReturn(profileDTO);
 
-        ProfileDTO result = profileService.getProfileByUser(user);
+        Profile result = profileService.getProfileByUser(user);
 
-        assertEquals(profileDTO, result);
+        assertEquals(profile, result);
     }
 
 	@Test
@@ -119,11 +117,10 @@ public class ProfileServiceImplTest {
 
 		when(profileRepository.findById(anyLong())).thenReturn(Optional.of(existingProfile));
 		when(profileRepository.save(any(Profile.class))).thenReturn(updatedProfile);
-		when(profileMapper.toDTO(updatedProfile)).thenReturn(profileDTO);
 
-		ProfileDTO result = profileService.updateProfile(1L, profileDTO);
+		Profile result = profileService.updateProfile(1L, profileDTO);
 
-		assertEquals(profileDTO, result);
+		assertEquals(profile, result);
 	}
 
 	@Test
@@ -141,11 +138,10 @@ public class ProfileServiceImplTest {
 
 		when(profileRepository.findById(anyLong())).thenReturn(Optional.of(existingProfile));
 		when(profileRepository.save(any(Profile.class))).thenReturn(updatedProfile);
-		when(profileMapper.toDTO(updatedProfile)).thenReturn(profileDTO);
 
-		ProfileDTO result = profileService.updateProfile(1L, profileDTO);
+		Profile result = profileService.updateProfile(1L, profileDTO);
 
-		assertEquals(profileDTO, result);
+		assertEquals(profile, result);
 	}
 
 	@Test

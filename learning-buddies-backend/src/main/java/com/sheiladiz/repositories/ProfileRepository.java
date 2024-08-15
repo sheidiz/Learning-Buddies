@@ -7,17 +7,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.sheiladiz.models.Profile;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 
 @Repository
 public interface ProfileRepository extends CrudRepository<Profile, Long> {
-
 	List<Profile> findAll();
-	
-	boolean existsByUser(UserEntity user);
-
-	Optional<Profile> findByUser(UserEntity user);
-	
+	boolean existsByUser(User user);
+	Optional<Profile> findByUser(User user);
+	Optional<Profile> findByUserId(Long userId);
 	List<Profile> findByJobPositionContaining(String job);
-
 }

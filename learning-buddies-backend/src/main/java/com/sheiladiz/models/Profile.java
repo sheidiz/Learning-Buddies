@@ -35,17 +35,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "profiles")
 public class Profile {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-	private UserEntity user;
+	private User user;
 
 	@NotEmpty(message = "Nombre requerido.")
 	private String name;
+	
+	private String profilePicture;
 
 	private String gender;
 
@@ -94,5 +95,14 @@ public class Profile {
 	@PreUpdate
 	protected void onUpdate() {
 		this.updatedAt = new Date();
+	}
+
+	public Profile(User user, String name, String country, String jobPosition, String bio, String githubUrl) {
+		this.user = user;
+		this.name = name;
+		this.country = country;
+		this.jobPosition = jobPosition;
+		this.bio = bio;
+		this.githubUrl = githubUrl;
 	}
 }

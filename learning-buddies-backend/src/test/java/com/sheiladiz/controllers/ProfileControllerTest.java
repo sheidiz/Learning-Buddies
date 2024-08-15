@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
+import com.sheiladiz.models.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +32,7 @@ import com.sheiladiz.dtos.SkillsRequest;
 import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
-import com.sheiladiz.models.UserEntity;
+import com.sheiladiz.models.User;
 import com.sheiladiz.services.ProfileService;
 import com.sheiladiz.services.UserService;
 
@@ -48,7 +49,8 @@ public class ProfileControllerTest {
 	private ProfileDTO profileDTO;
 	private UserDTO userDTO;
 	private SkillsRequest skillsRequest;
-	private UserEntity user;
+	private User user;
+	private Profile profile;
 
 	@MockBean
 	private ProfileService profileService;
@@ -58,6 +60,9 @@ public class ProfileControllerTest {
 
 	@BeforeEach
 	public void setup() {
+		profile = new Profile();
+		profile.setName("Test Profile");
+
 		profileDTO = new ProfileDTO();
 		profileDTO.setName("Test Profile");
 
@@ -67,26 +72,26 @@ public class ProfileControllerTest {
 		skillsRequest = new SkillsRequest();
 		skillsRequest.setSkillsLearned(Arrays.asList("Java", "Spring"));
 
-		user = new UserEntity();
+		user = new User();
 		user.setId(1L);
 		user.setEmail("test@example.com");
 	}
 
 	@Test
     public void testCreateProfile_ShouldReturnCreatedProfileDTO() throws Exception {
-        when(userService.getUserEntityById(anyLong())).thenReturn(user);
-        when(profileService.saveProfile(any(ProfileDTO.class), any(UserEntity.class))).thenReturn(profileDTO);
+        when(userService.getUserById(anyLong())).thenReturn(user);
+        when(profileService.saveProfile(any(ProfileDTO.class), any(User.class))).thenReturn(profile);
 
         mockMvc.perform(post("/api/v1/profiles/1")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(profileDTO)))
+                .content(objectMapper.writeValueAsString(profile)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(profileDTO.getName()));
+                .andExpect(jsonPath("$.name").value(profile.getName()));
     }
 
 	@Test
     public void testCreateProfile_ShouldReturnNotFoundWhenUserNotFound() throws Exception {
-        when(userService.getUserEntityById(anyLong())).thenThrow(new UserNotFoundException("User not found"));
+        when(userService.getUserById(anyLong())).thenThrow(new UserNotFoundException("User not found"));
 
         mockMvc.perform(post("/api/v1/profiles/1")
                 .contentType("application/json")
@@ -97,11 +102,11 @@ public class ProfileControllerTest {
 
 	@Test
     public void testGetProfileById_ShouldReturnProfileDTO() throws Exception {
-        when(profileService.getProfileById(anyLong())).thenReturn(profileDTO);
+        when(profileService.getProfileById(anyLong())).thenReturn(profile);
 
         mockMvc.perform(get("/api/v1/profiles/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(profileDTO.getName()));
+                .andExpect(jsonPath("$.name").value(profile.getName()));
     }
 
 	@Test
@@ -115,24 +120,24 @@ public class ProfileControllerTest {
 
 	@Test
     public void testUpdateProfile_ShouldReturnUpdatedProfileDTO() throws Exception {
-        when(profileService.updateProfile(anyLong(), any(ProfileDTO.class))).thenReturn(profileDTO);
+        when(profileService.updateProfile(anyLong(), any(ProfileDTO.class))).thenReturn(profile);
 
         mockMvc.perform(put("/api/v1/profiles/1")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(profileDTO)))
+                .content(objectMapper.writeValueAsString(profile)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(profileDTO.getName()));
+                .andExpect(jsonPath("$.name").value(profile.getName()));
     }
 
 	@Test
     public void testAddSkillsToProfile_ShouldReturnProfileWithUpdatedSkills() throws Exception {
-        when(profileService.addProfileSkills(anyString(), anyLong(), anyList())).thenReturn(profileDTO);
+        when(profileService.addProfileSkills(anyString(), anyLong(), anyList())).thenReturn(profile);
 
         mockMvc.perform(put("/api/v1/profiles/1/addSkills")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(skillsRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(profileDTO.getName()));
+                .andExpect(jsonPath("$.name").value(profile.getName()));
     }
 
 	@Test
