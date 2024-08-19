@@ -3,6 +3,10 @@ package com.sheiladiz.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +37,16 @@ public class SkillController {
 	@Autowired
 	private SkillService skillService;
 
-	@PostMapping()
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillDTO.class)) }),
+			@ApiResponse(responseCode = "400", description = "Missing data on request.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "Skill category not found.",
+					content = @Content),
+			@ApiResponse(responseCode = "409", description = "Skill already created.",
+					content = @Content)})
+	@PostMapping
 	public ResponseEntity<?> createSkill(@Valid @RequestBody SkillDTO skillDTO, BindingResult result) {
 		if (result.hasErrors()) {
 			List<String> errors = result.getAllErrors().stream().map(error -> error.getDefaultMessage())
@@ -51,13 +64,18 @@ public class SkillController {
 		}
 	}
 
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<List<SkillDTO>> getSkills() {
 		List<SkillDTO> skillDTOs = skillService.allSkills();
 		return ResponseEntity.ok(skillDTOs);
 	}
 
-	@GetMapping("{skillId}")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Skill category not found.",
+					content = @Content)})
+	@GetMapping("/{skillId}")
 	public ResponseEntity<?> getSkillById(@PathVariable("skillId") Long id) {
 		try {
 			SkillDTO skillDTO = skillService.getSkillById(id);
@@ -67,17 +85,27 @@ public class SkillController {
 		}
 	}
 
-	@PutMapping("{id}")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Skill not found.",
+					content = @Content)})
+	@PutMapping("/{id}")
 	public ResponseEntity<?> updateSkill(@PathVariable("id") Long id, @RequestBody SkillDTO skillDTO) {
 		try {
 			SkillDTO updateSkillDTO = skillService.updateSkill(id, skillDTO);
 			return ResponseEntity.ok(updateSkillDTO);
 		} catch (SkillNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
 
-	@DeleteMapping("{skillId}")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Skill deleted.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "Skill not found.",
+					content = @Content)})
+	@DeleteMapping("/{skillId}")
 	public ResponseEntity<?> deleteSkillById(@PathVariable("skillId") Long id) {
 		try {
 			skillService.deleteSkill(id);
@@ -87,6 +115,13 @@ public class SkillController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
+			@ApiResponse(responseCode = "400", description = "Missing data on request.",
+					content = @Content),
+			@ApiResponse(responseCode = "409", description = "Skill category already created.",
+					content = @Content)})
 	@PostMapping("/categories")
 	public ResponseEntity<?> createCategory(@Valid @RequestBody SkillCategoryDTO skillCategoryDTO,
 			BindingResult result) {
@@ -109,16 +144,26 @@ public class SkillController {
 		return ResponseEntity.ok(categoriesDTOs);
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Skill category not found.",
+					content = @Content)})
 	@GetMapping("/categories/{categoryId}")
 	public ResponseEntity<?> getCategoryById(@PathVariable("categoryId") Long id) {
 		try {
 			SkillCategoryDTO categoryDTO = skillService.getCategoryById(id);
 			return ResponseEntity.ok(categoryDTO);
-		} catch (SkillCategoryAlreadyCreatedException ex) {
+		} catch (SkillCategoryNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Skill category not found.",
+					content = @Content)})
 	@PutMapping("/categories/{id}")
 	public ResponseEntity<?> updateCategory(@PathVariable("id") Long id,
 			@RequestBody SkillCategoryDTO skillCategoryDTO) {
@@ -126,10 +171,15 @@ public class SkillController {
 			SkillCategoryDTO updatedCategoryDTO = skillService.updateCategory(id, skillCategoryDTO);
 			return ResponseEntity.ok(updatedCategoryDTO);
 		} catch (SkillCategoryNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "Skill category deleted.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "Skill category not found.",
+					content = @Content)})
 	@DeleteMapping("/categories/{categoryId}")
 	public ResponseEntity<?> deleteCategoryById(@PathVariable("categoryId") Long id) {
 		try {

@@ -5,7 +5,10 @@ import java.util.stream.Collectors;
 
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +48,15 @@ public class ProfileController {
 		this.profileMapper = profileMapper;
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = ProfileDTO.class)) }),
+			@ApiResponse(responseCode = "400", description = "Missing data on request.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "User not found.",
+					content = @Content),
+			@ApiResponse(responseCode = "409", description = "Profile already created.",
+					content = @Content)})
 	@PostMapping
 	public ResponseEntity<?> createProfile(@Valid @RequestBody ProfileDTO profileDTO, BindingResult result) {
 		if (result.hasErrors()) {
@@ -77,6 +89,11 @@ public class ProfileController {
 		return ResponseEntity.ok(profileMapper.profilesToProfileDTOs(profiles));
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = ProfileDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "User not found.",
+					content = @Content)})
 	@GetMapping("/{email}")
 	public ResponseEntity<?> getProfileByUserEmail(@PathVariable("email") String email) {
 		try {
@@ -88,6 +105,11 @@ public class ProfileController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = ProfileDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Profile not found.",
+					content = @Content)})
 	@PutMapping
 	public ResponseEntity<?> updateProfile(@RequestBody ProfileDTO profileDTO) {
 		try {
@@ -96,10 +118,15 @@ public class ProfileController {
 			Profile updateProfile = profileService.updateProfile(authenticatedUser.getProfile().getId(), profileDTO);
 			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
 		} catch (ProfileNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = ProfileDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Profile or skill not found.",
+					content = @Content)})
 	@PutMapping("/addSkills")
 	public ResponseEntity<?> addSkillsToProfile(@RequestBody SkillsRequest request) {
 		try {
@@ -125,6 +152,11 @@ public class ProfileController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = ProfileDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "Profile or skill not found.",
+					content = @Content)})
 	@PutMapping("/updateSkills")
 	public ResponseEntity<?> updateSkillsToProfile(@RequestBody SkillsRequest request) {
 		try {
@@ -150,6 +182,11 @@ public class ProfileController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", description = "Profile deleted successfully.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "Profile not found.",
+					content = @Content)})
 	@DeleteMapping("/{userId}")
 	public ResponseEntity<?> deleteProfileById(@PathVariable("userId") Long id) {
 		try {

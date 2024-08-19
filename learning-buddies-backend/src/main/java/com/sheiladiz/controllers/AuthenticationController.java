@@ -9,6 +9,10 @@ import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
 import com.sheiladiz.services.AuthenticationService;
 import com.sheiladiz.services.JwtService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,6 +38,13 @@ public class AuthenticationController {
 		this.userMapper = userMapper;
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = UserDTO.class)) }),
+			@ApiResponse(responseCode = "400", description = "Missing data.",
+					content = @Content),
+			@ApiResponse(responseCode = "409", description = "Email already registered.",
+					content = @Content) })
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest,
 			BindingResult bindingResult) {
@@ -52,12 +63,19 @@ public class AuthenticationController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = LoginResponse.class)) }),
+			@ApiResponse(responseCode = "403", description = "Invalid credentials.",
+					content = @Content)})
 	@PostMapping("/login")
 	public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
 		try {
 			User authenticatedUser = authenticationService.authenticate(loginRequest);
 			String jwtToken = jwtService.generateToken(authenticatedUser);
-			LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+			UserDTO userDTO = userMapper.toDTO(authenticatedUser);
+
+			LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), userDTO);
 			return ResponseEntity.ok(loginResponse);
 		} catch (Exception ex) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());

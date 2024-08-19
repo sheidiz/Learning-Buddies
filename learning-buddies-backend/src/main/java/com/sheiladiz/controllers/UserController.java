@@ -4,26 +4,24 @@ import java.util.List;
 
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sheiladiz.dtos.ChangePasswordRequest;
 import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
-import com.sheiladiz.exceptions.user.InvalidUserCredentialsException;
 import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.services.UserService;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -42,6 +40,11 @@ public class UserController {
 		return ResponseEntity.ok(userMapper.userEntitiesToUserDTOs(users));
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = UserDTO.class)) }),
+			@ApiResponse(responseCode = "404", description = "User not found.",
+					content = @Content)})
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
 		try {
@@ -52,6 +55,11 @@ public class UserController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
+					schema = @Schema(implementation = UserDTO.class)) }),
+			@ApiResponse(responseCode = "409", description = "User not found.",
+					content = @Content)})
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
 		try {
@@ -62,6 +70,11 @@ public class UserController {
 		}
 	}
 
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "User deleted successfully.",
+					content = @Content),
+			@ApiResponse(responseCode = "404", description = "User not found.",
+					content = @Content)})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
 		try {
