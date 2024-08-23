@@ -132,7 +132,7 @@ public class ProfileMapper {
 	}
 
 	public List<Skill> mapSkillNames(List<String> skillNames) {
-		return skillNames.stream().map(skillService::getSkillEntityByName).collect(Collectors.toList());
+		return skillNames.stream().map(skillService::getSkillByName).collect(Collectors.toList());
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {

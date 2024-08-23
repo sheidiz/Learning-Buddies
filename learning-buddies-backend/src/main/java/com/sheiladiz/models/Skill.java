@@ -3,6 +3,7 @@ package com.sheiladiz.models;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -39,6 +40,7 @@ public class Skill {
 
 	private String skillType; // programacion u otros
 
+	@NotNull(message = "Categorías requeridas.")
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_have_categories", joinColumns = @JoinColumn(name = "skill_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private List<SkillCategory> categories;

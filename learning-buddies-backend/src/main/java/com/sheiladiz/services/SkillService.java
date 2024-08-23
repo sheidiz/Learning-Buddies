@@ -8,21 +8,17 @@ import com.sheiladiz.models.Skill;
 import com.sheiladiz.models.SkillCategory;
 
 public interface SkillService {
-	
-	SkillCategoryDTO saveCategory(SkillCategoryDTO newCategory);
-	SkillDTO saveSkill(SkillDTO newSkill);
-	List<SkillCategoryDTO> allCategories();
-	List<SkillDTO> allSkills();
-	SkillDTO getSkillById(Long id);
-	SkillDTO getSkillByName(String name);
-	Skill getSkillEntityById(Long id);
-	Skill getSkillEntityByName(String name);
-	SkillCategoryDTO getCategoryById(Long id);
-	SkillCategoryDTO getCategoryByName(String name);
-	SkillCategory getCategoryEntityById(Long id);
-	SkillCategory getCategoryEntityByName(String name);
-	SkillDTO updateSkill(Long skillId,SkillDTO skillDTO);
-	SkillCategoryDTO updateCategory(Long categoryId,SkillCategoryDTO categoryDTO);
-	void deleteCategory(Long id);
-	void deleteSkill(Long id);
+
+	SkillCategory saveCategory(SkillCategoryDTO newCategory);
+	List<SkillCategory> allCategories();
+	SkillCategory getCategoryById(Long id);
+	SkillCategory getCategoryByName(String name);
+	SkillCategory updateCategory(Long categoryId, SkillCategoryDTO newCategoryDTO);
+	void deleteCategoryById(Long id);
+	Skill saveSkill(SkillDTO newSkill);
+	List<Skill> allSkills();
+	Skill getSkillById(Long id);
+	Skill getSkillByName(String name);
+	Skill updateSkill(Long skillId, SkillDTO newSkillDTO);
+	void deleteSkillById(Long id);
 }

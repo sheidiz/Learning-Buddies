@@ -89,7 +89,7 @@ public class ProfileServiceImpl implements ProfileService {
 		Profile profile = getProfileById(profileId);
 
 		for (String name : skillNames) {
-			Skill skill = skillService.getSkillEntityByName(name);
+			Skill skill = skillService.getSkillByName(name);
 
 			if (type.equals("learned")) {
 				if (!profile.getSkillsLearned().contains(skill)) {
@@ -111,7 +111,7 @@ public class ProfileServiceImpl implements ProfileService {
 			profile.setSkillsToLearn(new ArrayList<>());
 		}
 		for (String name : skillNames) {
-			Skill skill = skillService.getSkillEntityByName(name);
+			Skill skill = skillService.getSkillByName(name);
 
 			if (type.equals("learned")) {
 				if (!profile.getSkillsLearned().contains(skill)) {

@@ -6,14 +6,12 @@ import java.util.Optional;
 
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
 import com.sheiladiz.dtos.SkillDTO;
 import com.sheiladiz.mappers.SkillCategoryMapper;
 import com.sheiladiz.mappers.SkillMapper;
-import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.Skill;
 import com.sheiladiz.models.SkillCategory;
 import com.sheiladiz.repositories.SkillCategoryRepository;
@@ -22,148 +20,125 @@ import com.sheiladiz.services.SkillService;
 
 @Service
 public class SkillServiceImpl implements SkillService {
+    private final SkillRepository skillRepository;
+    private final SkillCategoryRepository categoryRepository;
+    private final SkillMapper skillMapper;
+    private final SkillCategoryMapper categoryMapper;
 
-	@Autowired
-	private SkillRepository skillRepository;
+    public SkillServiceImpl(SkillRepository skillRepository, SkillCategoryRepository categoryRepository, SkillMapper skillMapper, SkillCategoryMapper categoryMapper) {
+        this.skillRepository = skillRepository;
+        this.categoryRepository = categoryRepository;
+        this.skillMapper = skillMapper;
+        this.categoryMapper = categoryMapper;
+    }
 
-	@Autowired
-	private SkillCategoryRepository categoryRepository;
+    public SkillCategory saveCategory(SkillCategoryDTO newCategory) {
+        Optional<SkillCategory> existingCategory = categoryRepository.findByName(newCategory.getName());
+        if (existingCategory.isPresent()) {
+            throw new ResourceAlreadyExistsException("Ya existe una categoria de habilidad con ese nombre");
+        }
 
-	@Autowired
-	private SkillMapper skillMapper;
+        List<Skill> skills = new ArrayList<>();
+        SkillCategory category = SkillCategory
+                .builder()
+                .id(newCategory.getId())
+                .name(newCategory.getName())
+                .skills(skills).build();
 
-	@Autowired
-	private SkillCategoryMapper categoryMapper;
+        return categoryRepository.save(category);
+    }
 
-	public SkillCategoryDTO saveCategory(SkillCategoryDTO newCategory) {
-		Optional<SkillCategory> existingCategory = categoryRepository.findByName(newCategory.getName());
-		if (existingCategory.isPresent()) {
-			throw new ResourceAlreadyExistsException("Ya existe una categoria de habilidad con ese nombre");
-		}
+    public List<SkillCategory> allCategories() {
+        return categoryRepository.findAll();
+    }
 
-		List<Skill> skills = new ArrayList<>();
-		SkillCategory category = SkillCategory.builder().id(newCategory.getId()).name(newCategory.getName())
-				.skills(skills).build();
+    public SkillCategory getCategoryById(Long id) {
+        return categoryRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Categoría de habilidad con id [" + id + "] no encontrada"));
+    }
 
-		SkillCategory savedCategory = categoryRepository.save(category);
-		return categoryMapper.toDTO(savedCategory);
-	}
+    public SkillCategory getCategoryByName(String name) {
+        return categoryRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría de habilidad [" + name + "] no encontrada"));
+    }
 
-	public SkillDTO saveSkill(SkillDTO newSkill) {
-		Optional<Skill> existingSkill = skillRepository.findByName(newSkill.getName());
-		if (existingSkill.isPresent()) {
-			throw new ResourceAlreadyExistsException("Ya existe una habilidad con ese nombre");
-		}
+    public SkillCategory updateCategory(Long id, SkillCategoryDTO newCategoryDTO) {
+        SkillCategory existingCategory = categoryRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Categoría de habilidad con id [" + id + "] no encontrada"));
 
-		List<SkillCategory> categories = new ArrayList<>();
-		List<Profile> profiles = new ArrayList<>();
-		for (String name : newSkill.getCategories()) {
-			SkillCategory category = categoryRepository.findByName(name).orElseThrow(
-					() -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
-			categories.add(category);
-		}
-		Skill skill = Skill.builder().id(newSkill.getId()).skillType(newSkill.getSkillType()).name(newSkill.getName())
-				.categories(categories).profilesLearningThisSkill(profiles).profilesWhoLearnedThisSkill(profiles)
-				.build();
+        if (categoryRepository.findByName(newCategoryDTO.getName()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Ya existe una categoría creada con ese nombre");
+        }
 
-		Skill savedSkill = skillRepository.save(skill);
-		return skillMapper.toDTO(savedSkill);
-	}
+        existingCategory.setName(newCategoryDTO.getName());
 
-	public List<SkillCategoryDTO> allCategories() {
-		return categoryMapper.skillCategoriesToSkillCategoryDTOs(categoryRepository.findAll());
-	}
+        return categoryRepository.save(existingCategory);
+    }
 
-	public List<SkillDTO> allSkills() {
-		return skillMapper.skillsToSkillDTOs(skillRepository.findAll());
-	}
+    public void deleteCategoryById(Long id) {
+        SkillCategory category = categoryRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Categoría de habilidad con id [" + id + "] no encontrada"));
+        categoryRepository.delete(category);
+    }
 
-	public SkillDTO getSkillById(Long id) {
-		Skill skill = skillRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
-		return skillMapper.toDTO(skill);
-	}
+    public Skill saveSkill(SkillDTO newSkill) {
+        Optional<Skill> existingSkill = skillRepository.findByName(newSkill.getName());
+        if (existingSkill.isPresent()) {
+            throw new ResourceAlreadyExistsException("Ya existe una habilidad con ese nombre");
+        }
 
-	public SkillDTO getSkillByName(String name) {
-		Skill skill = skillRepository.findByName(name)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad [" + name + "] no encontrada"));
-		return skillMapper.toDTO(skill);
-	}
+        List<SkillCategory> categories = new ArrayList<>();
+        for (String name : newSkill.getCategories()) {
+            SkillCategory category = categoryRepository.findByName(name).orElseThrow(
+                    () -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
+            categories.add(category);
+        }
+        Skill skill = Skill.builder()
+                .id(newSkill.getId())
+                .skillType(newSkill.getSkillType())
+                .name(newSkill.getName())
+                .categories(categories)
+                .profilesLearningThisSkill(new ArrayList<>())
+                .profilesLearningThisSkill(new ArrayList<>())
+                .build();
 
-	public Skill getSkillEntityById(Long id) {
-		return skillRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
-	}
+        return skillRepository.save(skill);
+    }
 
-	public Skill getSkillEntityByName(String name) {
-		return skillRepository.findByName(name)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad [" + name + "] no encontrada"));
-	}
+    public List<Skill> allSkills() {
+        return skillRepository.findAll();
+    }
 
-	public SkillCategoryDTO getCategoryById(Long id) {
-		SkillCategory category = categoryRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Categoria de habilidad con id [" + id + "] no encontrada"));
-		return categoryMapper.toDTO(category);
-	}
+    public Skill getSkillById(Long id) {
+        return skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
+    }
 
-	public SkillCategoryDTO getCategoryByName(String name) {
-		SkillCategory category = categoryRepository.findByName(name)
-				.orElseThrow(() -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
-		return categoryMapper.toDTO(category);
-	}
+    public Skill getSkillByName(String name) {
+        return skillRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Habilidad [" + name + "] no encontrada"));
+    }
 
-	public SkillCategory getCategoryEntityById(Long id) {
-		return categoryRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Categoria de habilidad con id [" + id + "] no encontrada"));
-	}
+    public Skill updateSkill(Long id, SkillDTO newSkillDTO) {
+        Skill existingSkill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
 
-	public SkillCategory getCategoryEntityByName(String name) {
-		return categoryRepository.findByName(name)
-				.orElseThrow(() -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
-	}
+        if (skillRepository.findByName(newSkillDTO.getName()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Ya existe una habilidad con ese nombre");
+        }
 
-	public void deleteCategory(Long id) {
-		SkillCategory category = categoryRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Categoria de habilidad con id [" + id + "] no encontrada"));
-		categoryRepository.delete(category);
-	}
+        existingSkill.setName(newSkillDTO.getName());
+        if (newSkillDTO.getSkillType() != null) {
+            existingSkill.setSkillType(newSkillDTO.getSkillType());
+        }
 
-	public void deleteSkill(Long id) {
-		Skill skill = skillRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
-		skillRepository.delete(skill);
-	}
+        return skillRepository.save(existingSkill);
+    }
 
-	public SkillDTO updateSkill(Long id, SkillDTO skillDTO) {
-		Skill existingSkill = skillRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
-
-		if (skillRepository.findByName(skillDTO.getName()).isPresent()) {
-			throw new ResourceAlreadyExistsException("Ya existe una habilidad con ese nombre");
-		}
-
-		existingSkill.setName(skillDTO.getName());
-		if (skillDTO.getSkillType() != null) {
-			existingSkill.setSkillType(skillDTO.getSkillType());
-		}
-
-		Skill updatedSkill = skillRepository.save(existingSkill);
-
-		return skillMapper.toDTO(updatedSkill);
-	}
-
-	public SkillCategoryDTO updateCategory(Long id, SkillCategoryDTO categoryDTO) {
-		SkillCategory existingCategory = categoryRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Categoria de habilidad con id [" + id + "] no encontrada"));
-
-		if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
-			throw new ResourceAlreadyExistsException("Ya existe una categoria creada con ese nombre");
-		}
-
-		existingCategory.setName(categoryDTO.getName());
-
-		SkillCategory updatedCategory = categoryRepository.save(existingCategory);
-		return categoryMapper.toDTO(updatedCategory);
-	}
+    public void deleteSkillById(Long id) {
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Habilidad con id [" + id + "] no encontrada"));
+        skillRepository.delete(skill);
+    }
 
 }

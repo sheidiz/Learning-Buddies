@@ -1,190 +1,160 @@
 package com.sheiladiz.controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
-import com.sheiladiz.exceptions.ResourceNotFoundException;
+import com.sheiladiz.dtos.SkillCategoryDTO;
+import com.sheiladiz.dtos.SkillDTO;
+import com.sheiladiz.exceptions.ErrorResponse;
+import com.sheiladiz.mappers.SkillCategoryMapper;
+import com.sheiladiz.mappers.SkillMapper;
+import com.sheiladiz.models.Skill;
+import com.sheiladiz.models.SkillCategory;
+import com.sheiladiz.services.SkillService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.sheiladiz.dtos.SkillCategoryDTO;
-import com.sheiladiz.dtos.SkillDTO;
-import com.sheiladiz.services.SkillService;
-
-import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/skills")
 public class SkillController {
+    private final SkillService skillService;
+    private final SkillMapper skillMapper;
+    private final SkillCategoryMapper categoryMapper;
 
-	@Autowired
-	private SkillService skillService;
+    public SkillController(SkillService skillService, SkillMapper skillMapper, SkillCategoryMapper categoryMapper) {
+        this.skillService = skillService;
+        this.skillMapper = skillMapper;
+        this.categoryMapper = categoryMapper;
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillDTO.class)) }),
-			@ApiResponse(responseCode = "400", description = "Missing data on request.",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = "Skill category not found.",
-					content = @Content),
-			@ApiResponse(responseCode = "409", description = "Skill already created.",
-					content = @Content)})
-	@PostMapping
-	public ResponseEntity<?> createSkill(@Valid @RequestBody SkillDTO skillDTO, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> errors = result.getAllErrors().stream().map(error -> error.getDefaultMessage())
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Categoría de habilidad no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Ya existe una habilidad con ese nombre",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @PostMapping
+    public ResponseEntity<SkillDTO> createSkill(@Valid @RequestBody SkillDTO skillDTO) {
+        Skill savedSkill = skillService.saveSkill(skillDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(skillMapper.toDTO(savedSkill));
+    }
 
-		try {
-			SkillDTO savedSkillDTO = skillService.saveSkill(skillDTO);
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedSkillDTO);
-		} catch (ResourceAlreadyExistsException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @GetMapping
+    public ResponseEntity<List<SkillDTO>> getSkills() {
+        List<Skill> skills = skillService.allSkills();
+        return ResponseEntity.ok(skillMapper.skillsToSkillDTOs(skills));
+    }
 
-	@GetMapping
-	public ResponseEntity<List<SkillDTO>> getSkills() {
-		List<SkillDTO> skillDTOs = skillService.allSkills();
-		return ResponseEntity.ok(skillDTOs);
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Habilidad con id {id} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/{skillId}")
+    public ResponseEntity<SkillDTO> getSkillById(@PathVariable("skillId") Long id) {
+        Skill skill = skillService.getSkillById(id);
+        return ResponseEntity.ok(skillMapper.toDTO(skill));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Skill category not found.",
-					content = @Content)})
-	@GetMapping("/{skillId}")
-	public ResponseEntity<?> getSkillById(@PathVariable("skillId") Long id) {
-		try {
-			SkillDTO skillDTO = skillService.getSkillById(id);
-			return ResponseEntity.ok(skillDTO);
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Habilidad con id {id} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Categoría de habilidad no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<SkillDTO> updateSkill(@PathVariable("id") Long id, @RequestBody SkillDTO skillDTO) {
+        Skill updatedSkill = skillService.updateSkill(id, skillDTO);
+        return ResponseEntity.ok(skillMapper.toDTO(updatedSkill));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Skill not found.",
-					content = @Content)})
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateSkill(@PathVariable("id") Long id, @RequestBody SkillDTO skillDTO) {
-		try {
-			SkillDTO updateSkillDTO = skillService.updateSkill(id, skillDTO);
-			return ResponseEntity.ok(updateSkillDTO);
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Habilidad eliminada exitosamente.",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Habilidad con id {id} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @DeleteMapping("/{skillId}")
+    public ResponseEntity<?> deleteSkillById(@PathVariable("skillId") Long id) {
+        skillService.deleteSkillById(id);
+        return ResponseEntity.ok("Habilidad eliminada exitosamente.");
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Skill deleted.",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = "Skill not found.",
-					content = @Content)})
-	@DeleteMapping("/{skillId}")
-	public ResponseEntity<?> deleteSkillById(@PathVariable("skillId") Long id) {
-		try {
-			skillService.deleteSkill(id);
-			return ResponseEntity.ok("Habilidad eliminada exitosamente");
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillCategoryDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Ya existe una categoría de habilidad con ese nombre.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @PostMapping("/categories")
+    public ResponseEntity<SkillCategoryDTO> createCategory(@Valid @RequestBody SkillCategoryDTO skillCategoryDTO) {
+        SkillCategory savedCategory = skillService.saveCategory(skillCategoryDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toDTO(savedCategory));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
-			@ApiResponse(responseCode = "400", description = "Missing data on request.",
-					content = @Content),
-			@ApiResponse(responseCode = "409", description = "Skill category already created.",
-					content = @Content)})
-	@PostMapping("/categories")
-	public ResponseEntity<?> createCategory(@Valid @RequestBody SkillCategoryDTO skillCategoryDTO,
-			BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> errors = result.getAllErrors().stream().map(error -> error.getDefaultMessage())
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
-		try {
-			SkillCategoryDTO savedCategory = skillService.saveCategory(skillCategoryDTO);
-			return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
-		} catch (ResourceAlreadyExistsException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		}
-	}
+    @GetMapping("/categories")
+    public ResponseEntity<List<SkillCategoryDTO>> getCategories() {
+        List<SkillCategory> categories = skillService.allCategories();
+        return ResponseEntity.ok(categoryMapper.skillCategoriesToSkillCategoryDTOs(categories));
+    }
 
-	@GetMapping("/categories")
-	public ResponseEntity<List<SkillCategoryDTO>> getCategories() {
-		List<SkillCategoryDTO> categoriesDTOs = skillService.allCategories();
-		return ResponseEntity.ok(categoriesDTOs);
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillCategoryDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Categoría de habilidad con id {id} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<SkillCategoryDTO> getCategoryById(@PathVariable("categoryId") Long id) {
+        SkillCategory category = skillService.getCategoryById(id);
+        return ResponseEntity.ok(categoryMapper.toDTO(category));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Skill category not found.",
-					content = @Content)})
-	@GetMapping("/categories/{categoryId}")
-	public ResponseEntity<?> getCategoryById(@PathVariable("categoryId") Long id) {
-		try {
-			SkillCategoryDTO categoryDTO = skillService.getCategoryById(id);
-			return ResponseEntity.ok(categoryDTO);
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = SkillCategoryDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Categoría de habilidad con id {id} no encontrada",
+                    content = @Content)})
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<SkillCategoryDTO> updateCategory(@PathVariable("id") Long id, @RequestBody SkillCategoryDTO skillCategoryDTO) {
+        SkillCategory updatedCategory = skillService.updateCategory(id, skillCategoryDTO);
+        return ResponseEntity.ok(categoryMapper.toDTO(updatedCategory));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = SkillCategoryDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Skill category not found.",
-					content = @Content)})
-	@PutMapping("/categories/{id}")
-	public ResponseEntity<?> updateCategory(@PathVariable("id") Long id,
-			@RequestBody SkillCategoryDTO skillCategoryDTO) {
-		try {
-			SkillCategoryDTO updatedCategoryDTO = skillService.updateCategory(id, skillCategoryDTO);
-			return ResponseEntity.ok(updatedCategoryDTO);
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
-
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Skill category deleted.",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = "Skill category not found.",
-					content = @Content)})
-	@DeleteMapping("/categories/{categoryId}")
-	public ResponseEntity<?> deleteCategoryById(@PathVariable("categoryId") Long id) {
-		try {
-			skillService.deleteCategory(id);
-			return ResponseEntity.ok("Categoria de habilidad eliminada exitosamente");
-		} catch (ResourceAlreadyExistsException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categoría de habilidad eliminada exitosamente",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Categoría de habilidad con id {id} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @DeleteMapping("/categories/{categoryId}")
+    public ResponseEntity<?> deleteCategoryById(@PathVariable("categoryId") Long id) {
+        skillService.deleteCategoryById(id);
+        return ResponseEntity.ok("Categoría de habilidad eliminada exitosamente");
+    }
 }
