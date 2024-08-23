@@ -20,6 +20,7 @@ public class ProfileDTO {
 	@NotBlank(message = "Nombre requerido.")
     private String name;
 	private String profilePicture;
+    private String profilePictureBackground;
     private String gender;
     private String pronouns;
     private String country;

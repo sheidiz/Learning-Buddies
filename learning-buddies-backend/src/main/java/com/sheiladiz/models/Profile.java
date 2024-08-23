@@ -48,6 +48,8 @@ public class Profile {
 	
 	private String profilePicture;
 
+	private String profilePictureBackground;
+
 	private String gender;
 
 	private String pronouns;
@@ -97,8 +99,10 @@ public class Profile {
 		this.updatedAt = new Date();
 	}
 
-	public Profile(User user, String name, String country, String jobPosition, String bio, String githubUrl) {
+	public Profile(User user, String profilePicture, String profilePictureBackground, String name, String country, String jobPosition, String bio, String githubUrl) {
 		this.user = user;
+		this.profilePicture = profilePicture;
+		this.profilePictureBackground = profilePictureBackground;
 		this.name = name;
 		this.country = country;
 		this.jobPosition = jobPosition;

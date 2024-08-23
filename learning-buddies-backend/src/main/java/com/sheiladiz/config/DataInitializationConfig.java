@@ -77,8 +77,8 @@ public class DataInitializationConfig implements CommandLineRunner {
             userRepository.saveAll(users);
 
             List<Profile> profiles = List.of(
-                    new Profile(users.get(0), "Sheila1", "Argentina", "Estudiante Front-end", "Soy Sheila 1", "/sheila1"),
-                    new Profile(users.get(1), "Sheila2", "Argentina", "Estudiante Back-end", "Soy Sheila 2", "/sheila2")
+                    new Profile(users.get(0),"/src/assets/users/1.png", "#FF8A8A", "Sheila1", "Argentina", "Estudiante Front-end", "Soy Sheila 1", "/sheila1"),
+                    new Profile(users.get(1),"/src/assets/users/2.png","#3795BD", "Sheila2", "Argentina", "Estudiante Back-end", "Soy Sheila 2", "/sheila2")
             );
             profileRepository.saveAll(profiles);
         }

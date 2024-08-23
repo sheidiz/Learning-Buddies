@@ -20,7 +20,11 @@ public class ProfileMapper {
 	private SkillService skillService;
 
 	public ProfileDTO toDTO(Profile profile) {
-		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder().id(profile.getId()).name(profile.getName()).profilePicture(profile.getProfilePicture());
+		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder()
+				.id(profile.getId())
+				.name(profile.getName())
+				.profilePicture(profile.getProfilePicture())
+				.profilePictureBackground(profile.getProfilePictureBackground());
 
 		if (profile.getGender() != null) {
 			builder.gender(profile.getGender());
@@ -70,7 +74,11 @@ public class ProfileMapper {
 	}
 
 	public Profile toEntity(ProfileDTO profileDTO) {
-		Profile.ProfileBuilder builder = Profile.builder().id(profileDTO.getId()).name(profileDTO.getName()).profilePicture(profileDTO.getProfilePicture());
+		Profile.ProfileBuilder builder = Profile.builder()
+				.id(profileDTO.getId())
+				.name(profileDTO.getName())
+				.profilePicture(profileDTO.getProfilePicture())
+				.profilePictureBackground(profileDTO.getProfilePictureBackground());
 
 		if (profileDTO.getGender() != null) {
 			builder.gender(profileDTO.getGender());
