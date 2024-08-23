@@ -1,10 +1,9 @@
 package com.sheiladiz.controllers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
-import com.sheiladiz.exceptions.ResourceNotFoundException;
+import com.sheiladiz.exceptions.ErrorResponse;
+import com.sheiladiz.exceptions.InvalidDataException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,9 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,152 +32,152 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/profiles")
 public class ProfileController {
-	private final ProfileService profileService;
-	private final UserService userService;
-	private final ProfileMapper profileMapper;
+    private final ProfileService profileService;
+    private final UserService userService;
+    private final ProfileMapper profileMapper;
 
-	public ProfileController(ProfileService profileService, UserService userService, ProfileMapper profileMapper) {
-		this.profileService = profileService;
-		this.userService = userService;
-		this.profileMapper = profileMapper;
-	}
+    public ProfileController(ProfileService profileService, UserService userService, ProfileMapper profileMapper) {
+        this.profileService = profileService;
+        this.userService = userService;
+        this.profileMapper = profileMapper;
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = ProfileDTO.class)) }),
-			@ApiResponse(responseCode = "400", description = "Missing data on request.",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = "User not found.",
-					content = @Content),
-			@ApiResponse(responseCode = "409", description = "Profile already created.",
-					content = @Content)})
-	@PostMapping
-	public ResponseEntity<?> createProfile(@Valid @RequestBody ProfileDTO profileDTO, BindingResult result) {
-		if (result.hasErrors()) {
-			List<String> errors = result.getAllErrors().stream()
-					.map(ObjectError::getDefaultMessage)
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "El perfil para este usuario ya existe.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PostMapping("/{userId}")
+    public ResponseEntity<ProfileDTO> createProfile(@PathVariable("userId") Long userId, @Valid @RequestBody ProfileDTO profileDTO) {
+        User user = userService.getUserById(userId);
 
-		try {
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User authenticatedUser = userService.getUserByEmail(email);
+        Profile savedProfile = profileService.saveProfile(profileDTO, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toDTO(savedProfile));
+    }
 
-			if (authenticatedUser.getProfile() != null) {
-				throw new ResourceAlreadyExistsException("El perfil para este usuario ya existe");
-			}
+    @GetMapping
+    public ResponseEntity<List<ProfileDTO>> getAllProfiles() {
+        List<Profile> profiles = profileService.allProfiles();
+        return ResponseEntity.ok(profileMapper.profilesToProfileDTOs(profiles));
+    }
 
-			Profile savedProfile = profileService.saveProfile(profileDTO, authenticatedUser);
-			return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toDTO(savedProfile));
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Perfil con email {email} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/{email}")
+    public ResponseEntity<ProfileDTO> getProfileByUserEmail(@PathVariable("email") String email) {
+        User user = userService.getUserByEmail(email);
+        Profile profile = profileService.getProfileByUser(user);
+        return ResponseEntity.ok(profileMapper.toDTO(profile));
+    }
 
-	@GetMapping
-	public ResponseEntity<List<ProfileDTO>> getAllProfiles() {
-		List<Profile> profiles = profileService.allProfiles();
-		return ResponseEntity.ok(profileMapper.profilesToProfileDTOs(profiles));
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PutMapping("/{userId}")
+    public ResponseEntity<ProfileDTO> updateProfile(@PathVariable("userId") Long userId, @RequestBody ProfileDTO newProfileDTO) {
+        User user = userService.getUserById(userId);
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = ProfileDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "User not found.",
-					content = @Content)})
-	@GetMapping("/{email}")
-	public ResponseEntity<?> getProfileByUserEmail(@PathVariable("email") String email) {
-		try {
-			User user = userService.getUserByEmail(email);
-			Profile profile = profileService.getProfileByUser(user);
-			return ResponseEntity.ok(profileMapper.toDTO(profile));
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+        Profile updatedProfile = profileService.updateProfile(user.getProfile().getId(), newProfileDTO);
+        return ResponseEntity.ok(profileMapper.toDTO(updatedProfile));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = ProfileDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Profile not found.",
-					content = @Content)})
-	@PutMapping
-	public ResponseEntity<?> updateProfile(@RequestBody ProfileDTO profileDTO) {
-		try {
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User authenticatedUser = userService.getUserByEmail(email);
-			Profile updateProfile = profileService.updateProfile(authenticatedUser.getProfile().getId(), profileDTO);
-			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Habilidad {habilidad} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PutMapping("/addSkills/{userId}")
+    public ResponseEntity<ProfileDTO> addSkillsToProfile(@PathVariable("userId") Long userId, @RequestBody SkillsRequest request) {
+        User user = userService.getUserById(userId);
+        Profile profileToUpdate = profileService.getProfileByUserId(user.getId());
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = ProfileDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Profile or skill not found.",
-					content = @Content)})
-	@PutMapping("/addSkills")
-	public ResponseEntity<?> addSkillsToProfile(@RequestBody SkillsRequest request) {
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User authenticatedUser = userService.getUserByEmail(email);
-			Profile updateProfile = profileService.getProfileByUserId(authenticatedUser.getId());
+        if (request.getSkillsLearned() == null && request.getSkillsToLearn() == null) {
+            throw new InvalidDataException("Se necesita ingresar skillsLearned y/o skillsToLearn");
+        }
 
-			if(request.getSkillsLearned() == null && request.getSkillsToLearn() == null){
-				return ResponseEntity.badRequest().body("Se necesita ingresar skillsLearned y/o skillsToLearn");
-			}
-			if (request.getSkillsLearned() != null) {
-				updateProfile = profileService.addProfileSkills("learned", updateProfile.getId(), request.getSkillsLearned());
-			}
-			if (request.getSkillsToLearn() != null) {
-				updateProfile = profileService.addProfileSkills("learning", updateProfile.getId(), request.getSkillsToLearn());
-			}
+        if (request.getSkillsLearned() != null) {
+            profileToUpdate = profileService.addProfileSkills("learned", profileToUpdate.getId(), request.getSkillsLearned());
+        }
 
-			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
+        if (request.getSkillsToLearn() != null) {
+            profileToUpdate = profileService.addProfileSkills("learning", profileToUpdate.getId(), request.getSkillsToLearn());
+        }
 
-	}
+        return ResponseEntity.ok(profileMapper.toDTO(profileToUpdate));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = ProfileDTO.class)) }),
-			@ApiResponse(responseCode = "404", description = "Profile or skill not found.",
-					content = @Content)})
-	@PutMapping("/updateSkills")
-	public ResponseEntity<?> updateSkillsToProfile(@RequestBody SkillsRequest request) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Habilidad {habilidad} no encontrada",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PutMapping("/updateSkills/{userId}")
+    public ResponseEntity<ProfileDTO> updateSkillsToProfile(@PathVariable("userId") Long userId, @RequestBody SkillsRequest request) {
+        User user = userService.getUserById(userId);
+        Profile profileToUpdate = profileService.getProfileByUserId(user.getId());
 
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User authenticatedUser = userService.getUserByEmail(email);
-			Profile updateProfile = profileService.getProfileByUserId(authenticatedUser.getId());
+        if (request.getSkillsLearned() == null && request.getSkillsToLearn() == null) {
+            throw new InvalidDataException("Se necesita ingresar skillsLearned y/o skillsToLearn");
+        }
 
-			if(request.getSkillsLearned() == null && request.getSkillsToLearn() == null){
-				return ResponseEntity.badRequest().body("Se necesita ingresar skillsLearned y/o skillsToLearn");
-			}
-			if (request.getSkillsLearned() != null) {
-				updateProfile = profileService.updateProfileSkills("learned", updateProfile.getId(), request.getSkillsLearned());
-			}
-			if (request.getSkillsToLearn() != null) {
-				updateProfile = profileService.updateProfileSkills("learning", updateProfile.getId(), request.getSkillsToLearn());
-			}
+        if (request.getSkillsLearned() != null) {
+            profileToUpdate = profileService.updateProfileSkills("learned", profileToUpdate.getId(), request.getSkillsLearned());
+        }
 
-			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
+        if (request.getSkillsToLearn() != null) {
+            profileToUpdate = profileService.updateProfileSkills("learning", profileToUpdate.getId(), request.getSkillsToLearn());
+        }
 
-	}
+        return ResponseEntity.ok(profileMapper.toDTO(profileToUpdate));
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "Profile deleted successfully.",
-					content = @Content),
-			@ApiResponse(responseCode = "404", description = "Profile not found.",
-					content = @Content)})
-	@DeleteMapping("/{userId}")
-	public ResponseEntity<?> deleteProfileById(@PathVariable("userId") Long id) {
-		try {
-			Profile profile = profileService.getProfileByUserId(id);
-			profileService.deleteProfile(profile.getId());
-			return ResponseEntity.ok("Perfil eliminado exitosamente");
-		} catch (ResourceNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Perfil eliminado exitosamente.",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Perfil no encontrado para usuario con id {id}",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteProfileById(@PathVariable("userId") Long userId) {
+        User user = userService.getUserById(userId);
+        profileService.deleteProfile(user.getId());
+        return ResponseEntity.ok("Perfil eliminado exitosamente.");
+    }
 }

@@ -36,6 +36,9 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	public Profile saveProfile(ProfileDTO newProfile, User user) {
+		if (user.getProfile() != null) {
+			throw new ResourceAlreadyExistsException("El perfil para este usuario ya existe.");
+		}
 		Profile profile = profileMapper.toEntity(newProfile);
 		profile.setUser(user);
 		return profileRepository.save(profile);
@@ -123,9 +126,9 @@ public class ProfileServiceImpl implements ProfileService {
 		return profileRepository.save(profile);
 	}
 
-	public void deleteProfile(Long id) {
-		Profile profile = profileRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
+	public void deleteProfile(Long userId) {
+		Profile profile = profileRepository.findByUserId(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id " + userId));
 		profileRepository.delete(profile);
 	}
 

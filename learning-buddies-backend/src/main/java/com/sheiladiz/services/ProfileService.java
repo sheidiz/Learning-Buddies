@@ -17,6 +17,6 @@ public interface ProfileService {
 	Profile updateProfile(Long profileId, ProfileDTO profileDTO);
 	Profile addProfileSkills(String type, Long profileId, List<String> skillNames);
 	Profile updateProfileSkills(String type, Long profileId, List<String> skillNames);
-	void deleteProfile(Long id);
+	void deleteProfile(Long userId);
 	void isProfileExistsByUser(User user);
 }

@@ -63,14 +63,14 @@ public class UserController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User deleted successfully.",
+            @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente.",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "User not found.",
+            @ApiResponse(responseCode = "404", description = "Usuario con id {id} no encontrado",
                     content = @Content)})
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok("Usuario eliminado exitosamente.");
     }
 
 }

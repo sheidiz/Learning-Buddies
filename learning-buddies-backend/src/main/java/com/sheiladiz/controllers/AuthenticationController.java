@@ -50,7 +50,7 @@ public class AuthenticationController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = LoginResponse.class))}),
-            @ApiResponse(responseCode = "400", description = "Datos enviados no cumplen los requisitos de la entidad.",
+            @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Usuario y/o contraseña inválidos.",
