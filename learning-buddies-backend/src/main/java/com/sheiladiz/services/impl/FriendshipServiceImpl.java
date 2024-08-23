@@ -1,15 +1,13 @@
 package com.sheiladiz.services.impl;
 
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sheiladiz.exceptions.friendship.FriendshipNotFoundException;
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.FriendshipStatus;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.repositories.FriendshipRepository;
-//import com.sheiladiz.repositories.ProfileRepository;
-//import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.FriendshipService;
 
 @Service
@@ -18,15 +16,9 @@ public class FriendshipServiceImpl implements FriendshipService {
 	@Autowired
 	private FriendshipRepository friendshipRepository;
 
-	// @Autowired
-	// private ProfileRepository profileRepository;
-
-	// @Autowired
-	// private UserRepository userRepository;
-
 	public Friendship findFriendship(Profile profile, Profile friendProfile) {
 		return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile)
-				.orElseThrow(() -> new FriendshipNotFoundException("No se encontro la solicitud de amistad"));
+				.orElseThrow(() -> new ResourceNotFoundException("No se encontro la solicitud de amistad"));
 	}
 
 	public boolean friendshipExists(Profile profile, Profile friendProfile) {

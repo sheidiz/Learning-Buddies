@@ -3,6 +3,8 @@ package com.sheiladiz.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,10 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.dtos.SkillsRequest;
-import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
-import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
-import com.sheiladiz.exceptions.skill.SkillNotFoundException;
-import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.models.User;
 import com.sheiladiz.services.ProfileService;
 import com.sheiladiz.services.UserService;
@@ -71,15 +69,13 @@ public class ProfileController {
 			User authenticatedUser = userService.getUserByEmail(email);
 
 			if (authenticatedUser.getProfile() != null) {
-				throw new ProfileAlreadyCreatedException("El perfil para este usuario ya existe");
+				throw new ResourceAlreadyExistsException("El perfil para este usuario ya existe");
 			}
 
 			Profile savedProfile = profileService.saveProfile(profileDTO, authenticatedUser);
 			return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toDTO(savedProfile));
-		} catch (UserNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-		} catch (ProfileAlreadyCreatedException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
 	}
 
@@ -100,7 +96,7 @@ public class ProfileController {
 			User user = userService.getUserByEmail(email);
 			Profile profile = profileService.getProfileByUser(user);
 			return ResponseEntity.ok(profileMapper.toDTO(profile));
-		} catch (ProfileNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -117,7 +113,7 @@ public class ProfileController {
 			User authenticatedUser = userService.getUserByEmail(email);
 			Profile updateProfile = profileService.updateProfile(authenticatedUser.getProfile().getId(), profileDTO);
 			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
-		} catch (ProfileNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -129,7 +125,6 @@ public class ProfileController {
 					content = @Content)})
 	@PutMapping("/addSkills")
 	public ResponseEntity<?> addSkillsToProfile(@RequestBody SkillsRequest request) {
-		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User authenticatedUser = userService.getUserByEmail(email);
 			Profile updateProfile = profileService.getProfileByUserId(authenticatedUser.getId());
@@ -145,11 +140,7 @@ public class ProfileController {
 			}
 
 			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
-		} catch (ProfileNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		} catch (SkillNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		}
+
 	}
 
 	@ApiResponses({
@@ -159,7 +150,7 @@ public class ProfileController {
 					content = @Content)})
 	@PutMapping("/updateSkills")
 	public ResponseEntity<?> updateSkillsToProfile(@RequestBody SkillsRequest request) {
-		try {
+
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User authenticatedUser = userService.getUserByEmail(email);
 			Profile updateProfile = profileService.getProfileByUserId(authenticatedUser.getId());
@@ -175,11 +166,7 @@ public class ProfileController {
 			}
 
 			return ResponseEntity.ok(profileMapper.toDTO(updateProfile));
-		} catch (ProfileNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		} catch (SkillNotFoundException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		}
+
 	}
 
 	@ApiResponses({
@@ -193,7 +180,7 @@ public class ProfileController {
 			Profile profile = profileService.getProfileByUserId(id);
 			profileService.deleteProfile(profile.getId());
 			return ResponseEntity.ok("Perfil eliminado exitosamente");
-		} catch (ProfileNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}

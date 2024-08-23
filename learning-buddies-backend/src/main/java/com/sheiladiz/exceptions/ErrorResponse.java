@@ -1,19 +1,21 @@
 package com.sheiladiz.exceptions;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class ErrorResponse {
+	private int statusCode;
+	private String message;
 
-	private String error;
-
-	public ErrorResponse(String error) {
-		this.error = error;
+	public ErrorResponse(int statusCode, String message) {
+		this.statusCode = statusCode;
+		this.message = message;
 	}
 
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
+	public ErrorResponse(String message) {
+		this.message = message;
 	}
 	
 }

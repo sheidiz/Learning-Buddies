@@ -3,6 +3,8 @@ package com.sheiladiz.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,10 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
 import com.sheiladiz.dtos.SkillDTO;
-import com.sheiladiz.exceptions.skill.SkillAlreadyCreatedException;
-import com.sheiladiz.exceptions.skill.SkillCategoryAlreadyCreatedException;
-import com.sheiladiz.exceptions.skill.SkillCategoryNotFoundException;
-import com.sheiladiz.exceptions.skill.SkillNotFoundException;
 import com.sheiladiz.services.SkillService;
 
 import jakarta.validation.Valid;
@@ -57,9 +55,9 @@ public class SkillController {
 		try {
 			SkillDTO savedSkillDTO = skillService.saveSkill(skillDTO);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedSkillDTO);
-		} catch (SkillAlreadyCreatedException ex) {
+		} catch (ResourceAlreadyExistsException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		} catch (SkillCategoryNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -80,7 +78,7 @@ public class SkillController {
 		try {
 			SkillDTO skillDTO = skillService.getSkillById(id);
 			return ResponseEntity.ok(skillDTO);
-		} catch (SkillNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -95,7 +93,7 @@ public class SkillController {
 		try {
 			SkillDTO updateSkillDTO = skillService.updateSkill(id, skillDTO);
 			return ResponseEntity.ok(updateSkillDTO);
-		} catch (SkillNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -110,7 +108,7 @@ public class SkillController {
 		try {
 			skillService.deleteSkill(id);
 			return ResponseEntity.ok("Habilidad eliminada exitosamente");
-		} catch (SkillNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -133,7 +131,7 @@ public class SkillController {
 		try {
 			SkillCategoryDTO savedCategory = skillService.saveCategory(skillCategoryDTO);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
-		} catch (SkillCategoryAlreadyCreatedException ex) {
+		} catch (ResourceAlreadyExistsException ex) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 		}
 	}
@@ -154,7 +152,7 @@ public class SkillController {
 		try {
 			SkillCategoryDTO categoryDTO = skillService.getCategoryById(id);
 			return ResponseEntity.ok(categoryDTO);
-		} catch (SkillCategoryNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -170,7 +168,7 @@ public class SkillController {
 		try {
 			SkillCategoryDTO updatedCategoryDTO = skillService.updateCategory(id, skillCategoryDTO);
 			return ResponseEntity.ok(updatedCategoryDTO);
-		} catch (SkillCategoryNotFoundException ex) {
+		} catch (ResourceNotFoundException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}
@@ -185,7 +183,7 @@ public class SkillController {
 		try {
 			skillService.deleteCategory(id);
 			return ResponseEntity.ok("Categoria de habilidad eliminada exitosamente");
-		} catch (SkillCategoryAlreadyCreatedException ex) {
+		} catch (ResourceAlreadyExistsException ex) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 		}
 	}

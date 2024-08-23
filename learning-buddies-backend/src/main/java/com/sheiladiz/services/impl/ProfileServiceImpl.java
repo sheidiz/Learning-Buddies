@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.dtos.ProfileDTO;
-import com.sheiladiz.exceptions.profile.ProfileAlreadyCreatedException;
-import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.Skill;
@@ -31,7 +31,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	public void isProfileExistsByUser(User user) {
 		if (profileRepository.existsByUser(user)) {
-			throw new ProfileAlreadyCreatedException("Perfil ya existe");
+			throw new ResourceAlreadyExistsException("Perfil ya existe");
 		}
 	}
 
@@ -47,16 +47,16 @@ public class ProfileServiceImpl implements ProfileService {
 
 	public Profile getProfileByUser(User user) {
 		return profileRepository.findByUser(user).orElseThrow(
-				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con email: " + user.getEmail()));
+				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con email: " + user.getEmail()));
 	}
 	public Profile getProfileByUserId(Long id) {
 		return profileRepository.findByUserId(id).orElseThrow(
-				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
+				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
 	}
 
 	public Profile getProfileById(Long id) {
 		return profileRepository.findById(id)
-				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
 	}
 
 	public List<Profile> listProfilesByJobPositionContaining(String job) {
@@ -65,7 +65,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	public Profile updateProfile(Long profileId, ProfileDTO profileDTO) {
 		Profile existingProfile = profileRepository.findById(profileId).orElseThrow(
-				() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + profileId));
+				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + profileId));
 
 		Optional.ofNullable(profileDTO.getName()).ifPresent(existingProfile::setName);
 		Optional.ofNullable(profileDTO.getProfilePicture()).ifPresent(existingProfile::setProfilePicture);
@@ -125,7 +125,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	public void deleteProfile(Long id) {
 		Profile profile = profileRepository.findById(id)
-				.orElseThrow(() -> new ProfileNotFoundException("Perfil no encontrado para usuario con id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
 		profileRepository.delete(profile);
 	}
 

@@ -1,10 +1,8 @@
 package com.sheiladiz.controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.sheiladiz.dtos.*;
-import com.sheiladiz.exceptions.user.InvalidUserCredentialsException;
+import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
 import com.sheiladiz.services.AuthenticationService;
@@ -17,93 +15,72 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-
-import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
 
 import jakarta.validation.Valid;
 
 @RequestMapping("/auth")
 @RestController
 public class AuthenticationController {
-	private final JwtService jwtService;
-	private final AuthenticationService authenticationService;
-	private final UserMapper userMapper;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
+    private final UserMapper userMapper;
 
-	public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, UserMapper userMapper) {
-		this.jwtService = jwtService;
-		this.authenticationService = authenticationService;
-		this.userMapper = userMapper;
-	}
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, UserMapper userMapper) {
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+        this.userMapper = userMapper;
+    }
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = UserDTO.class)) }),
-			@ApiResponse(responseCode = "400", description = "Missing data.",
-					content = @Content),
-			@ApiResponse(responseCode = "409", description = "Email already registered.",
-					content = @Content) })
-	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			List<String> errors = bindingResult.getAllErrors().stream()
-					.map(ObjectError::getDefaultMessage)
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = UserDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos enviados no cumplen los requisitos de la entidad.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "409", description = "Email ya se encuentra registrado.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+        User registeredUser = authenticationService.signUp(registerRequest);
+        return ResponseEntity.ok(userMapper.toDTO(registeredUser));
+    }
 
-		try {
-			User registeredUser = authenticationService.signUp(registerRequest);
-			return ResponseEntity.ok(userMapper.toDTO(registeredUser));
-		} catch (EmailAlreadyRegisteredException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-		}
-	}
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = LoginResponse.class))}),
+            @ApiResponse(responseCode = "400", description = "Datos enviados no cumplen los requisitos de la entidad.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Usuario y/o contraseña inválidos.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
+        User authenticatedUser = authenticationService.authenticate(loginRequest);
+        String jwtToken = jwtService.generateToken(authenticatedUser);
+        UserDTO userDTO = userMapper.toDTO(authenticatedUser);
 
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", content = { @Content(mediaType = "application/json",
-					schema = @Schema(implementation = LoginResponse.class)) }),
-			@ApiResponse(responseCode = "403", description = "Invalid credentials.",
-					content = @Content)})
-	@PostMapping("/login")
-	public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-		try {
-			User authenticatedUser = authenticationService.authenticate(loginRequest);
-			String jwtToken = jwtService.generateToken(authenticatedUser);
-			UserDTO userDTO = userMapper.toDTO(authenticatedUser);
+        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), userDTO);
+        return ResponseEntity.ok(loginResponse);
+    }
 
-			LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), userDTO);
-			return ResponseEntity.ok(loginResponse);
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-		}
-	}
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User authenticatedUser = (User) authentication.getPrincipal();
 
-	@PutMapping("/change-password")
-	public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, BindingResult bindingResult) {
+            authenticationService.changePassword(authenticatedUser, changePasswordRequest.getCurrentPassword(), changePasswordRequest.getNewPassword());
 
-		if (bindingResult.hasErrors()) {
-			List<String> errors = bindingResult.getAllErrors().stream()
-					.map(ObjectError::getDefaultMessage)
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
-
-		try {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			User authenticatedUser = (User) authentication.getPrincipal();
-
-			authenticationService.changePassword(authenticatedUser, changePasswordRequest.getCurrentPassword(), changePasswordRequest.getNewPassword());
-
-			return ResponseEntity.ok("Contraseña actualizada correctamente.");
-		} catch (InvalidUserCredentialsException ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-		} catch (Exception ex) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrio un error al actualizar la contraseña");
-		}
-	}
+            return ResponseEntity.ok("Contraseña actualizada correctamente.");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrio un error al actualizar la contraseña");
+        }
+    }
 
 }

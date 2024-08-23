@@ -2,15 +2,18 @@ package com.sheiladiz.services.impl;
 
 import com.sheiladiz.dtos.LoginRequest;
 import com.sheiladiz.dtos.RegisterRequest;
-import com.sheiladiz.exceptions.user.EmailAlreadyRegisteredException;
-import com.sheiladiz.exceptions.user.InvalidUserCredentialsException;
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
+import com.sheiladiz.exceptions.ResourceNotFoundException;
+import com.sheiladiz.exceptions.InvalidUserCredentialsException;
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
@@ -22,7 +25,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
-    public User signUp(RegisterRequest registerUserDto){
+
+    public User signUp(RegisterRequest registerUserDto) {
         User user = User.builder()
                 .email(registerUserDto.getEmail())
                 .authProvider(registerUserDto.getAuthProvider())
@@ -33,33 +37,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .credentialsNonExpired(true)
                 .build();
 
-        if(userRepository.findByEmail(registerUserDto.getEmail()).isPresent()){
-            throw new RuntimeException("Email ya se encuentra registrado");
+        if (userRepository.findByEmail(registerUserDto.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Email ya se encuentra registrado");
         }
 
-        try {
-            User savedUser = userRepository.save(user);
-            return savedUser;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return userRepository.save(user);
     }
 
-    public User authenticate(LoginRequest loginRequest){
-        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
+    public User authenticate(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        if(!user.isEnabled()){
-            throw new EmailAlreadyRegisteredException("Account is disabled, try to contact support.");
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+            return user;
+        } catch (BadCredentialsException ex) {
+            throw new InvalidUserCredentialsException("Usuario y/o contraseña invalidos.");
         }
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
-
-        return user;
     }
 
     @Override
