@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import com.sheiladiz.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheiladiz.dtos.UserDTO;
-import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.services.UserService;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(UserController.class)
-public class UserControllerTest {
+@WebMvcTest(AdminUserController.class)
+public class AdminUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -77,7 +77,7 @@ public class UserControllerTest {
 
 	@Test
     public void testGetUserById_ShouldReturnNotFoundWhenUserNotFound() throws Exception {
-        when(userService.getUserById(1L)).thenThrow(new UserNotFoundException("User not found"));
+        when(userService.getUserById(1L)).thenThrow(new ResourceNotFoundException("User not found"));
 
         mockMvc.perform(get("/api/v1/users/1"))
             .andExpect(status().isNotFound())

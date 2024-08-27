@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
 import com.sheiladiz.dtos.SkillDTO;
-import com.sheiladiz.mappers.SkillCategoryMapper;
-import com.sheiladiz.mappers.SkillMapper;
 import com.sheiladiz.models.Skill;
 import com.sheiladiz.models.SkillCategory;
 import com.sheiladiz.repositories.SkillCategoryRepository;
@@ -22,14 +20,10 @@ import com.sheiladiz.services.SkillService;
 public class SkillServiceImpl implements SkillService {
     private final SkillRepository skillRepository;
     private final SkillCategoryRepository categoryRepository;
-    private final SkillMapper skillMapper;
-    private final SkillCategoryMapper categoryMapper;
 
-    public SkillServiceImpl(SkillRepository skillRepository, SkillCategoryRepository categoryRepository, SkillMapper skillMapper, SkillCategoryMapper categoryMapper) {
+    public SkillServiceImpl(SkillRepository skillRepository, SkillCategoryRepository categoryRepository) {
         this.skillRepository = skillRepository;
         this.categoryRepository = categoryRepository;
-        this.skillMapper = skillMapper;
-        this.categoryMapper = categoryMapper;
     }
 
     public SkillCategory saveCategory(SkillCategoryDTO newCategory) {

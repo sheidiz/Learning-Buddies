@@ -71,14 +71,15 @@ public class DataInitializationConfig implements CommandLineRunner {
         }
         if(userRepository.count() == 0){
             List<User> users = List.of(
-                    new User("sheila1@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true),
-                    new User("sheila2@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true)
+                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true),
+                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true),
+                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true)
             );
             userRepository.saveAll(users);
 
             List<Profile> profiles = List.of(
-                    new Profile(users.get(0),"/src/assets/users/1.png", "#FF8A8A", "Sheila1", "Argentina", "Estudiante Front-end", "Soy Sheila 1", "/sheila1"),
-                    new Profile(users.get(1),"/src/assets/users/2.png","#3795BD", "Sheila2", "Argentina", "Estudiante Back-end", "Soy Sheila 2", "/sheila2")
+                    new Profile(users.get(0),"/src/assets/users/1.png", "#FF8A8A", "Juana Mendoza", "Argentina", "Estudiante Front-end", "Soy una estudiante de Frontend.", "/juana_m"),
+                    new Profile(users.get(1),"/src/assets/users/6.png","#3795BD", "Juan Suarez", "Argentina", "Estudiante Back-end", "Soy un estudiante de programación. Estoy estudiando en Edu123.", "/juan123")
             );
             profileRepository.saveAll(profiles);
         }
