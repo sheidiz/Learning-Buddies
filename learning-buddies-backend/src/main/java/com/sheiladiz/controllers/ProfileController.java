@@ -1,7 +1,5 @@
 package com.sheiladiz.controllers;
 
-import java.util.List;
-
 import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.exceptions.InvalidDataException;
 import com.sheiladiz.mappers.ProfileMapper;
@@ -12,9 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +28,7 @@ import com.sheiladiz.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/profiles")
+@RequestMapping("/api/profiles")
 public class ProfileController {
     private final ProfileService profileService;
     private final UserService userService;
@@ -48,36 +46,29 @@ public class ProfileController {
             @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "409", description = "El perfil para este usuario ya existe.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PostMapping("/{userId}")
-    public ResponseEntity<ProfileDTO> createProfile(@PathVariable("userId") Long userId, @Valid @RequestBody ProfileDTO profileDTO) {
-        User user = userService.getUserById(userId);
+    @PostMapping("/me")
+    public ResponseEntity<ProfileDTO> createMyProfile(Authentication authentication, @Valid @RequestBody ProfileDTO profileDTO) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
 
         Profile savedProfile = profileService.saveProfile(profileDTO, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(profileMapper.toDTO(savedProfile));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProfileDTO>> getAllProfiles() {
-        List<Profile> profiles = profileService.allProfiles();
-        return ResponseEntity.ok(profileMapper.profilesToProfileDTOs(profiles));
-    }
-
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Perfil con email {email} no encontrado",
+            @ApiResponse(responseCode = "404", description = "Perfil no encontrado",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @GetMapping("/{email}")
-    public ResponseEntity<ProfileDTO> getProfileByUserEmail(@PathVariable("email") String email) {
+    @GetMapping("/me")
+    public ResponseEntity<ProfileDTO> getMyProfile(Authentication authentication) {
+        String email = authentication.getName();
         User user = userService.getUserByEmail(email);
         Profile profile = profileService.getProfileByUser(user);
         return ResponseEntity.ok(profileMapper.toDTO(profile));
@@ -86,13 +77,14 @@ public class ProfileController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
+            @ApiResponse(responseCode = "404", description = "Perfil no encontrado",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("/{userId}")
-    public ResponseEntity<ProfileDTO> updateProfile(@PathVariable("userId") Long userId, @RequestBody ProfileDTO newProfileDTO) {
-        User user = userService.getUserById(userId);
+    @PutMapping("/me")
+    public ResponseEntity<ProfileDTO> updateProfile(Authentication authentication, @RequestBody ProfileDTO newProfileDTO) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
 
         Profile updatedProfile = profileService.updateProfile(user.getProfile().getId(), newProfileDTO);
         return ResponseEntity.ok(profileMapper.toDTO(updatedProfile));
@@ -106,14 +98,12 @@ public class ProfileController {
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Habilidad {habilidad} no encontrada",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
-                    content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("/addSkills/{userId}")
-    public ResponseEntity<ProfileDTO> addSkillsToProfile(@PathVariable("userId") Long userId, @RequestBody SkillsRequest request) {
-        User user = userService.getUserById(userId);
+    @PutMapping("/me/addSkills")
+    public ResponseEntity<ProfileDTO> addSkillsToProfile(Authentication authentication, @RequestBody SkillsRequest request) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
         Profile profileToUpdate = profileService.getProfileByUserId(user.getId());
 
         if (request.getSkillsLearned() == null && request.getSkillsToLearn() == null) {
@@ -139,14 +129,12 @@ public class ProfileController {
                             schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Habilidad {habilidad} no encontrada",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
-                    content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PutMapping("/updateSkills/{userId}")
-    public ResponseEntity<ProfileDTO> updateSkillsToProfile(@PathVariable("userId") Long userId, @RequestBody SkillsRequest request) {
-        User user = userService.getUserById(userId);
+    @PutMapping("/me/updateSkills")
+    public ResponseEntity<ProfileDTO> updateSkillsToProfile(Authentication authentication, @RequestBody SkillsRequest request) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
         Profile profileToUpdate = profileService.getProfileByUserId(user.getId());
 
         if (request.getSkillsLearned() == null && request.getSkillsToLearn() == null) {
@@ -167,16 +155,14 @@ public class ProfileController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Perfil eliminado exitosamente.",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Perfil no encontrado para usuario con id {id}",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Usuario con id {userId} no encontrado",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteProfileById(@PathVariable("userId") Long userId) {
-        User user = userService.getUserById(userId);
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteProfileById(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
         profileService.deleteProfile(user.getId());
         return ResponseEntity.ok("Perfil eliminado exitosamente.");
     }

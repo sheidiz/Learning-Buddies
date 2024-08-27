@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import com.sheiladiz.models.Profile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.dtos.SkillsRequest;
 import com.sheiladiz.dtos.UserDTO;
-import com.sheiladiz.exceptions.profile.ProfileNotFoundException;
-import com.sheiladiz.exceptions.user.UserNotFoundException;
 import com.sheiladiz.models.User;
 import com.sheiladiz.services.ProfileService;
 import com.sheiladiz.services.UserService;
@@ -91,7 +90,7 @@ public class ProfileControllerTest {
 
 	@Test
     public void testCreateProfile_ShouldReturnNotFoundWhenUserNotFound() throws Exception {
-        when(userService.getUserById(anyLong())).thenThrow(new UserNotFoundException("User not found"));
+        when(userService.getUserById(anyLong())).thenThrow(new ResourceNotFoundException("User not found"));
 
         mockMvc.perform(post("/api/v1/profiles/1")
                 .contentType("application/json")
@@ -111,7 +110,7 @@ public class ProfileControllerTest {
 
 	@Test
     public void testGetProfileById_ShouldReturnNotFoundWhenProfileNotFound() throws Exception {
-        when(profileService.getProfileById(anyLong())).thenThrow(new ProfileNotFoundException("Profile not found"));
+        when(profileService.getProfileById(anyLong())).thenThrow(new ResourceNotFoundException("Profile not found"));
 
         mockMvc.perform(get("/api/v1/profiles/1"))
                 .andExpect(status().isNotFound())

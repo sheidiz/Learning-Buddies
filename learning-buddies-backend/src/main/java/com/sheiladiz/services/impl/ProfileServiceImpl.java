@@ -57,6 +57,11 @@ public class ProfileServiceImpl implements ProfileService {
 				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
 	}
 
+	public Profile getProfileByUserEmail(String email) {
+		return profileRepository.findByUserEmail(email).orElseThrow(
+				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con email: " + email));
+	}
+
 	public Profile getProfileById(Long id) {
 		return profileRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));

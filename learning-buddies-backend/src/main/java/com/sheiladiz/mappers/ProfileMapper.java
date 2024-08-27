@@ -20,6 +20,27 @@ public class ProfileMapper {
 	private SkillService skillService;
 
 	public ProfileDTO toDTO(Profile profile) {
+		ProfileDTO profileDTO = toProtectedDTO(profile);
+
+		if (profile.getDiscordUrl() != null) {
+			profileDTO.setDiscordUrl(profile.getDiscordUrl());
+		}
+
+		if (profile.getGithubUrl() != null) {
+			profileDTO.setGithubUrl(profile.getGithubUrl());
+		}
+
+		if (profile.getLinkedinUrl() != null) {
+			profileDTO.setLinkedinUrl(profile.getLinkedinUrl());
+		}
+
+		if (profile.getContactEmail() != null) {
+			profileDTO.setContactEmail(profile.getContactEmail());
+		}
+
+		return profileDTO;
+	}
+	public ProfileDTO toProtectedDTO(Profile profile) {
 		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder()
 				.id(profile.getId())
 				.name(profile.getName())
@@ -44,22 +65,6 @@ public class ProfileMapper {
 
 		if (profile.getBio() != null) {
 			builder.bio(profile.getBio());
-		}
-
-		if (profile.getDiscordUrl() != null) {
-			builder.discordUrl(profile.getDiscordUrl());
-		}
-
-		if (profile.getGithubUrl() != null) {
-			builder.githubUrl(profile.getGithubUrl());
-		}
-
-		if (profile.getLinkedinUrl() != null) {
-			builder.linkedinUrl(profile.getLinkedinUrl());
-		}
-
-		if (profile.getContactEmail() != null) {
-			builder.contactEmail(profile.getContactEmail());
 		}
 
 		if (profile.getSkillsLearned() != null) {
@@ -137,6 +142,10 @@ public class ProfileMapper {
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {
 		return profiles.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	public List<ProfileDTO> profilesToProtectedProfileDTOs(List<Profile> profiles) {
+		return profiles.stream().map(this::toProtectedDTO).collect(Collectors.toList());
 	}
 
 }

@@ -12,6 +12,7 @@ public interface ProfileService {
 	List<Profile> allProfiles();
 	Profile getProfileByUser(User user);
 	Profile getProfileByUserId(Long id);
+	Profile getProfileByUserEmail(String email);
 	Profile getProfileById(Long id);
 	List<Profile> listProfilesByJobPositionContaining(String job);
 	Profile updateProfile(Long profileId, ProfileDTO profileDTO);

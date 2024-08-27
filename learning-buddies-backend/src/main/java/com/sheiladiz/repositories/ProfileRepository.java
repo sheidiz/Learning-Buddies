@@ -15,5 +15,6 @@ public interface ProfileRepository extends CrudRepository<Profile, Long> {
 	boolean existsByUser(User user);
 	Optional<Profile> findByUser(User user);
 	Optional<Profile> findByUserId(Long userId);
+	Optional<Profile> findByUserEmail(String email);
 	List<Profile> findByJobPositionContaining(String job);
 }
