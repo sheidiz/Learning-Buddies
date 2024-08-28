@@ -35,78 +35,84 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "profiles")
 public class Profile {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-	@NotEmpty(message = "Nombre requerido.")
-	private String name;
-	
-	private String profilePicture;
+    @NotEmpty(message = "Nombre requerido.")
+    private String name;
 
-	private String profilePictureBackground;
+    private String profilePicture;
 
-	private String gender;
+    private String profilePictureBackground;
 
-	private String pronouns;
+    private String gender;
 
-	private String country;
+    private String pronouns;
 
-	@Size(max = 100, message = "Posición de trabajo tiene un limite de 100 caracteres.")
-	private String jobPosition;
+    private String country;
 
-	@Size(max = 250, message = "Descripción tiene un limite de 250 caracteres.")
-	private String bio;
+    @Size(max = 100, message = "Posición de trabajo tiene un limite de 100 caracteres.")
+    private String jobPosition;
 
-	private String discordUrl;
-	private String githubUrl;
-	private String linkedinUrl;
-	private String contactEmail;
+    @Size(max = 250, message = "Descripción tiene un limite de 250 caracteres.")
+    private String bio;
 
-	@JsonManagedReference(value = "skills-learned-json")
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "profile_has_learnedskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-	private List<Skill> skillsLearned;
+    private String discordUrl;
+    private String githubUrl;
+    private String linkedinUrl;
+    private String contactEmail;
 
-	@JsonManagedReference(value = "skills-to-learn-json")
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-	private List<Skill> skillsToLearn;
+    @JsonManagedReference(value = "skills-learned-json")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "profile_has_learnedskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List<Skill> skillsLearned;
 
-	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "friend_profile_id"))
-	private List<Profile> friends;
+    @JsonManagedReference(value = "skills-to-learn-json")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List<Skill> skillsToLearn;
 
-	@Column(updatable = false)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createdAt;
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "friend_profile_id"))
+    private List<Profile> friends;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date updatedAt;
+    @Column(updatable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date createdAt;
 
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = new Date();
-	}
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date updatedAt;
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.updatedAt = new Date();
-	}
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
 
-	public Profile(User user, String profilePicture, String profilePictureBackground, String name, String country, String jobPosition, String bio, String githubUrl) {
-		this.user = user;
-		this.profilePicture = profilePicture;
-		this.profilePictureBackground = profilePictureBackground;
-		this.name = name;
-		this.country = country;
-		this.jobPosition = jobPosition;
-		this.bio = bio;
-		this.githubUrl = githubUrl;
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
+    public Profile(User user, String profilePicture, String profilePictureBackground, String name, String country, String jobPosition, String bio, String githubUrl) {
+        this.user = user;
+        this.profilePicture = profilePicture;
+        this.profilePictureBackground = profilePictureBackground;
+        this.name = name;
+        this.country = country;
+        this.jobPosition = jobPosition;
+        this.bio = bio;
+        this.githubUrl = githubUrl;
+    }
+
+    public Profile(Long id, User user, String name) {
+        this.id = id;
+        this.user = user;
+        this.name = name;
+    }
 }

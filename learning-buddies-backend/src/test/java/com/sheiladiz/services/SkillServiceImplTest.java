@@ -1,14 +1,15 @@
 package com.sheiladiz.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
+import com.sheiladiz.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
 import com.sheiladiz.dtos.SkillDTO;
-import com.sheiladiz.exceptions.skill.SkillAlreadyCreatedException;
-import com.sheiladiz.exceptions.skill.SkillCategoryAlreadyCreatedException;
-import com.sheiladiz.exceptions.skill.SkillCategoryNotFoundException;
-import com.sheiladiz.exceptions.skill.SkillNotFoundException;
-import com.sheiladiz.mappers.SkillCategoryMapper;
-import com.sheiladiz.mappers.SkillMapper;
 import com.sheiladiz.models.Skill;
 import com.sheiladiz.models.SkillCategory;
 import com.sheiladiz.repositories.SkillCategoryRepository;
@@ -33,217 +28,217 @@ import com.sheiladiz.services.impl.SkillServiceImpl;
 @ExtendWith(MockitoExtension.class)
 public class SkillServiceImplTest {
 
-	@Mock
-	private SkillRepository skillRepository;
+    @Mock
+    private SkillRepository skillRepository;
 
-	@Mock
-	private SkillCategoryRepository categoryRepository;
+    @Mock
+    private SkillCategoryRepository categoryRepository;
 
-	@Mock
-	private SkillMapper skillMapper;
+    @InjectMocks
+    private SkillServiceImpl skillService;
 
-	@Mock
-	private SkillCategoryMapper categoryMapper;
+    private SkillCategory category;
+    private SkillCategoryDTO categoryDTO;
+    private Skill skill;
+    private SkillDTO skillDTO;
 
-	@InjectMocks
-	private SkillServiceImpl skillService;
+    @BeforeEach
+    public void setup() {
+        category = SkillCategory.builder()
+                .id(1L)
+                .name("FrontEnd")
+                .build();
 
-	private Skill skill;
-	private SkillDTO skillDTO;
-	private SkillCategory category;
-	private SkillCategoryDTO categoryDTO;
+        categoryDTO = SkillCategoryDTO.builder()
+                .id(1L)
+                .name("FrontEnd")
+                .build();
 
-	@BeforeEach
-	public void setup() {
-		category = new SkillCategory();
-		category.setId(1L);
-		category.setName("FrontEnd");
+        skill = Skill.builder()
+                .id(1L)
+                .name("HTML")
+                .skillType("Desarrollo web")
+                .categories(List.of(category))
+                .build();
 
-		categoryDTO = new SkillCategoryDTO();
-		categoryDTO.setId(category.getId());
-		categoryDTO.setName(category.getName());
+        skillDTO = SkillDTO.builder()
+                .id(1L)
+                .name("HTML")
+                .skillType("Desarrollo web")
+                .categories(List.of("FrontEnd"))
+                .build();
+    }
 
-		skill = new Skill();
-		skill.setId(1L);
-		skill.setName("HTML");
-		skill.setSkillType("Desarrollo web");
-		skill.setCategories(List.of(category));
+    @Test
+    void shouldSaveCategory_whenCategoryIsValid() {
+        when(categoryRepository.findByName(categoryDTO.getName())).thenReturn(Optional.empty());
+        when(categoryRepository.save(any(SkillCategory.class))).thenReturn(category);
 
-		skillDTO = new SkillDTO();
-		skillDTO.setId(skill.getId());
-		skillDTO.setName(skill.getName());
-		skillDTO.setSkillType(skill.getSkillType());
-		skillDTO.setCategories(skillMapper.mapCategories(skill.getCategories()));
-	}
+        SkillCategory result = skillService.saveCategory(categoryDTO);
 
-	@Test
-	public void whenSaveExistingCategory_thenThrowException() {
-	    when(categoryRepository.findByName(category.getName())).thenReturn(Optional.of(category));
-	    
-	    assertThrows(SkillCategoryAlreadyCreatedException.class, () -> {
-	        skillService.saveCategory(categoryDTO);
-	    });
-	}
+        assertNotNull(result);
+        assertEquals(categoryDTO.getName(), result.getName());
+        verify(categoryRepository).findByName(categoryDTO.getName());
+        verify(categoryRepository).save(any(SkillCategory.class));
+    }
 
-	@Test
-	public void whenSaveCategory_thenReturnCategoryDTO() {
-		when(categoryRepository.findByName(categoryDTO.getName())).thenReturn(Optional.empty());
-		when(categoryRepository.save(any(SkillCategory.class))).thenReturn(category);
-		when(categoryMapper.toDTO(any(SkillCategory.class))).thenReturn(categoryDTO);
-		
-		SkillCategoryDTO result = skillService.saveCategory(categoryDTO);
-		
-		assertEquals(categoryDTO, result);
-		
-	}
+    @Test
+    void shouldThrowResourceAlreadyExistsException_whenCategoryNameAlreadyExists() {
+        when(categoryRepository.findByName(category.getName())).thenReturn(Optional.of(category));
 
-	@Test
-	public void whenGetCategoryById_thenReturnCategoryDTO() {
-		when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
-		when(categoryMapper.toDTO(category)).thenReturn(categoryDTO);
-		
-		SkillCategoryDTO result = skillService.getCategoryById(category.getId());
-		
-		assertEquals(categoryDTO, result);
-	}
+        assertThrows(ResourceAlreadyExistsException.class, () -> skillService.saveCategory(categoryDTO));
 
-	@Test
-	public void whenCategoryNotFoundById_thenThrowException() {
-		when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
-		
-		assertThrows(SkillCategoryNotFoundException.class, () -> {
-			skillService.getCategoryById(category.getId());
-		});
-	}
+        verify(categoryRepository, times(1)).findByName(category.getName());
+        verify(categoryRepository, never()).save(any(SkillCategory.class));
+    }
 
-	@Test
-	public void whenGetCategoryByName_thenReturnCategoryDTO() {
-		when(categoryRepository.findByName(category.getName())).thenReturn(Optional.of(category));
-		when(categoryMapper.toDTO(category)).thenReturn(categoryDTO);
-		
-		SkillCategoryDTO result = skillService.getCategoryByName(category.getName());
-		
-		assertEquals(categoryDTO, result);
-	}
+    @Test
+    public void shouldReturnCategoryById_whenCategoryIdIsValid() {
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
 
-	@Test
-	public void whenCategoryNotFoundByName_thenThrowException() {
-		when(categoryRepository.findByName(category.getName())).thenReturn(Optional.empty());
-		
-		assertThrows(SkillCategoryNotFoundException.class, () -> {
-			skillService.getCategoryByName(category.getName());
-		});
-	}
+        SkillCategory result = skillService.getCategoryById(category.getId());
 
-	@Test
-	public void whenUpdateCategory_thenReturnUpdatedCategoryDTO() {
-		SkillCategory existingCategory = new SkillCategory();
-		existingCategory.setId(1L);
-		existingCategory.setName("Fronten");
+        assertEquals(category, result);
+    }
 
-		SkillCategory updatedCategory = new SkillCategory();
-		updatedCategory.setId(1L);
-		updatedCategory.setName("Frontend");
+    @Test
+    public void shouldThrowResourceNotFoundException_whenCategoryIdIsInvalid() {
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
 
-		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(existingCategory));
-		when(categoryRepository.save(any(SkillCategory.class))).thenReturn(updatedCategory);
-		when(categoryMapper.toDTO(updatedCategory)).thenReturn(categoryDTO);
+        assertThrows(ResourceNotFoundException.class, () -> skillService.getCategoryById(category.getId()));
+    }
 
-		SkillCategoryDTO result = skillService.updateCategory(1L, categoryDTO);
+    @Test
+    public void shouldReturnCategoryByName_whenCategoryNameIsValid() {
+        when(categoryRepository.findByName(category.getName())).thenReturn(Optional.of(category));
 
-		assertEquals(categoryDTO, result);
-	}
+        SkillCategory result = skillService.getCategoryByName(category.getName());
 
-	@Test
-	public void whenDeleteCategory_thenVoid() {
-		when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
-		
-		skillService.deleteCategory(1L);
-	}
+        assertEquals(category, result);
+    }
 
-	@Test
-	public void whenSaveExistingSkill_thenThrowException() {
-	    when(skillRepository.findByName(skill.getName())).thenReturn(Optional.of(skill));
-	    
-	    assertThrows(SkillAlreadyCreatedException.class, () -> {
-	        skillService.saveSkill(skillDTO);
-	    });
-	}
+    @Test
+    public void shouldThrowResourceNotFoundException_whenCategoryNameIsInvalid() {
+        when(categoryRepository.findByName(category.getName())).thenReturn(Optional.empty());
 
-	@Test
-	public void whenSaveSkill_thenReturnSkillDTO() {
-		when(skillRepository.findByName(skillDTO.getName())).thenReturn(Optional.empty());
-		when(skillRepository.save(any(Skill.class))).thenReturn(skill);
-		when(skillMapper.toDTO(any(Skill.class))).thenReturn(skillDTO);
-		
-		SkillDTO result = skillService.saveSkill(skillDTO);
-		
-		assertEquals(skillDTO, result);
-		
-	}
+        assertThrows(ResourceNotFoundException.class, () -> skillService.getCategoryByName(category.getName()));
+    }
 
-	@Test
-	public void whenGetSkillById_thenReturnSkillDTO() {
-		when(skillRepository.findById(skill.getId())).thenReturn(Optional.of(skill));
-		when(skillMapper.toDTO(skill)).thenReturn(skillDTO);
-		
-		SkillDTO result = skillService.getSkillById(skill.getId());
-		
-		assertEquals(skillDTO, result);
-	}
+    @Test
+    public void shouldUpdateCategory_whenCategoryIsValid() {
+        SkillCategory existingCategory = new SkillCategory();
+        existingCategory.setId(1L);
+        existingCategory.setName("Fronten");
 
-	@Test
-	public void whenSkillNotFoundById_thenThrowException() {
-		when(skillRepository.findById(skill.getId())).thenReturn(Optional.empty());
-		
-		assertThrows(SkillNotFoundException.class, () -> {
-			skillService.getSkillById(skill.getId());
-		});
-	}
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(existingCategory));
+        when(categoryRepository.save(any(SkillCategory.class))).thenReturn(category);
 
-	@Test
-	public void whenGetSkillByName_thenReturnSkillDTO() {
-		when(skillRepository.findByName(skill.getName())).thenReturn(Optional.of(skill));
-		when(skillMapper.toDTO(skill)).thenReturn(skillDTO);
-		
-		SkillDTO result = skillService.getSkillByName(skill.getName());
-		
-		assertEquals(skillDTO, result);
-	}
+        SkillCategory result = skillService.updateCategory(1L, categoryDTO);
 
-	@Test
-	public void whenSkillNotFoundByName_thenThrowException() {
-		when(skillRepository.findByName(skill.getName())).thenReturn(Optional.empty());
-		
-		assertThrows(SkillNotFoundException.class, () -> {
-			skillService.getSkillByName(skill.getName());
-		});
-	}
+        assertEquals(category.getName(), result.getName());
+        verify(categoryRepository).save(any(SkillCategory.class));
+    }
 
-	@Test
-	public void whenUpdateSkill_thenReturnUpdatedSkillDTO() {
-		Skill existingSkill = new Skill();
-		existingSkill.setId(1L);
-		existingSkill.setName("Fronten");
-		existingSkill.setCategories(List.of(category));
+    @Test
+    public void shouldDeleteCategoryById_whenCategoryIdIsValid() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
 
-		Skill updatedSkill = new Skill();
-		updatedSkill.setId(1L);
-		updatedSkill.setName("Frontend");
+        skillService.deleteCategoryById(1L);
 
-		when(skillRepository.findById(anyLong())).thenReturn(Optional.of(existingSkill));
-		when(skillRepository.save(any(Skill.class))).thenReturn(updatedSkill);
-		when(skillMapper.toDTO(updatedSkill)).thenReturn(skillDTO);
+        verify(categoryRepository, times(1)).delete(category);
+    }
 
-		SkillDTO result = skillService.updateSkill(1L, skillDTO);
+    @Test
+    public void shouldThrowResourceAlreadyExistsException_whenSkillNameAlreadyExists() {
+        when(skillRepository.findByName(skill.getName())).thenReturn(Optional.of(skill));
 
-		assertEquals(skillDTO, result);
-	}
+        assertThrows(ResourceAlreadyExistsException.class, () -> skillService.saveSkill(skillDTO));
 
-	@Test
-	public void whenDeleteSkill_thenVoid() {
-		when(skillRepository.findById(anyLong())).thenReturn(Optional.of(skill));
-		
-		skillService.deleteSkill(1L);
-	}
+        verify(skillRepository).findByName(skill.getName());
+        verifyNoMoreInteractions(skillRepository, categoryRepository);
+    }
+
+    @Test
+    public void shouldSaveSkill_whenSkillIsValid() {
+        when(skillRepository.findByName(skillDTO.getName())).thenReturn(Optional.empty());
+        when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(category));
+        when(skillRepository.save(any(Skill.class))).thenReturn(skill);
+
+        Skill result = skillService.saveSkill(skillDTO);
+
+        assertEquals(skill.getName(), result.getName());
+        verify(skillRepository).save(any(Skill.class));
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundException_whenSavingSkillWithInvalidCategory() {
+        when(skillRepository.findByName(skillDTO.getName())).thenReturn(Optional.empty());
+        when(categoryRepository.findByName("FrontEnd")).thenReturn(Optional.of(category));
+        when(categoryRepository.findByName("BackEnd")).thenReturn(Optional.empty());
+
+        skillDTO.setCategories(List.of("FrontEnd", "BackEnd"));
+
+        assertThrows(ResourceNotFoundException.class, () -> skillService.saveSkill(skillDTO));
+
+        verify(skillRepository).findByName(skillDTO.getName());
+        verify(categoryRepository).findByName("FrontEnd");
+        verify(categoryRepository).findByName("BackEnd");
+        verify(skillRepository, never()).save(any(Skill.class));
+    }
+
+    @Test
+    public void shouldReturnSkillById_whenSkillIdIsValid() {
+        when(skillRepository.findById(skill.getId())).thenReturn(Optional.of(skill));
+
+        Skill result = skillService.getSkillById(skill.getId());
+
+        assertEquals(skill, result);
+    }
+
+    @Test
+    public void shouldThrowResourceNotFoundException_whenSkillIdIsInvalid() {
+        when(skillRepository.findById(skill.getId())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> skillService.getSkillById(skill.getId()));
+    }
+
+    @Test
+    public void shouldReturnSkillByName_whenSkillNameIsValid() {
+        when(skillRepository.findByName(skill.getName())).thenReturn(Optional.of(skill));
+
+        Skill result = skillService.getSkillByName(skill.getName());
+
+        assertEquals(skill, result);
+    }
+
+    @Test
+    public void shouldThrowResourceNotFoundException_whenSkillNameIsInvalid() {
+        when(skillRepository.findByName(skill.getName())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> skillService.getSkillByName(skill.getName()));
+    }
+
+    @Test
+    public void shouldUpdateSkill_whenSkillIsValid() {
+        Skill existingSkill = new Skill();
+        existingSkill.setId(1L);
+        existingSkill.setName("Fronten");
+
+        when(skillRepository.findById(anyLong())).thenReturn(Optional.of(existingSkill));
+        when(skillRepository.save(any(Skill.class))).thenReturn(skill);
+
+        Skill result = skillService.updateSkill(1L, skillDTO);
+
+        assertEquals(skill.getName(), result.getName());
+        verify(skillRepository).save(any(Skill.class));
+    }
+
+    @Test
+    public void shouldDeleteSkillById_whenSkillIdIsValid() {
+        when(skillRepository.findById(anyLong())).thenReturn(Optional.of(skill));
+
+        skillService.deleteSkillById(1L);
+
+        verify(skillRepository, times(1)).delete(skill);
+    }
 }

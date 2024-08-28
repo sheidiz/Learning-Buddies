@@ -73,6 +73,10 @@ public class Skill {
 		this.updatedAt = new Date();
 	}
 
+	public Skill(String name) {
+		this.name = name;
+	}
+
 	public Skill(String name, List<SkillCategory> categories) {
 		this.name = name;
 		this.categories = categories;
