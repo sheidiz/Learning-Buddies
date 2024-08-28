@@ -34,70 +34,77 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotEmpty(message = "Email requerido.")
-	@Email(message = "Email invalido.")
-	@Column(unique = true)
-	private String email;
+    @NotEmpty(message = "Email requerido.")
+    @Email(message = "Email invalido.")
+    @Column(unique = true)
+    private String email;
 
-	@NotEmpty(message = "Contraseña requerida.")
-	@Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
-	private String password;
+    @NotEmpty(message = "Contraseña requerida.")
+    @Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
+    private String password;
 
-	private String authProvider; // local or google
+    private String authProvider; // local or google
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Profile profile;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Profile profile;
 
-	@Column(updatable = false)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createdAt;
+    @Column(updatable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date createdAt;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date updatedAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date updatedAt;
 
-	private boolean enabled;
-	private boolean accountNonExpired;
-	private boolean accountNonLocked;
-	private boolean credentialsNonExpired;
+    private boolean enabled;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
 
-	public User(String email, String password, String authProvider) {
-		this.email = email;
-		this.password = password;
-		this.authProvider = authProvider;
-	}
+    public User(Long id, String email, String password, String authProvider) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+    }
 
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = new Date();
+    public User(String email, String password, String authProvider) {
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+    }
 
-	}
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.updatedAt = new Date();
-	}
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of();
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
 
-	@Override
-	public String getUsername() {
-		return this.email;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 
-	public User(String email, String password, String authProvider, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
-		this.email = email;
-		this.password = password;
-		this.authProvider = authProvider;
-		this.enabled = enabled;
-		this.accountNonExpired = accountNonExpired;
-		this.accountNonLocked = accountNonLocked;
-		this.credentialsNonExpired = credentialsNonExpired;
-	}
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    public User(String email, String password, String authProvider, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+        this.enabled = enabled;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
 }

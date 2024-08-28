@@ -33,4 +33,9 @@ public class ProfileDTO {
     private List<String> skillsLearned;
     private List<String> skillsToLearn;
     private List<Long> friendIds;
+
+    public ProfileDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

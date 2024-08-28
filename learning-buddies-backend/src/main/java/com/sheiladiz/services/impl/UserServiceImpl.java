@@ -4,23 +4,20 @@ import java.util.List;
 
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.dtos.UserDTO;
-import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserMapper userMapper;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<User> allUsers() {
         return userRepository.findAll();

@@ -1,7 +1,8 @@
 package com.sheiladiz.services.impl;
 
+import com.sheiladiz.exceptions.InvalidDataException;
+import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.models.Friendship;
@@ -10,63 +11,111 @@ import com.sheiladiz.models.Profile;
 import com.sheiladiz.repositories.FriendshipRepository;
 import com.sheiladiz.services.FriendshipService;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 public class FriendshipServiceImpl implements FriendshipService {
+    private final FriendshipRepository friendshipRepository;
 
-	@Autowired
-	private FriendshipRepository friendshipRepository;
+    private static final Map<FriendshipStatus, String> STATUS_MESSAGES = Map.of(
+            FriendshipStatus.PENDING, "Ya existe una solicitud pendiente de amistad.",
+            FriendshipStatus.ACCEPTED, "Ya son amigos.",
+            FriendshipStatus.REJECTED, "Ya se ha rechazado la solicitud de amistad."
+    );
 
-	public Friendship findFriendship(Profile profile, Profile friendProfile) {
-		return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile)
-				.orElseThrow(() -> new ResourceNotFoundException("No se encontro la solicitud de amistad"));
-	}
+    public FriendshipServiceImpl(FriendshipRepository friendshipRepository) {
+        this.friendshipRepository = friendshipRepository;
+    }
 
-	public boolean friendshipExists(Profile profile, Profile friendProfile) {
-		return friendshipRepository.existsByProfileAndFriendProfile(profile, friendProfile)
-				|| friendshipRepository.existsByProfileAndFriendProfile(friendProfile, profile);
-	}
+    private void validateDifferentProfiles(Profile profile, Profile friendProfile) {
+        if (profile.getId().equals(friendProfile.getId())) {
+            throw new InvalidDataException("Los IDs deben pertenecer a diferentes perfiles.");
+        }
+    }
 
-	public String sendFriendRequest(Profile profile, Profile friendProfile) {
-		if (friendshipExists(profile, friendProfile)) {
-			return "Ya existe una solicitud de amistad / ya son amigos";
-		}
+    public void sendFriendRequest(Profile profile, Profile friendProfile) {
+        validateDifferentProfiles(profile, friendProfile);
 
-		Friendship friendship = new Friendship(profile, friendProfile, FriendshipStatus.PENDING);
-		friendshipRepository.save(friendship);
+        Optional<Friendship> foundFriendship = friendshipRepository.findFriendshipBetweenProfiles(profile, friendProfile);
 
-		return "Solicitud de amistad enviada!";
+        if (foundFriendship.isPresent()) {
+            throw new ResourceAlreadyExistsException(STATUS_MESSAGES.get(foundFriendship.get().getStatus()));
+        }
+        Friendship friendship = new Friendship(profile, friendProfile, FriendshipStatus.PENDING);
+        friendshipRepository.save(friendship);
+    }
 
-	}
+    public Friendship findFriendshipBetween(Profile profile, Profile friendProfile) {
+        validateDifferentProfiles(profile, friendProfile);
 
-	public String acceptFriendRequest(Profile profile, Profile friendProfile) {
-		Friendship friendship = findFriendship(friendProfile, profile);
-		if (friendship.getStatus() == FriendshipStatus.PENDING) {
-			Friendship existingFriendship = friendship;
-			existingFriendship.setStatus(FriendshipStatus.ACCEPTED);
-			friendshipRepository.save(existingFriendship);
-			return "Solicitud de amistad aceptada.";
-		}
+        return friendshipRepository.findFriendshipBetweenProfiles(profile, friendProfile)
+                .orElseThrow(() -> new ResourceNotFoundException("Amistad/Solicitud de amistad no encontrada"));
+    }
 
-		return "No se encontró una solicitud de amistad pendiente.";
-	}
+    public Friendship findFriendship(Profile profile, Profile friendProfile) {
+        validateDifferentProfiles(profile, friendProfile);
 
-	public String rejectFriendRequest(Profile profile, Profile friendProfile) {
-		Friendship friendship = findFriendship(friendProfile, profile);
-		if (friendship.getStatus() == FriendshipStatus.PENDING) {
-			friendshipRepository.delete(friendship);
-			return "Solicitud de amistad rechazada y eliminada.";
-		}
+        return friendshipRepository.findByProfileAndFriendProfile(profile, friendProfile)
+                .orElseThrow(() -> new ResourceNotFoundException("Amistad/Solicitud de amistad no encontrada"));
+    }
 
-		return "No se encontró una solicitud de amistad pendiente.";
-	}
+    public List<Profile> getFriendsProfiles(Profile profile) {
+        List<Profile> friendsReceived = getProfilesFromFriendships(
+                friendshipRepository.findByFriendProfileAndStatus(profile, FriendshipStatus.ACCEPTED),
+                Friendship::getProfile
+        );
+        List<Profile> friendsSent = getProfilesFromFriendships(
+                friendshipRepository.findByProfileAndStatus(profile, FriendshipStatus.ACCEPTED),
+                Friendship::getFriendProfile
+        );
 
-	public String removeFriend(Profile profile, Profile friendProfile) {
-		Friendship friendship = findFriendship(friendProfile, profile);
-		if (friendship != null) {
-			friendshipRepository.delete(friendship);
-			return "Amistad eliminada.";
-		}
+        List<Profile> profiles = new ArrayList<>(friendsReceived);
+        profiles.addAll(friendsSent);
 
-		return "No se encontró una amistad existente.";
-	}
+        return profiles;
+    }
+
+    public List<Profile> getPendingFriendshipProfiles(Profile profile) {
+        return getProfilesFromFriendships(
+                friendshipRepository.findByProfileAndStatus(profile, FriendshipStatus.PENDING),
+                Friendship::getFriendProfile
+        );
+    }
+
+    public List<Profile> getPendingReceivedFriendshipProfiles(Profile friendProfile) {
+        return getProfilesFromFriendships(
+                friendshipRepository.findByFriendProfileAndStatus(friendProfile, FriendshipStatus.PENDING),
+                Friendship::getProfile
+        );
+    }
+
+    public Friendship acceptFriendRequest(Profile profile, Profile friendProfile) {
+        validateDifferentProfiles(profile, friendProfile);
+
+        Friendship friendship = findFriendship(friendProfile, profile);
+
+        switch (friendship.getStatus()) {
+            case PENDING, REJECTED -> {
+                friendship.setStatus(FriendshipStatus.ACCEPTED);
+                return friendshipRepository.save(friendship);
+            }
+            case ACCEPTED -> throw new ResourceAlreadyExistsException("Ya son amigos.");
+            default -> throw new InvalidDataException("Estado de amistad no reconocido.");
+        }
+    }
+
+    public void removeFriendship(Friendship friendship) {
+        friendshipRepository.delete(friendship);
+    }
+
+    private List<Profile> getProfilesFromFriendships(List<Friendship> friendships, Function<Friendship, Profile> profileMapper) {
+        return friendships.stream()
+                .map(profileMapper)
+                .collect(Collectors.toList());
+    }
 }

@@ -81,12 +81,7 @@ public class SkillServiceImpl implements SkillService {
             throw new ResourceAlreadyExistsException("Ya existe una habilidad con ese nombre");
         }
 
-        List<SkillCategory> categories = new ArrayList<>();
-        for (String name : newSkill.getCategories()) {
-            SkillCategory category = categoryRepository.findByName(name).orElseThrow(
-                    () -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
-            categories.add(category);
-        }
+        List<SkillCategory> categories = getCategoriesFromNames(newSkill);
         Skill skill = Skill.builder()
                 .id(newSkill.getId())
                 .skillType(newSkill.getSkillType())
@@ -97,6 +92,16 @@ public class SkillServiceImpl implements SkillService {
                 .build();
 
         return skillRepository.save(skill);
+    }
+
+    public List<SkillCategory> getCategoriesFromNames(SkillDTO newSkill) {
+        List<SkillCategory> categories = new ArrayList<>();
+        for (String name : newSkill.getCategories()) {
+            SkillCategory category = categoryRepository.findByName(name).orElseThrow(
+                    () -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
+            categories.add(category);
+        }
+        return categories;
     }
 
     public List<Skill> allSkills() {

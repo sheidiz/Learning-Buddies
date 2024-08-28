@@ -21,4 +21,5 @@ public interface SkillService {
 	Skill getSkillByName(String name);
 	Skill updateSkill(Long skillId, SkillDTO newSkillDTO);
 	void deleteSkillById(Long id);
+	List<SkillCategory> getCategoriesFromNames(SkillDTO newSkill);
 }

@@ -1,21 +1,20 @@
 package com.sheiladiz.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sheiladiz.models.FriendshipStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FriendshipDTO {
-	private Long id;
-	private ProfileDTO profile;
-	private ProfileDTO friendProfile;
-	private FriendshipStatus status;
+public class FriendshipsResponse {
+	private List<ProfileDTO> friendships;
+	private List<ProfileDTO> pendingRequests;
+	private List<ProfileDTO> receivedRequests;
 }
