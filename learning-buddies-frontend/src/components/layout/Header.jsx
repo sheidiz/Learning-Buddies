@@ -1,9 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MdAccountCircle, MdClose, MdMenu, MdMenuBook } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useUser } from "../../contexts/UserContext";
-import { loadFromLocalStorage, removeFromLocalStorage } from "../../utils/storageUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -11,22 +9,8 @@ function classNames(...classes) {
 
 export const Header = () => {
     const navigate = useNavigate();
-    const { user, setUser, profile, setProfile } = useUser();
-
-    useEffect(() => {
-        const storedUser = loadFromLocalStorage("user");
-        const storedProfile = loadFromLocalStorage("profile");
-        if (storedUser) setUser(storedUser);
-        if (storedProfile) setProfile(storedProfile);
-    }, [setUser, setProfile]);
-
-    const handleLogOut = () => {
-        removeFromLocalStorage("user");
-        removeFromLocalStorage("profile");
-        setUser(null);
-        setProfile(null);
-        navigate("/iniciar-sesion");
-    }
+    const { logout } = useAuth();
+    const user = localStorage.getItem("user") || null;
 
     const navigation = [
         { name: 'Inicio', href: '/', current: true, type: 'none' },
@@ -37,6 +21,11 @@ export const Header = () => {
         if (user) return true;
         return nav.type === 'none';
     });
+
+    const handleLogOut = async () => {
+        await logout();
+        navigate('/');
+    };
 
     return (
         <Disclosure as="nav" className="bg-light dark:bg-dark">
@@ -99,7 +88,7 @@ export const Header = () => {
                                             <>
                                                 <MenuItem>
                                                     {({ focus }) => (
-                                                        profile == null ?
+                                                        user.profile == null ?
                                                             <a href="/creacion-perfil" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}> Crear Perfil </a>
                                                             : <a href="/mi-perfil" className={classNames(focus ? 'bg-gray-100' : '', 'block px-4 py-2 text-md text-gray-700')}> Tu Perfil </a>
                                                     )}
@@ -156,7 +145,7 @@ export const Header = () => {
                                 user != null ?
                                     (
                                         <>
-                                            {profile == null ?
+                                            {user.profile == null ?
                                                 <a href="/creacion-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Crear Perfil</a>
                                                 : <a href="/mi-perfil" className="mt-2 border-t border-light-green block px-3 py-2 text-base font-medium text-light-green">Mi Perfil</a>
                                             }
@@ -171,7 +160,6 @@ export const Header = () => {
                                         </>
                                     )
                             }
-
                         </div>
                     </DisclosurePanel>
                 </>

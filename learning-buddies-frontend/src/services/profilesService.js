@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://localhost:8080/api';
 
-export const getProfile = async (email) => {
+export const getProfile = async () => {
 
     try {
-        const response = await axios.get(`${API_URL}/api/v1/profiles/${email}`);
+        const response = await axios.get(`${API_URL}/profiles/me`);
         return response.data;
     } catch (error) {
         if (error.response) {
@@ -16,9 +16,13 @@ export const getProfile = async (email) => {
     }
 };
 
-export const createProfile = async (id, profileData) => {
+export const saveProfile = async (profileData, token) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/profiles/${id}`, profileData);
+        const response = await axios.post(`${API_URL}/profiles/me`, profileData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data;
     } catch (error) {
         if (error.response) {
@@ -27,4 +31,8 @@ export const createProfile = async (id, profileData) => {
             throw new Error("Ocurrio un error al crear el perfil.");
         }
     }
+};
+
+export default {
+    saveProfile,
 };

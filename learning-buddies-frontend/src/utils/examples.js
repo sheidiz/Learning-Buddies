@@ -22,8 +22,14 @@ export const choosenFilters = {
 export const skills = ["HTML", "CSS", "JavaScript", "SQL", "C / C++", ".NET", "Java", "Spring", "Python", "NodeJs", "NextJs"];
 
 export const images = [
-    "/src/assets/users/2.png",
-    "/src/assets/users/4.png",
     "/src/assets/users/1.png",
-    "/src/assets/users/3.png"
+    "/src/assets/users/2.png",
+    "/src/assets/users/3.png",
+    "/src/assets/users/4.png",
+    "/src/assets/users/5.png",
+    "/src/assets/users/6.png",
+    "/src/assets/users/7.png",
+    "/src/assets/users/8.png",
+    "/src/assets/users/9.png",
+    "/src/assets/users/10.png",
 ];

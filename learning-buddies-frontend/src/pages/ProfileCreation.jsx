@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
-import { useUser } from "../contexts/UserContext";
-import { createProfile } from "../services/profilesService";
+import { useCallback, useEffect, useState } from "react";
+import profilesService from "../services/profilesService";
 import ImageSelector from "../components/user/ImageSelector";
 import { TextInput } from "../components/user/TextInput";
 import { TextareaInput } from "../components/user/TextareaInput";
-import { getSkills } from "../services/skillsService";
+import skillsService from "../services/skillsService";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../contexts/AuthContext";
 
 export default function ProfileCreation() {
-    const navigate = useNavigate();
-    const [errorMessage, setErrorMessage] = useState(null);
-    const [skills, setSkills] = useState([]);
-    const { user, profile, setProfile } = useUser();
-    const [formData, setFormData] = useState({
+    const [profileData, setProfileData] = useState({
         name: '',
         profilePicture: '/src/assets/users/2.png',
+        profilePictureBackground: '',
         gender: '',
         pronouns: '',
         country: '',
@@ -28,49 +24,54 @@ export default function ProfileCreation() {
         skillsLearned: [],
         skillsToLearn: []
     });
+    const [skills, setSkills] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState('/src/assets/users/2.png');
-    const [skillsLearned, setSkillsLearned] = useState(formData.skillsLearned || []);
-    const [skillsToLearn, setSkillsToLearn] = useState(formData.skillsToLearn || []);
+    const [bgColor, setBgColor] = useState("#f2f2f2");
+    const [errorMessage, setErrorMessage] = useState(null);
+    const { token, updateProfile } = useAuth();
+    const navigate = useNavigate();
 
-    const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
+    const handleInputChange = useCallback((e) => {
+        setProfileData(prevData => ({
+            ...prevData,
             [e.target.name]: e.target.value
-        });
-    };
+        }));
+    }, []);
 
-    const handleImageSelect = (image) => {
+    const handleImageSelect = useCallback((image) => {
         setSelectedImage(image);
-    };
+    }, []);
 
-    const handleSkillToggle = (skill, isLearned) => {
+    const handleSkillToggle = useCallback((skill, isLearned) => {
         if (isLearned) {
-            setSkillsLearned(prev => {
-                if (prev.includes(skill)) {
-                    return prev.filter(s => s !== skill);
-                } else {
-                    return [...prev, skill];
-                }
-            });
+            setProfileData(prev => ({
+                ...prev,
+                skillsLearned: prev.skillsLearned.includes(skill) 
+                    ? prev.skillsLearned.filter(s => s !== skill)
+                    : [...prev.skillsLearned, skill]
+            }));
         } else {
-            setSkillsToLearn(prev => {
-                if (prev.includes(skill)) {
-                    return prev.filter(s => s !== skill);
-                } else {
-                    return [...prev, skill];
-                }
-            });
+            setProfileData(prev => ({
+                ...prev,
+                skillsToLearn: prev.skillsToLearn.includes(skill)
+                    ? prev.skillsToLearn.filter(s => s !== skill)
+                    : [...prev.skillsToLearn, skill]
+            }));
         }
-    };
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        formData.profilePicture = selectedImage;
-        formData.skillsLearned = skillsLearned;
-        formData.skillsToLearn = skillsToLearn;
-        console.log('FormData:', formData);
+        const updatedProfileData = {
+            ...profileData,
+            profilePicture: selectedImage,
+            profilePictureBackground: bgColor
+        };
+        console.log('FormData:', updatedProfileData);
         try {
-            const savedProfile = await createProfile(user.id, formData);
-            setProfile(savedProfile);
+            const savedProfile = await profilesService.saveProfile(updatedProfileData, token);
+            updateProfile(savedProfile);
             navigate("/mi-perfil");
         } catch (error) {
             setErrorMessage(error.message);
@@ -83,15 +84,21 @@ export default function ProfileCreation() {
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const skillsData = await getSkills();
+                const skillsData = await skillsService.getSkills();
                 setSkills(skillsData);
             } catch (error) {
                 console.error('Error fetching skills:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchSkills();
-    }, [profile]);
+    }, [isLoading]);
+
+    if(isLoading){
+        return(<p>Cargando habilidades...</p>)
+    }
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
@@ -100,7 +107,8 @@ export default function ProfileCreation() {
                     <h1 className="mb-2 font-bold text-2xl">Crea tu perfil</h1>
                     <div className="grid grid-cols-3 gap-4">
                         <div className="col-span-3 mb-3 flex justify-center items-center">
-                            <ImageSelector onImageSelect={handleImageSelect} />
+                            <ImageSelector onImageSelect={handleImageSelect} bgColor={bgColor} />
+                            <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
                         </div>
                         <TextInput label="Nombre Completo" inputName="name" inputPlaceholder="María Lopez" className="col-span-2" required={true} onChangeAction={handleInputChange} />
                         <TextInput label="País" inputName="country" inputPlaceholder="Argentina" className="col-span-1" required={true} onChangeAction={handleInputChange} />
@@ -122,7 +130,7 @@ export default function ProfileCreation() {
                     <div className="pb-3 flex flex-wrap gap-2 md:gap-3 text-white text-sm md:text-base">
                         {skills.map((item, index) => (
                             <button key={index} type="button" onClick={() => handleSkillToggle(item.name, true)}
-                                className={`md:text-sm lg:text-base px-2 py-1 md:py-2 bg-light-green dark:bg-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom ${skillsLearned.includes(item.name) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
+                                className={`md:text-sm lg:text-base px-2 py-1 md:py-2 bg-light-green dark:bg-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom ${profileData.skillsLearned.includes(item.name) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
                                 {item.name}
                             </button>
                         ))}
@@ -131,7 +139,7 @@ export default function ProfileCreation() {
                     <div className="flex flex-wrap gap-2 md:gap-3 text-dark text-sm md:text-base">
                         {skills.map((item, index) => (
                             <button key={index} type="button" onClick={() => handleSkillToggle(item.name, false)}
-                                className={`md:text-sm lg:text-base px-2 py-1 border-2 bg-light border-light-green dark:border-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom ${skillsToLearn.includes(item.name) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
+                                className={`md:text-sm lg:text-base px-2 py-1 border-2 bg-light border-light-green dark:border-dm-light-green rounded-md shadow-lg hover:shadow-inner-custom ${profileData.skillsToLearn.includes(item.name) && "py-1 font-bold border-2 border-medium-green dark:border-dm-medium-green"}`}>
                                 {item.name}
                             </button>
                         ))}

@@ -1,6 +1,6 @@
 export const TextLabel = ({ label, inputPlaceholder, className }) => {
 
-    if (inputPlaceholder.trim().length == 0) inputPlaceholder = "-";
+    if (inputPlaceholder == null || inputPlaceholder.trim().length == 0) inputPlaceholder = "-";
 
     return (
         <div className={`${className} w-full`}>

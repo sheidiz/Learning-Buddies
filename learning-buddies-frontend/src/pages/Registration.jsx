@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdEmail, MdLock } from "react-icons/md";
-import { normalizeError } from "../utils/functions";
-import { registerUser } from "../services/authService";
+import authService from "../services/authService";
 import HeroImg from "../assets/images/users.png";
 
 export default function Registration() {
@@ -35,7 +34,7 @@ export default function Registration() {
         };
 
         try {
-            const savedUser = await registerUser(user);
+            const savedUser = await authService.register(user);
             if (savedUser) navigate('/iniciar-sesion');
             setErrorMessage(null)
         } catch (error) {
@@ -76,7 +75,7 @@ export default function Registration() {
                         <div className='w-2 border-l-2 border-l-dark-grey dark:border-l-light'></div>
                         <input type="password" name="passwordConfirmation" id="passwordConfirmation" onChange={handleInputChange} placeholder="********" className="px-1 w-full bg-transparent active:outline-light-green/50 focus-visible:outline-light-green/50" />
                     </div>
-                    <input type="submit" value="Registrarme" className="w-full py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-bold text-white hover:scale-105" />
+                    <input type="submit" value="Registrarme" className="cursor-pointer w-full py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-bold text-white hover:scale-105" />
                 </form>
                 {errorMessage &&
                     <p className="mt-3 px-6 py-1 text-red-600 font-bold text-sm dark:bg-light rounded-lg">{errorMessage}</p>

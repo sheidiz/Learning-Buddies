@@ -1,46 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { profiles } from '../utils/sampleData'
-import { TextLabel } from '../components/user/TextLabel';
+import React, { useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext';
 import { BiTrash } from 'react-icons/bi';
 import { MdCancel, MdCheck } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
-import { getProfile } from '../services/profilesService';
-import { loadFromLocalStorage } from '../utils/storageUtils';
+import { TextLabel } from '../components/user/TextLabel';
+import { profiles } from '../utils/sampleData' //provisory for showing fake friend requests
 
 export default function Profile() {
-    const [profile, setProfile] = useState(null);
-    const { user } = useUser();
-    const navigate = useNavigate();
+    const { user } = useAuth();
 
-    useEffect(() => {
-        const loadProfile = async () => {
-            try {
-                const storedUser = loadFromLocalStorage("user");
-                const data = await getProfile(storedUser.email);
-                setProfile(data);
-                localStorage.setItem('profile', JSON.stringify(data));
-            } catch (error) {
-                navigate("/creacion-perfil")
-            }
-        };
-
-        loadProfile();
-    }, [user, profile, navigate]);
-
-    //MODIFY WITH LOADER
-    if (!profile) {
-        return <div>Cargando...</div>;
+    if (!user || !user.profile) {
+        return <p>Loading...</p>; //loading
     }
 
-    const { name, profilePicture, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
+    const { name, profilePicture,profilePictureBackground, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = user.profile;
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
             <section className="md:w-2/3 lg:w-1/2 px-3 md:p-6 lg:px-10 lg:max-w-5xl lg:mx-auto md:bg-white md:dark:bg-dm-dark-green md:rounded-md">
                 <div className="mb-2 flex flex-col justify-center items-center">
                     <div className="rounded-full overflow-hidden">
-                        <img src={profilePicture} alt="Avatar" className="h-28 md:h-32 rounded-full bg-zinc-400 dark:bg-zinc-700" />
+                        <img src={profilePicture} alt="Avatar" className="h-28 md:h-32 rounded-full" style={{ backgroundColor: profilePictureBackground }} />
                     </div>
                     <h1 className='font-bold text-2xl'>{name}</h1>
                     <h3>{jobPosition} | {gender} </h3>

@@ -1,46 +1,27 @@
-import { useState } from "react";
-import { MdEmail, MdLock } from "react-icons/md";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
 import HeroImg from "../assets/images/users.png";
-import { normalizeError } from "../utils/functions";
-import { loadFromLocalStorage, saveToLocalStorage } from "../utils/storageUtils";
-import { useUser } from "../contexts/UserContext";
-import { getProfile } from "../services/profilesService";
+import { MdEmail, MdLock } from "react-icons/md";
+import authService from "../services/authService";
+import AuthContext from "../contexts/AuthContext";
 
 export default function Login() {
-    const { setUser, setProfile } = useUser();
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
+    const { login } = useContext(AuthContext);
     const navigate = useNavigate();
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
 
     const handleLogIn = async (e) => {
         e.preventDefault();
-
         try {
-            const user = await loginUser(formData);
-            setUser(user);
-            localStorage.setItem('user', JSON.stringify(user));
-
-            try {
-                const profile = await getProfile(user.email);
-                setProfile(profile);
-                if (profile) {
-                    localStorage.setItem('profile', JSON.stringify(profile));
-                    navigate('/mi-perfil');
-                } else {
-                    navigate('/creacion-perfil');
-                }
-            } catch (err) {
-                console.error("Error al obtener el perfil:", err);
+            const { token, user } = await authService.login(email, password);
+            login(token, user);
+            if (user.profile) {
+                navigate('/mi-perfil');
+            } else {
                 navigate('/creacion-perfil');
             }
-            setErrorMessage(null)
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -61,15 +42,15 @@ export default function Login() {
                     <div className="md:w-96 mb-5 pt-1 pb-2 border-b-2 border-b-dark-grey dark:border-b-light flex gap-2">
                         <MdEmail className="text-2xl" />
                         <div className='w-2 border-l-2 border-l-dark-grey dark:border-l-light'></div>
-                        <input type="email" name="email" id="email" placeholder="juan@email.com" onChange={handleInputChange} className="px-1 w-full bg-transparent active:outline-light-green/50 focus-visible:outline-light-green/50" />
+                        <input type="email" name="email" id="email" placeholder="juan@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="px-1 w-full bg-transparent active:outline-light-green/50 focus-visible:outline-light-green/50" />
                     </div>
                     <label htmlFor="password" className="font-semibold">Contraseña</label>
                     <div className="md:w-96 mb-5 pt-1 pb-2 border-b-2 border-b-dark-grey dark:border-b-light flex gap-2">
                         <MdLock className="text-2xl" />
                         <div className='w-2 border-l-2 border-l-dark-grey dark:border-l-light'></div>
-                        <input type="password" name="password" id="password" placeholder="********" onChange={handleInputChange} className="px-1 w-full bg-transparent active:outline-light-green/50 focus-visible:outline-light-green/50" />
+                        <input type="password" name="password" id="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} className="px-1 w-full bg-transparent active:outline-light-green/50 focus-visible:outline-light-green/50" />
                     </div>
-                    <input type="submit" value="Iniciar sesión" className="w-full py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-bold text-white hover:scale-105" />
+                    <input type="submit" value="Iniciar sesión" className="cursor-pointer w-full py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-bold text-white hover:scale-105" />
                 </form>
                 {errorMessage &&
                     <p className="mt-3 px-6 py-1 text-red-600 font-bold text-sm dark:bg-light rounded-lg">{errorMessage}</p>
