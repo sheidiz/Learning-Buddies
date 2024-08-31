@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { images } from "../../utils/examples";
 
-const ImageSelector = ({ onImageSelect, bgColor }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const ImageSelector = ({ currentIndex, onImageSelect, bgColor }) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(currentIndex - 1);
 
     const handlePrevClick = () => {
         setCurrentImageIndex((prevIndex) => prevIndex === 0 ? images.length - 1 : prevIndex - 1);

@@ -1,11 +1,14 @@
-//import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export function AuthGuard() {
-    //mirar algo(redux) y si no la cumple navega a la home
-    //const loginSlice = useSelector(store => store.users);
-    // return loginSlice.email ? <Outlet/> : <Navigate replace to={'/'}/>
-    return <Outlet />;
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+    console.log(user);
+    return user != null && user.email ? <Outlet /> : <Navigate replace to={'/'} />
 }
 
 export default AuthGuard;

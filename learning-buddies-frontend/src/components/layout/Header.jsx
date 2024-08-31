@@ -9,8 +9,7 @@ function classNames(...classes) {
 
 export const Header = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
-    const user = localStorage.getItem("user") || null;
+    const { user, logout } = useAuth();
 
     const navigation = [
         { name: 'Inicio', href: '/', current: true, type: 'none' },

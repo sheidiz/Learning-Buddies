@@ -1,9 +1,12 @@
 import HomeImg from "../assets/images/home.png";
 import { SkillsSlider } from "../components/home/SkillsSlider";
 import { UserCardExample } from "../components/user/UserCardExample";
+import { useAuth } from "../contexts/AuthContext";
 import { users } from "../utils/examples";
 
 export default function Home() {
+    const { user } = useAuth();
+
     return (
         <main className="my-2 px-1 md:px-0 font-raleway">
             <section className="my-5 py-2 md:py-6 lg:mx-auto px-3 lg:px-5 lg:max-w-6xl flex items-center">
@@ -17,12 +20,22 @@ export default function Home() {
                         Learning Buddies es la plataforma que conecta a entusiastas y profesionales de IT, ofreciéndote la oportunidad de unirte a compañeros apasionados que comparten tus intereses y metas.
                     </p>
                     <div className="my-5 flex justify-center md:justify-start gap-4">
-                        <a href="/signup" className="py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-semibold text-light hover:scale-105">
-                            Registrarme
-                        </a>
-                        <a href="/login" className="py-1 px-6 rounded-3xl text-decoration-none border-2 border-light-brown font-semibold text-light-brown dark:text-light hover:scale-105">
-                            Iniciar sesión
-                        </a>
+                        {
+                            user == null ?
+                                <>
+                                    <a href="/registro" className="py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-semibold text-light hover:scale-105">
+                                        Registrarme
+                                    </a>
+                                    <a href="/iniciar-sesion" className="py-1 px-6 rounded-3xl text-decoration-none border-2 border-light-brown font-semibold text-light-brown dark:text-light hover:scale-105">
+                                        Iniciar sesión
+                                    </a>
+                                </>
+                                : <a href="/buddies" className="py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-light-brown font-semibold text-light hover:scale-105">
+                                    Encontrar compañeros
+                                </a>
+                        }
+
+
                     </div>
                 </div>
                 <div className="hidden md:block">

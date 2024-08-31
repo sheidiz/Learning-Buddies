@@ -1,18 +1,36 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext';
 import { BiTrash } from 'react-icons/bi';
 import { MdCancel, MdCheck } from 'react-icons/md';
 import { TextLabel } from '../components/user/TextLabel';
 import { profiles } from '../utils/sampleData' //provisory for showing fake friend requests
+import profilesService from '../services/profilesService';
 
 export default function Profile() {
-    const { user } = useAuth();
+    const { token } = useAuth();
+    const [profile, setProfile] = useState();
+    const [isLoading, setIsLoading] = useState(true);
 
-    if (!user || !user.profile) {
-        return <p>Loading...</p>; //loading
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const profileData = await profilesService.getProfile(token);
+                setProfile(profileData);
+            } catch (error) {
+                console.error('Error fetching skills:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    if (isLoading) {
+        return (<p>Cargando habilidades...</p>)
     }
 
-    const { name, profilePicture,profilePictureBackground, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = user.profile;
+    const { name, profilePicture,profilePictureBackground, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
@@ -53,7 +71,7 @@ export default function Profile() {
                         </p>
                     ))}
                 </div>
-                <a href="/editar-perfil" className="block w-fit mt-5 mx-auto py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-dark-green dark:bg-dm-medium-green md:dark:bg-dark font-bold text-white md:hover:scale-105">Editar perfil</a>
+                <a href="/edicion-perfil" className="block w-fit mt-5 mx-auto py-1 px-6 rounded-3xl text-decoration-none border-2 border-transparent bg-dark-green dark:bg-dm-medium-green md:dark:bg-dark font-bold text-white md:hover:scale-105">Editar perfil</a>
             </section>
             <section className="md:w-1/3 lg:w-1/2 mt-10 md:mt-0 md:h-fit px-3 md:p-6 lg:px-10 lg:max-w-5xl lg:mx-auto md:bg-white md:dark:bg-dm-dark-green md:rounded-md">
                 <h2 className='font-bold text-2xl'>Tus conexiones</h2>
