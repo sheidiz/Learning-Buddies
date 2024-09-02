@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext';
-import { BiTrash } from 'react-icons/bi';
-import { MdCancel, MdCheck } from 'react-icons/md';
 import { TextLabel } from '../components/user/TextLabel';
-import { profiles } from '../utils/sampleData' //provisory for showing fake friend requests
 import profilesService from '../services/profilesService';
+import friendshipService from '../services/friendshipService';
+import { FriendCard } from '../components/buddies/FriendCard';
+import { FriendRequest } from '../components/buddies/FriendRequest';
 
 export default function Profile() {
     const { token } = useAuth();
     const [profile, setProfile] = useState();
+    const [friends, setFriends] = useState();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const profileData = await profilesService.getProfile(token);
+                const [profileData, friendshipsData] = await Promise.all([
+                    profilesService.getProfile(token),
+                    friendshipService.getFriendships(token)
+                ]);
                 setProfile(profileData);
+                setFriends(friendshipsData);
             } catch (error) {
-                console.error('Error fetching skills:', error);
+                console.error('Error fetching data:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -27,10 +32,11 @@ export default function Profile() {
     }, []);
 
     if (isLoading) {
-        return (<p>Cargando habilidades...</p>)
+        return (<p>Cargando...</p>)
     }
 
-    const { name, profilePicture,profilePictureBackground, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
+    const { name, profilePicture, profilePictureBackground, gender, jobPosition, country, bio, skillsLearned, skillsToLearn, discordUrl, githubUrl, linkedinUrl, contactEmail } = profile;
+    const { friendships, pendingRequests, receivedRequests } = friends;
 
     return (
         <main className="w-full md:max-w-7xl mb-5 md:mx-auto px-2 pt-2 font-raleway text-dark dark:text-light md:flex md:gap-x-4">
@@ -39,7 +45,7 @@ export default function Profile() {
                     <div className="rounded-full overflow-hidden">
                         <img src={profilePicture} alt="Avatar" className="h-28 md:h-32 rounded-full" style={{ backgroundColor: profilePictureBackground }} />
                     </div>
-                    <h1 className='font-bold text-2xl'>{name}</h1>
+                    <h1 className='mt-1 font-bold text-2xl'>{name}</h1>
                     <h3>{jobPosition} | {gender} </h3>
                 </div>
                 <h4 className='mb-1 text-lg font-semibold'>Biografía</h4>
@@ -76,37 +82,25 @@ export default function Profile() {
             <section className="md:w-1/3 lg:w-1/2 mt-10 md:mt-0 md:h-fit px-3 md:p-6 lg:px-10 lg:max-w-5xl lg:mx-auto md:bg-white md:dark:bg-dm-dark-green md:rounded-md">
                 <h2 className='font-bold text-2xl'>Tus conexiones</h2>
                 <div className='my-4 flex flex-col gap-4'>
-                    {profiles && profiles.map((profile, index) => (
-                        <div key={index} className='flex gap-4'>
-                            <div className="rounded-full overflow-hidden">
-                                <img src={profile.profilePic} alt="Avatar" className="h-24 rounded-full bg-zinc-400 dark:bg-zinc-700" />
-                            </div>
-                            <div className='flex flex-col justify-evenly'>
-                                <p className='text-lg font-semibold'>{profile.name}</p>
-                                <p className='mb-1 font-semibold'>{profile.jobPosition}</p>
-                                <a href={`/perfil/${profile.id}`} className="block w-fit py-1 px-10 rounded-3xl text-decoration-none border-2 border-transparent bg-dark-green dark:bg-dm-medium-green md:dark:bg-dm-light-green/40 text-sm font-semibold text-white md:hover:scale-105 select-none">Ver info</a>
-                            </div>
-                        </div>
-                    ))}
+                    {friendships.length > 0 ? friendships.map((profile, index) => (
+                        <FriendCard key={index} profile={profile} />
+                    ))
+                        : <p>Sin amistades.</p>
+                    }
                 </div>
                 <h2 className='pt-2 font-bold text-2xl'>Tus solicitudes pendientes</h2>
                 <div className='my-4 flex flex-col gap-4'>
-                    {profiles && profiles.map((profile, index) => (
-                        <div key={index} className='flex gap-4'>
-                            <div className="rounded-full overflow-hidden">
-                                <img src={profile.profilePic} alt="Avatar" className="h-24 rounded-full bg-zinc-400 dark:bg-zinc-700" />
-                            </div>
-                            <div className='flex flex-col justify-evenly'>
-                                <p className='text-lg font-semibold'>{profile.name}</p>
-                                <p className='mb-1 font-semibold'>{profile.jobPosition}</p>
-                                <div className='flex gap-2'>
-                                    <a href="/solicitud/id/borrar" className="block w-fit py-1 px-4 rounded-3xl text-decoration-none border-2 border-transparent bg-red-800 text-sm md:text-base font-semibold text-white md:hover:scale-105 select-none"><BiTrash /></a>
-                                    <a href="/solicitud/id/cancelar" className="block w-fit py-1 px-4 rounded-3xl text-decoration-none border-2 border-transparent bg-slate-600 text-sm md:text-base font-semibold text-white md:hover:scale-105 select-none"><MdCancel /></a>
-                                    <a href="/solicitud/id/aceptar" className="block w-fit py-1 px-4 rounded-3xl text-decoration-none border-2 border-transparent bg-green-800 text-sm md:text-base font-semibold text-white md:hover:scale-105 select-none"><MdCheck /></a>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                    {receivedRequests.length > 0 ? receivedRequests.map((profile, index) => (
+                        <FriendRequest key={index} profile={profile} type="Received" />
+                    ))
+                        : <p>Sin solicitudes pendientes.</p>}
+                </div>
+                <h2 className='pt-2 font-bold text-2xl'>Tus solicitudes enviadas</h2>
+                <div className='my-4 flex flex-col gap-4'>
+                    {pendingRequests.length > 0 ? pendingRequests.map((profile, index) => (
+                        <FriendRequest key={index} profile={profile} type="Sent" />
+                    ))
+                        : <p>Sin solicitudes pendientes de respuesta.</p>}
                 </div>
             </section>
         </main>

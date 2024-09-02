@@ -9,13 +9,29 @@ export const getProfile = async (token) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log(response)
         return response.data;
     } catch (error) {
         if (error.response) {
             throw new Error(error.response.data || 'Error al obtener el perfil');
         } else {
             throw new Error("Ocurrio un error obteniendo el perfil.");
+        }
+    }
+};
+
+export const getAllProfiles = async (token) => {
+    try {
+        const response = await axios.get(`${API_URL}/profiles`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data || 'Error al obtener los perfiles');
+        } else {
+            throw new Error("Ocurrio un error obteniendo los perfiles.");
         }
     }
 };
@@ -57,5 +73,6 @@ export const editProfile = async (profileData, token) => {
 export default {
     saveProfile,
     getProfile,
+    getAllProfiles,
     editProfile
 };

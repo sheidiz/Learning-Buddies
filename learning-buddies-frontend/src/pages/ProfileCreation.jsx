@@ -62,8 +62,7 @@ export default function ProfileCreation() {
                     : [...prev.skillsToLearn, skill]
             }));
         }
-        console.log(profileData)
-    }, [profileData]);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

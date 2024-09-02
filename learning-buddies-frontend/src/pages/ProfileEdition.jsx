@@ -29,7 +29,6 @@ export const ProfileEdition = () => {
     }, [user]);
 
     const handleInputChange = useCallback((e) => {
-        console.log(e.target.value)
         setProfileData(prevData => ({
             ...prevData,
             [e.target.name]: e.target.value
