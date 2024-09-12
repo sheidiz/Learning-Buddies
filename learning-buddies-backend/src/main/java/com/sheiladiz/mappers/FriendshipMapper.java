@@ -3,11 +3,11 @@ package com.sheiladiz.mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sheiladiz.dtos.FriendshipsResponse;
-import com.sheiladiz.dtos.ProfileDTO;
 import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.FriendshipDTO;
+import com.sheiladiz.dtos.FriendshipsResponse;
+import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.services.ProfileService;

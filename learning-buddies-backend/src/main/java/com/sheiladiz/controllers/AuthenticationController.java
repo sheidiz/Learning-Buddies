@@ -1,7 +1,7 @@
 package com.sheiladiz.controllers;
 
 
-import com.sheiladiz.dtos.*;
+import com.sheiladiz.dtos.user.*;
 import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;

@@ -2,11 +2,11 @@ package com.sheiladiz.services.impl;
 
 import java.util.List;
 
+import com.sheiladiz.dtos.user.UserDTO;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.UserService;

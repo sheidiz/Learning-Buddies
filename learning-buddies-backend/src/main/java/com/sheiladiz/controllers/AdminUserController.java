@@ -2,6 +2,7 @@ package com.sheiladiz.controllers;
 
 import java.util.List;
 
+import com.sheiladiz.dtos.user.UserDTO;
 import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.services.UserService;
 
 @RestController

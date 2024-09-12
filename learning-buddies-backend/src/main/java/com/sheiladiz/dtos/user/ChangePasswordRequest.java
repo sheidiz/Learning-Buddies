@@ -1,4 +1,4 @@
-package com.sheiladiz.dtos;
+package com.sheiladiz.dtos.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

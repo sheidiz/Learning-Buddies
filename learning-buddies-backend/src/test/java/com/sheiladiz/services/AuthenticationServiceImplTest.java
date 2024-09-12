@@ -3,8 +3,8 @@ package com.sheiladiz.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.sheiladiz.dtos.LoginRequest;
-import com.sheiladiz.dtos.RegisterRequest;
+import com.sheiladiz.dtos.user.LoginRequest;
+import com.sheiladiz.dtos.user.RegisterRequest;
 import com.sheiladiz.exceptions.InvalidUserCredentialsException;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;

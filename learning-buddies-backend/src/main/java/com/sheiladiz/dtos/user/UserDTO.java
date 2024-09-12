@@ -1,6 +1,7 @@
-package com.sheiladiz.dtos;
+package com.sheiladiz.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sheiladiz.dtos.ProfileDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

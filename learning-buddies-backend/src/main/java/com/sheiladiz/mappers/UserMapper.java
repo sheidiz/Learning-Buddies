@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sheiladiz.dtos.RegisterRequest;
-import com.sheiladiz.dtos.UserDTO;
+import com.sheiladiz.dtos.user.RegisterRequest;
+import com.sheiladiz.dtos.user.UserDTO;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.User;
 

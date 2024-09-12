@@ -1,7 +1,7 @@
 package com.sheiladiz.services.impl;
 
-import com.sheiladiz.dtos.LoginRequest;
-import com.sheiladiz.dtos.RegisterRequest;
+import com.sheiladiz.dtos.user.LoginRequest;
+import com.sheiladiz.dtos.user.RegisterRequest;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
 import com.sheiladiz.exceptions.InvalidUserCredentialsException;

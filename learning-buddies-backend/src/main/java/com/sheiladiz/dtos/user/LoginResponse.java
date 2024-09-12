@@ -1,4 +1,4 @@
-package com.sheiladiz.dtos;
+package com.sheiladiz.dtos.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.sheiladiz.services;
 
-import com.sheiladiz.dtos.LoginRequest;
-import com.sheiladiz.dtos.RegisterRequest;
+import com.sheiladiz.dtos.user.LoginRequest;
+import com.sheiladiz.dtos.user.RegisterRequest;
 import com.sheiladiz.models.User;
 
 public interface AuthenticationService {

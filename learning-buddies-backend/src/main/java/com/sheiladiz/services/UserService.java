@@ -2,7 +2,7 @@ package com.sheiladiz.services;
 
 import java.util.List;
 
-import com.sheiladiz.dtos.UserDTO;
+import com.sheiladiz.dtos.user.UserDTO;
 import com.sheiladiz.models.User;
 
 public interface UserService {
