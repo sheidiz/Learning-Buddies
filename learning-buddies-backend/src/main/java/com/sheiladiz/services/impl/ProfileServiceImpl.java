@@ -2,7 +2,6 @@ package com.sheiladiz.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
@@ -52,6 +51,7 @@ public class ProfileServiceImpl implements ProfileService {
 		return profileRepository.findByUser(user).orElseThrow(
 				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con email: " + user.getEmail()));
 	}
+
 	public Profile getProfileByUserId(Long id) {
 		return profileRepository.findByUserId(id).orElseThrow(
 				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + id));
@@ -71,43 +71,36 @@ public class ProfileServiceImpl implements ProfileService {
 		return profileRepository.findByJobPositionContaining(job);
 	}
 
-	public Profile updateProfile(Long profileId, ProfileDTO profileDTO) {
-		Profile existingProfile = profileRepository.findById(profileId).orElseThrow(
-				() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id: " + profileId));
+	public Profile updateProfile(Profile existingProfile, ProfileDTO profileDTO) {
 
-		Optional.ofNullable(profileDTO.getName()).ifPresent(existingProfile::setName);
-		Optional.ofNullable(profileDTO.getProfilePicture()).ifPresent(existingProfile::setProfilePicture);
-		Optional.ofNullable(profileDTO.getGender()).ifPresent(existingProfile::setGender);
-		Optional.ofNullable(profileDTO.getPronouns()).ifPresent(existingProfile::setPronouns);
-		Optional.ofNullable(profileDTO.getCountry()).ifPresent(existingProfile::setCountry);
-		Optional.ofNullable(profileDTO.getJobPosition()).ifPresent(existingProfile::setJobPosition);
-		Optional.ofNullable(profileDTO.getBio()).ifPresent(existingProfile::setBio);
-		Optional.ofNullable(profileDTO.getDiscordUrl()).ifPresent(existingProfile::setDiscordUrl);
-		Optional.ofNullable(profileDTO.getGithubUrl()).ifPresent(existingProfile::setGithubUrl);
-		Optional.ofNullable(profileDTO.getLinkedinUrl()).ifPresent(existingProfile::setLinkedinUrl);
-		Optional.ofNullable(profileDTO.getContactEmail()).ifPresent(existingProfile::setContactEmail);
+		Profile updatedProfile = profileMapper.toEntity(profileDTO);
+		
+		existingProfile.setName(updatedProfile.getName());
+		existingProfile.setBio(updatedProfile.getBio());
+		existingProfile.setJobPosition(updatedProfile.getJobPosition());
+		existingProfile.setCountry(updatedProfile.getCountry());
+		existingProfile.setGender(updatedProfile.getGender());
+		existingProfile.setProfilePicture(updatedProfile.getProfilePicture());
+		existingProfile.setProfilePictureBackground(updatedProfile.getProfilePictureBackground());
+		existingProfile.setSkillsLearned(updatedProfile.getSkillsLearned());
+		existingProfile.setSkillsToLearn(updatedProfile.getSkillsToLearn());
+		
+		if(updatedProfile.getGithubUrl() != null) {
+			existingProfile.setGithubUrl(updatedProfile.getGithubUrl());
+		}
+		if(updatedProfile.getLinkedinUrl() != null) {
+			existingProfile.setLinkedinUrl(updatedProfile.getLinkedinUrl());
+		}
+		if(updatedProfile.getDiscordUrl() != null) {
+			existingProfile.setDiscordUrl(updatedProfile.getDiscordUrl());
+		}
+		if(updatedProfile.getContactEmail() != null) {
+			existingProfile.setContactEmail(updatedProfile.getContactEmail());
+		}
 
 		return profileRepository.save(existingProfile);
 	}
 
-	public Profile addProfileSkills(String type, Long profileId, List<String> skillNames) {
-		Profile profile = getProfileById(profileId);
-
-		for (String name : skillNames) {
-			Skill skill = skillService.getSkillByName(name);
-
-			if (type.equals("learned")) {
-				if (!profile.getSkillsLearned().contains(skill)) {
-					profile.getSkillsLearned().add(skill);
-				}
-			} else {
-				if (!profile.getSkillsToLearn().contains(skill)) {
-					profile.getSkillsToLearn().add(skill);
-				}
-			}
-		}
-		return profileRepository.save(profile);
-	}
 	public Profile updateProfileSkills(String type, Long profileId, List<String> skillNames) {
 		Profile profile = getProfileById(profileId);
 		if (type.equals("learned")){

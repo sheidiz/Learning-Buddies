@@ -2,9 +2,6 @@ package com.sheiladiz.services;
 
 import java.util.List;
 
-import com.sheiladiz.dtos.ChangePasswordRequest;
-import com.sheiladiz.dtos.LoginRequest;
-import com.sheiladiz.dtos.RegisterRequest;
 import com.sheiladiz.dtos.UserDTO;
 import com.sheiladiz.models.User;
 

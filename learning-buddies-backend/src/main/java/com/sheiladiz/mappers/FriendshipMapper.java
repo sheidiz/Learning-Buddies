@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.sheiladiz.dtos.FriendshipsResponse;
 import com.sheiladiz.dtos.ProfileDTO;
-import com.sheiladiz.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.FriendshipDTO;
@@ -60,10 +59,6 @@ public class FriendshipMapper {
     }
 
     public FriendshipsResponse toFriendshipResponse(List<Profile> friends, List<Profile> receivedRequests, List<Profile> sentRequests){
-        if (friends.isEmpty() && receivedRequests.isEmpty() && sentRequests.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron perfiles.");
-        }
-
         List<ProfileDTO> friendsDTO = profileMapper.profilesToProfileDTOs(friends);
         List<ProfileDTO> receivedRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(receivedRequests); //this avoids having personal info shown off
         List<ProfileDTO> sentRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(sentRequests); //this avoids having personal info shown off

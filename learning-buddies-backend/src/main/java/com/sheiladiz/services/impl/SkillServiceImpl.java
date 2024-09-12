@@ -104,6 +104,16 @@ public class SkillServiceImpl implements SkillService {
         return categories;
     }
 
+    public List<Skill> getSkillsFromNames(List<String> names) {
+        List<Skill> skills = new ArrayList<>();
+        for (String name : names) {
+            Skill category = skillRepository.findByName(name).orElseThrow(
+                    () -> new ResourceNotFoundException("Habilidad [" + name + "] no encontrada"));
+            skills.add(category);
+        }
+        return skills;
+    }
+
     public List<Skill> allSkills() {
         return skillRepository.findAll();
     }

@@ -17,4 +17,10 @@ public class UserDTO {
 	private String email;
 	private String authProvider;
 	private ProfileDTO profile;
+
+	public UserDTO(Long id, String email, String authProvider) {
+		this.id = id;
+		this.email = email;
+		this.authProvider = authProvider;
+	}
 }

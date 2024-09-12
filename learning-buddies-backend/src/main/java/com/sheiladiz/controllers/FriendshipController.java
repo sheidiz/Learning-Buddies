@@ -56,10 +56,7 @@ public class FriendshipController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = FriendshipsResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "No se encontraron amistades.",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class))})
+                    schema = @Schema(implementation = FriendshipsResponse.class))})
     })
     @GetMapping("/me")
     public ResponseEntity<FriendshipsResponse> getFriendships(Authentication authentication) {

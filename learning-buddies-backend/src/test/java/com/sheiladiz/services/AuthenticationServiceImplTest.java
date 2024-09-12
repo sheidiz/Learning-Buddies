@@ -1,7 +1,6 @@
 package com.sheiladiz.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.sheiladiz.dtos.LoginRequest;

@@ -31,7 +31,7 @@ public class DataInitializationConfig implements CommandLineRunner {
     }
 
     public void run(String... args) throws Exception {
-        if(skillRepository.count() == 0){
+        if (skillRepository.count() == 0) {
             List<SkillCategory> categories = List.of(
                     new SkillCategory("Programación"),
                     new SkillCategory("Frontend"),
@@ -47,39 +47,39 @@ public class DataInitializationConfig implements CommandLineRunner {
             skillCategoryRepository.saveAll(categories);
 
             List<Skill> skills = List.of(
-                    new Skill("HTML", List.of(categories.get(3),categories.get(1))),
-                    new Skill("CSS", List.of(categories.get(3),categories.get(1))),
-                    new Skill("JavaScript", List.of(categories.get(3),categories.get(1))),
-                    new Skill("React", List.of(categories.get(3),categories.get(1),categories.get(0))),
-                    new Skill("Node.js", List.of(categories.get(2),categories.get(3),categories.get(0))),
-                    new Skill("Python", List.of(categories.get(2),categories.get(7),categories.get(0))),
-                    new Skill("Django", List.of(categories.get(2),categories.get(3),categories.get(7))),
-                    new Skill("Java", List.of(categories.get(2),categories.get(3),categories.get(4))),
-                    new Skill("Spring Boot", List.of(categories.get(2),categories.get(3),categories.get(0))),
-                    new Skill("SQL", List.of(categories.get(8),categories.get(2),categories.get(7))),
-                    new Skill("Docker", List.of(categories.get(5),categories.get(0))),
-                    new Skill("Kubernetes", List.of(categories.get(5),categories.get(0))),
-                    new Skill("AWS (Amazon Web Services)", List.of(categories.get(5),categories.get(2))),
-                    new Skill("Azure", List.of(categories.get(5),categories.get(2))),
-                    new Skill("Git", List.of(categories.get(5),categories.get(0))),
-                    new Skill("Machine Learning", List.of(categories.get(7),categories.get(0))),
-                    new Skill("Tableau", List.of(categories.get(7),categories.get(9))),
+                    new Skill("HTML", List.of(categories.get(3), categories.get(1))),
+                    new Skill("CSS", List.of(categories.get(3), categories.get(1))),
+                    new Skill("JavaScript", List.of(categories.get(3), categories.get(1))),
+                    new Skill("React", List.of(categories.get(3), categories.get(1), categories.get(0))),
+                    new Skill("Node.js", List.of(categories.get(2), categories.get(3), categories.get(0))),
+                    new Skill("Python", List.of(categories.get(2), categories.get(7), categories.get(0))),
+                    new Skill("Django", List.of(categories.get(2), categories.get(3), categories.get(7))),
+                    new Skill("Java", List.of(categories.get(2), categories.get(3), categories.get(4))),
+                    new Skill("Spring Boot", List.of(categories.get(2), categories.get(3), categories.get(0))),
+                    new Skill("SQL", List.of(categories.get(8), categories.get(2), categories.get(7))),
+                    new Skill("Docker", List.of(categories.get(5), categories.get(0))),
+                    new Skill("Kubernetes", List.of(categories.get(5), categories.get(0))),
+                    new Skill("AWS (Amazon Web Services)", List.of(categories.get(5), categories.get(2))),
+                    new Skill("Azure", List.of(categories.get(5), categories.get(2))),
+                    new Skill("Git", List.of(categories.get(5), categories.get(0))),
+                    new Skill("Machine Learning", List.of(categories.get(7), categories.get(0))),
+                    new Skill("Tableau", List.of(categories.get(7), categories.get(9))),
                     new Skill("Unity", List.of(categories.get(6), categories.get(4))),
-                    new Skill("C++", List.of(categories.get(0),categories.get(6)))
+                    new Skill("C++", List.of(categories.get(0), categories.get(6)))
             );
             skillRepository.saveAll(skills);
         }
-        if(userRepository.count() == 0){
+        if (userRepository.count() == 0) {
             List<User> users = List.of(
-                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true),
-                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true),
-                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"),"local", true, true, true, true)
+                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true),
+                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true),
+                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true)
             );
             userRepository.saveAll(users);
 
             List<Profile> profiles = List.of(
-                    new Profile(users.get(0),"/src/assets/users/1.png", "#FF8A8A", "Juana Mendoza", "Argentina", "Estudiante Front-end", "Soy una estudiante de Frontend.", "/juana_m"),
-                    new Profile(users.get(1),"/src/assets/users/6.png","#3795BD", "Juan Suarez", "Argentina", "Estudiante Back-end", "Soy un estudiante de programación. Estoy estudiando en Edu123.", "/juan123")
+                    new Profile(users.get(0), "Juana Mendoza", "/src/assets/users/1.png", "#FF8A8A", "Mujer", "Argentina", "Estudiante Front-end", "Soy una estudiante de Frontend.", "/juana_m"),
+                    new Profile(users.get(1), "Juan Suarez", "/src/assets/users/6.png", "#3795BD", "Hombre", "Argentina", "Estudiante Back-end", "Soy un estudiante de programación. Estoy estudiando en Edu123.", "/juan123")
             );
             profileRepository.saveAll(profiles);
         }

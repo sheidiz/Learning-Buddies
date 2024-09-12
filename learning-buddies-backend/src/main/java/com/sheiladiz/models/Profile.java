@@ -46,19 +46,25 @@ public class Profile {
     @NotEmpty(message = "Nombre requerido.")
     private String name;
 
+    @NotEmpty(message = "Foto de perfil requerida.")
     private String profilePicture;
 
+    @NotEmpty(message = "Fondo de foto de perfil requerido.")
     private String profilePictureBackground;
 
+    @NotEmpty(message = "Género requerido.")
     private String gender;
 
     private String pronouns;
 
+    @NotEmpty(message = "País requerido.")
     private String country;
 
+    @NotEmpty
     @Size(max = 100, message = "Posición de trabajo tiene un limite de 100 caracteres.")
     private String jobPosition;
 
+    @NotEmpty
     @Size(max = 250, message = "Descripción tiene un limite de 250 caracteres.")
     private String bio;
 
@@ -99,11 +105,23 @@ public class Profile {
         this.updatedAt = new Date();
     }
 
-    public Profile(User user, String profilePicture, String profilePictureBackground, String name, String country, String jobPosition, String bio, String githubUrl) {
+    public Profile(User user, String name, String profilePicture, String profilePictureBackground, String gender, String country, String jobPosition, String bio) {
         this.user = user;
+        this.name = name;
         this.profilePicture = profilePicture;
         this.profilePictureBackground = profilePictureBackground;
+        this.gender = gender;
+        this.country = country;
+        this.jobPosition = jobPosition;
+        this.bio = bio;
+    }
+
+    public Profile(User user, String name, String profilePicture, String profilePictureBackground, String gender, String country, String jobPosition, String bio, String githubUrl) {
+        this.user = user;
         this.name = name;
+        this.profilePicture = profilePicture;
+        this.profilePictureBackground = profilePictureBackground;
+        this.gender = gender;
         this.country = country;
         this.jobPosition = jobPosition;
         this.bio = bio;

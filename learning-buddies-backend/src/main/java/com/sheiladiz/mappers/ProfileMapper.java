@@ -1,5 +1,6 @@
 package com.sheiladiz.mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,31 +41,15 @@ public class ProfileMapper {
 
 		return profileDTO;
 	}
-	public ProfileDTO toProtectedDTO(Profile profile) {
-		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder()
-				.id(profile.getId())
-				.name(profile.getName())
-				.profilePicture(profile.getProfilePicture())
-				.profilePictureBackground(profile.getProfilePictureBackground());
 
-		if (profile.getGender() != null) {
-			builder.gender(profile.getGender());
-		}
+	public ProfileDTO toProtectedDTO(Profile profile) {
+		ProfileDTO.ProfileDTOBuilder builder = ProfileDTO.builder().id(profile.getId()).name(profile.getName())
+				.bio(profile.getBio()).profilePicture(profile.getProfilePicture())
+				.profilePictureBackground(profile.getProfilePictureBackground()).country(profile.getCountry())
+				.gender(profile.getGender()).jobPosition(profile.getJobPosition());
 
 		if (profile.getPronouns() != null) {
 			builder.pronouns(profile.getPronouns());
-		}
-
-		if (profile.getCountry() != null) {
-			builder.country(profile.getCountry());
-		}
-
-		if (profile.getJobPosition() != null) {
-			builder.jobPosition(profile.getJobPosition());
-		}
-
-		if (profile.getBio() != null) {
-			builder.bio(profile.getBio());
 		}
 
 		if (profile.getSkillsLearned() != null) {
@@ -79,30 +64,13 @@ public class ProfileMapper {
 	}
 
 	public Profile toEntity(ProfileDTO profileDTO) {
-		Profile.ProfileBuilder builder = Profile.builder()
-				.id(profileDTO.getId())
-				.name(profileDTO.getName())
-				.profilePicture(profileDTO.getProfilePicture())
-				.profilePictureBackground(profileDTO.getProfilePictureBackground());
-
-		if (profileDTO.getGender() != null) {
-			builder.gender(profileDTO.getGender());
-		}
+		Profile.ProfileBuilder builder = Profile.builder().id(profileDTO.getId()).name(profileDTO.getName())
+				.bio(profileDTO.getBio()).profilePicture(profileDTO.getProfilePicture())
+				.profilePictureBackground(profileDTO.getProfilePictureBackground()).country(profileDTO.getCountry())
+				.gender(profileDTO.getGender()).jobPosition(profileDTO.getJobPosition());
 
 		if (profileDTO.getPronouns() != null) {
 			builder.pronouns(profileDTO.getPronouns());
-		}
-
-		if (profileDTO.getCountry() != null) {
-			builder.country(profileDTO.getCountry());
-		}
-
-		if (profileDTO.getJobPosition() != null) {
-			builder.jobPosition(profileDTO.getJobPosition());
-		}
-
-		if (profileDTO.getBio() != null) {
-			builder.bio(profileDTO.getBio());
 		}
 
 		if (profileDTO.getDiscordUrl() != null) {
@@ -123,10 +91,14 @@ public class ProfileMapper {
 
 		if (profileDTO.getSkillsLearned() != null) {
 			builder.skillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
+		} else {
+			builder.skillsLearned(new ArrayList<Skill>());
 		}
 
 		if (profileDTO.getSkillsToLearn() != null) {
 			builder.skillsToLearn(mapSkillNames(profileDTO.getSkillsToLearn()));
+		} else {
+			builder.skillsToLearn(new ArrayList<Skill>());
 		}
 
 		return builder.build();

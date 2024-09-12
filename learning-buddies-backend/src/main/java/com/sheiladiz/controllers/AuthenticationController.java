@@ -43,8 +43,9 @@ public class AuthenticationController {
                             schema = @Schema(implementation = ErrorResponse.class))})})
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
-        User registeredUser = authenticationService.signUp(registerRequest);
-        return ResponseEntity.ok(userMapper.toDTO(registeredUser));
+        User user = authenticationService.signUp(registerRequest);
+        UserDTO userDTO = userMapper.toDTO(user);
+        return ResponseEntity.ok(userDTO);
     }
 
     @ApiResponses({

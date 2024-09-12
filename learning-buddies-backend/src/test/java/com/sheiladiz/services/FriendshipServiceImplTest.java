@@ -1,6 +1,5 @@
 package com.sheiladiz.services;
 
-import com.sheiladiz.dtos.ProfileDTO;
 import com.sheiladiz.exceptions.InvalidDataException;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;

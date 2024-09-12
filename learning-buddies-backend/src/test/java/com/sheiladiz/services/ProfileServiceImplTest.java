@@ -1,7 +1,6 @@
 package com.sheiladiz.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -10,6 +9,7 @@ import java.util.Optional;
 
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
+import com.sheiladiz.repositories.SkillRepository;
 import com.sheiladiz.services.impl.SkillServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,9 @@ public class ProfileServiceImplTest {
 
     @Mock
     private ProfileRepository profileRepository;
+
+    @Mock
+    private SkillRepository skillRepository;
 
     @Mock
     private ProfileMapper profileMapper;
@@ -60,13 +63,12 @@ public class ProfileServiceImplTest {
         userList = Arrays.asList(user1, user2);
 
         Profile profile1 = new Profile(1L, user1, "Test1");
-        profile1.setSkillsLearned(List.of(new Skill("Java"), new Skill("Spring")));
-        Profile profile2 = new Profile(2L, user2, "Test2");
-        profileList = Arrays.asList(profile1, profile2);
+        profile1.setSkillsLearned(List.of(new Skill("Java")));
+        profile1.setSkillsToLearn(List.of(new Skill("Spring")));
+        profileList = Arrays.asList(profile1);
 
         ProfileDTO profileDTO1 = new ProfileDTO(profile1.getId(), profile1.getName());
-        ProfileDTO profileDTO2 = new ProfileDTO(profile2.getId(), profile2.getName());
-        profileDTOList = Arrays.asList(profileDTO1, profileDTO2);
+        profileDTOList = Arrays.asList(profileDTO1);
     }
 
     @Test
@@ -159,66 +161,6 @@ public class ProfileServiceImplTest {
         when(profileRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> profileService.getProfileByUserEmail(anyString()));
-    }
-
-    @Test
-    void shouldUpdateProfile_whenProfileExistsAndDTOProvided() {
-        Profile existingProfile = profileList.get(0);
-
-        ProfileDTO profileDTO = new ProfileDTO();
-        profileDTO.setName("newName");
-
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(existingProfile));
-        when(profileRepository.save(existingProfile)).thenReturn(existingProfile);
-
-        Profile result = profileService.updateProfile(1L, profileDTO);
-
-        assertEquals("newName", result.getName());
-    }
-
-    @Test
-    void shouldAddProfileSkills_whenSkillsAreProvided() {
-        String skillType = "learned";
-        Long profileId = 1L;
-        List<String> skillNames = Arrays.asList("Java", "Spring");
-
-        Skill skill1 = new Skill(skillNames.get(0));
-        Skill skill2 = new Skill(skillNames.get(1));
-
-        Profile profile = profileList.get(0);
-
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
-        when(skillService.getSkillByName("Java")).thenReturn(skill1);
-        when(skillService.getSkillByName("Spring")).thenReturn(skill2);
-
-        profileService.addProfileSkills(skillType, profileId, skillNames);
-
-        assertTrue(profile.getSkillsLearned().contains(skill1));
-        assertTrue(profile.getSkillsLearned().contains(skill2));
-        verify(profileRepository).save(profile);
-    }
-
-    @Test
-    void shouldUpdateProfileSkills_whenSkillsAreUpdated() {
-        String skillType = "learned";
-        Long profileId = 1L;
-        List<String> skillNames = Arrays.asList("Java", "Spring");
-
-        Skill skill1 = new Skill(skillNames.get(0));
-        Skill skill2 = new Skill(skillNames.get(1));
-
-        Profile profile = profileList.get(0);
-
-        when(profileRepository.findById(profileId)).thenReturn(Optional.of(profile));
-        when(skillService.getSkillByName("Java")).thenReturn(skill1);
-        when(skillService.getSkillByName("Spring")).thenReturn(skill2);
-
-        profileService.updateProfileSkills(skillType, profileId, skillNames);
-
-        assertEquals(2, profile.getSkillsLearned().size());
-        assertTrue(profile.getSkillsLearned().contains(skill1));
-        assertTrue(profile.getSkillsLearned().contains(skill2));
-        verify(profileRepository).save(profile);
     }
 
     @Test

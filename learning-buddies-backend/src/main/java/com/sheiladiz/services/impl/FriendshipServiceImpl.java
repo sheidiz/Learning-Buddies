@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 public class FriendshipServiceImpl implements FriendshipService {
     private final FriendshipRepository friendshipRepository;
 
+    public FriendshipServiceImpl(FriendshipRepository friendshipRepository) {
+        this.friendshipRepository = friendshipRepository;
+    }
+
     private static final Map<FriendshipStatus, String> STATUS_MESSAGES = Map.of(
             FriendshipStatus.PENDING, "Ya existe una solicitud pendiente de amistad.",
             FriendshipStatus.ACCEPTED, "Ya son amigos.",
             FriendshipStatus.REJECTED, "Ya se ha rechazado la solicitud de amistad."
     );
-
-    public FriendshipServiceImpl(FriendshipRepository friendshipRepository) {
-        this.friendshipRepository = friendshipRepository;
-    }
 
     private void validateDifferentProfiles(Profile profile, Profile friendProfile) {
         if (profile.getId().equals(friendProfile.getId())) {

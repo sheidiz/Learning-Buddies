@@ -19,6 +19,7 @@ public interface SkillService {
 	List<Skill> allSkills();
 	Skill getSkillById(Long id);
 	Skill getSkillByName(String name);
+	List<Skill> getSkillsFromNames(List<String> names);
 	Skill updateSkill(Long skillId, SkillDTO newSkillDTO);
 	void deleteSkillById(Long id);
 	List<SkillCategory> getCategoriesFromNames(SkillDTO newSkill);

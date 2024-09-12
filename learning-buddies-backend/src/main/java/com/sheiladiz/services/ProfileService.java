@@ -15,9 +15,7 @@ public interface ProfileService {
 	Profile getProfileByUserEmail(String email);
 	Profile getProfileById(Long id);
 	List<Profile> listProfilesByJobPositionContaining(String job);
-	Profile updateProfile(Long profileId, ProfileDTO profileDTO);
-	Profile addProfileSkills(String type, Long profileId, List<String> skillNames);
-	Profile updateProfileSkills(String type, Long profileId, List<String> skillNames);
+	Profile updateProfile(Profile existingProfile, ProfileDTO profileDTO);
 	void deleteProfile(Long userId);
 	void isProfileExistsByUser(User user);
 }
