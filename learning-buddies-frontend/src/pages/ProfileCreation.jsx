@@ -45,7 +45,7 @@ export default function ProfileCreation() {
   const handleInputChange = useCallback((e) => {
     setProfileData((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value.trim(),
     }));
   }, []);
 
@@ -77,7 +77,9 @@ export default function ProfileCreation() {
     const validationErrors = validateProfileData(profileData);
     setErrorMessage(validationErrors);
 
-    const hasErrors = Object.values(validationErrors).some(error => error !== null && error.trim() !== '');
+    const hasErrors = Object.values(validationErrors).some(
+      (error) => error !== null && error.trim() !== "",
+    );
 
     if (hasErrors) {
       return;
@@ -90,7 +92,10 @@ export default function ProfileCreation() {
     };
 
     try {
-      const savedProfile = await profilesService.saveProfile(updatedProfileData, token);
+      const savedProfile = await profilesService.saveProfile(
+        updatedProfileData,
+        token,
+      );
       updateProfile(savedProfile); //context
       navigate("/mi-perfil");
     } catch (error) {
@@ -120,9 +125,12 @@ export default function ProfileCreation() {
 
   return (
     <main className="mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:gap-x-4 dark:text-light">
-      <form onSubmit={handleSubmit} className="px-3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:max-w-6xl lg:px-10 md:dark:bg-dm-dark-green" >
+      <form
+        onSubmit={handleSubmit}
+        className="px-3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:max-w-6xl lg:px-10 md:dark:bg-dm-dark-green"
+      >
         <section className="flex flex-col md:flex-row md:gap-10">
-          <div className="md:w-1/2" >
+          <div className="md:w-1/2">
             <h1 className="mb-2 text-2xl font-bold">Crea tu perfil</h1>
             <div className="grid grid-cols-2 gap-4">
               <AvatarSelector
@@ -138,8 +146,14 @@ export default function ProfileCreation() {
                 error={errorMessage?.name}
                 onChange={handleInputChange}
               />
-              <CountrySelector onChange={handleInputChange} error={errorMessage?.country} />
-              <GenderSelect onChange={handleInputChange} error={errorMessage?.gender} />
+              <CountrySelector
+                onChange={handleInputChange}
+                error={errorMessage?.country}
+              />
+              <GenderSelect
+                onChange={handleInputChange}
+                error={errorMessage?.gender}
+              />
               <TextInput
                 label="Pronombres"
                 name="pronouns"
@@ -196,9 +210,11 @@ export default function ProfileCreation() {
                 onChange={handleInputChange}
               />
             </div>
-            {errorMessage.contact && <p className="mt-1 text-red-600">{errorMessage.contact}</p>}
+            {errorMessage.contact && (
+              <p className="mt-1 text-red-600">{errorMessage.contact}</p>
+            )}
           </div>
-          <div className="md:w-1/2 mt-4 md:mt-0">
+          <div className="mt-4 md:mt-0 md:w-1/2">
             <h2 className="mb-4 text-2xl font-bold">Marcá tus habilidades</h2>
             <p className="my-2 font-medium md:text-xl">CONOCIMIENTOS:</p>
             <div className="flex flex-wrap gap-2 pb-3 text-sm text-white md:gap-3 md:text-base">
@@ -232,10 +248,10 @@ export default function ProfileCreation() {
           <input
             type="submit"
             value="Guardar Mi perfil"
-            className="mx-auto w-fit text-decoration-none mt-5 cursor-pointer rounded-3xl border-2 border-transparent bg-dark-green px-6 py-1 font-bold text-white md:hover:scale-105 dark:bg-dm-medium-green md:dark:bg-dark"
+            className="text-decoration-none mx-auto mt-5 w-fit cursor-pointer rounded-3xl border-2 border-transparent bg-dark-green px-6 py-1 font-bold text-white md:hover:scale-105 dark:bg-dm-medium-green md:dark:bg-dark"
           />
         </div>
       </form>
-    </main >
+    </main>
   );
 }

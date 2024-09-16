@@ -1,6 +1,4 @@
 import React from "react";
-import Countries from "../../utils/countries.json";
-
 export const GenderSelect = ({ value, onChange, error }) => {
   if (value == null) value = "";
 

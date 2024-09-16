@@ -16,24 +16,29 @@ export const ProfileEdition = () => {
   const [profileData, setProfileData] = useState(user.profile);
   const [skills, setSkills] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState({
+    name: null,
+    jobPosition: null,
+    bio: null,
+    country: null,
+    gender: null,
+    contact: null,
+  });
   const [selectedImage, setSelectedImage] = useState();
   const [bgColor, setBgColor] = useState();
 
   useEffect(() => {
     if (user && user.profile) {
       setProfileData(user.profile);
-      setSelectedImage(
-        user.profile.profilePicture || "/src/assets/users/1.png",
-      );
-      setBgColor(user.profile.profilePictureBackground || "#f2f2f2");
+      setSelectedImage(user.profile.profilePicture);
+      setBgColor(user.profile.profilePictureBackground);
     }
   }, [user]);
 
   const handleInputChange = useCallback((e) => {
     setProfileData((prevData) => ({
       ...prevData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value.trim(),
     }));
   }, []);
 
@@ -62,9 +67,14 @@ export const ProfileEdition = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validationError = validateProfileData(profileData);
-    if (validationError) {
-      setErrorMessage(validationError);
+    const validationErrors = validateProfileData(profileData);
+    setErrorMessage(validationErrors);
+
+    const hasErrors = Object.values(validationErrors).some(
+      (error) => error !== null && error.trim() !== "",
+    );
+
+    if (hasErrors) {
       return;
     }
 
@@ -107,130 +117,135 @@ export const ProfileEdition = () => {
 
   return (
     <main className="mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:max-w-7xl md:gap-x-4 dark:text-light">
-      <section className="px-3 md:w-2/3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:w-1/2 lg:max-w-5xl lg:px-10 md:dark:bg-dm-dark-green">
-        <form onSubmit={handleSubmit}>
-          <h1 className="mb-2 text-2xl font-bold">Edita tu perfil</h1>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 mb-3 flex items-center justify-center">
-              <AvatarSelector
-                currentIndex={0}
-                onImageSelect={handleImageSelect}
-                bgColor={bgColor}
-                setBgColor={setBgColor}
+      <form onSubmit={handleSubmit} className="px-3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:max-w-6xl lg:px-10 md:dark:bg-dm-dark-green">
+        <section className="flex flex-col md:flex-row md:gap-10">
+          <div className="md:w-1/2">
+            <h1 className="mb-2 text-2xl font-bold">Edita tu perfil</h1>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2 mb-3 flex items-center justify-center">
+                <AvatarSelector
+                  currentIndex={0}
+                  onImageSelect={handleImageSelect}
+                  bgColor={bgColor}
+                  setBgColor={setBgColor}
+                />
+              </div>
+              <TextInput
+                label="Nombre Completo"
+                name="name"
+                value={profileData.name}
+                error={errorMessage?.name}
+                onChange={handleInputChange}
+              />
+              <CountrySelector
+                value={profileData.country}
+                onChange={handleInputChange}
+                error={errorMessage?.country}
+              />
+              <GenderSelect
+                value={profileData.gender}
+                onChange={handleInputChange}
+                error={errorMessage?.gender}
+              />
+              <TextInput
+                label="Pronombres"
+                name="pronouns"
+                value={profileData.pronouns}
+                error={null}
+                onChange={handleInputChange}
+              />
+              <div className="col-span-2">
+                <TextInput
+                  label="Rol / Puesto Laboral"
+                  name="jobPosition"
+                  value={profileData.jobPosition}
+                  error={errorMessage?.jobPosition}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col-span-2">
+                <TextareaInput
+                  label="Biografia"
+                  name="bio"
+                  value={profileData.bio}
+                  className="col-span-2"
+                  error={errorMessage?.bio}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <h3 className="mt-3 text-xl font-bold">Datos de contacto</h3>
+            <h4 className="font-semibold text-dark-green dark:text-dm-light-green">
+              Estos datos se mostraran solo a tus conexiones
+            </h4>
+            <div className="mt-2 grid grid-cols-2 gap-4">
+              <TextInput
+                label="Discord"
+                name="discordUrl"
+                value={profileData.discordUrl}
+                onChange={handleInputChange}
+              />
+              <TextInput
+                label="GitHub"
+                name="githubUrl"
+                value={profileData.githubUrl}
+                onChange={handleInputChange}
+              />
+              <TextInput
+                label="LinkedIn"
+                name="linkedinUrl"
+                value={profileData.linkedinUrl}
+                onChange={handleInputChange}
+              />
+              <TextInput
+                label="Email"
+                name="contactEmail"
+                value={profileData.contactEmail}
+                onChange={handleInputChange}
               />
             </div>
-            <TextInput
-              label="Nombre Completo"
-              name="name"
-              value={profileData.name}
-              className="col-span-1"
-              required={true}
-              onChange={handleInputChange}
-            />
-            <CountrySelector
-              value={profileData.country}
-              onChange={handleInputChange}
-            />
-            <GenderSelect
-              value={profileData.gender}
-              onChange={handleInputChange}
-            />
-            <TextInput
-              label="Pronombres"
-              name="pronouns"
-              value={profileData.pronouns}
-              className="col-span-1"
-              onChange={handleInputChange}
-            />
-            <TextInput
-              label="Rol / Puesto Laboral"
-              name="jobPosition"
-              value={profileData.jobPosition}
-              required={true}
-              className="col-span-2"
-              onChange={handleInputChange}
-            />
-            <TextareaInput
-              label="Biografia"
-              name="bio"
-              value={profileData.bio}
-              className="col-span-2"
-              required={true}
-              onChange={handleInputChange}
-            />
+            {errorMessage.contact && (
+              <p className="mt-1 text-red-600">{errorMessage.contact}</p>
+            )}
           </div>
-          <h3 className="mt-3 text-xl font-bold">Datos de contacto</h3>
-          <h4 className="font-semibold text-dark-green dark:text-dm-light-green">
-            Estos datos se mostraran solo a tus conexiones
-          </h4>
-          <div className="mt-2 grid grid-cols-2 gap-4">
-            <TextInput
-              label="Discord"
-              name="discordUrl"
-              value={profileData.discordUrl}
-              onChange={handleInputChange}
-            />
-            <TextInput
-              label="GitHub"
-              name="githubUrl"
-              value={profileData.githubUrl}
-              onChange={handleInputChange}
-            />
-            <TextInput
-              label="LinkedIn"
-              name="linkedinUrl"
-              value={profileData.linkedinUrl}
-              onChange={handleInputChange}
-            />
-            <TextInput
-              label="Email"
-              name="contactEmail"
-              value={profileData.contactEmail}
-              onChange={handleInputChange}
-            />
+          <div className="mt-4 md:mt-0 md:w-1/2">
+            <h2 className="mb-4 text-2xl font-bold">Marcá tus habilidades</h2>
+            <p className="my-2 font-medium md:text-xl">CONOCIMIENTOS:</p>
+            <div className="flex flex-wrap gap-2 pb-3 text-sm text-white md:gap-3 md:text-base">
+              {skills.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleSkillToggle(item.name, true)}
+                  className={`rounded-md bg-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom md:py-2 md:text-sm lg:text-base dark:bg-dm-light-green ${profileData.skillsLearned.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+            <p className="my-2 font-medium md:text-xl">APRENDIENDO:</p>
+            <div className="flex flex-wrap gap-2 text-sm text-dark md:gap-3 md:text-base">
+              {skills.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleSkillToggle(item.name, false)}
+                  className={`rounded-md border-2 border-light-green bg-light px-2 py-1 shadow-lg hover:shadow-inner-custom md:text-sm lg:text-base dark:border-dm-light-green ${profileData.skillsToLearn.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
           </div>
-          <h2 className="mt-4 text-2xl font-bold lg:mb-4">
-            Marcá tus habilidades
-          </h2>
-          <p className="my-2 font-medium md:text-xl">CONOCIMIENTOS:</p>
-          <div className="flex flex-wrap gap-2 pb-3 text-sm text-white md:gap-3 md:text-base">
-            {skills.map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handleSkillToggle(item.name, true)}
-                className={`rounded-md bg-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom md:py-2 md:text-sm lg:text-base dark:bg-dm-light-green ${profileData.skillsLearned.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-          <p className="my-2 font-medium md:text-xl">APRENDIENDO:</p>
-          <div className="flex flex-wrap gap-2 text-sm text-dark md:gap-3 md:text-base">
-            {skills.map((item, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handleSkillToggle(item.name, false)}
-                className={`rounded-md border-2 border-light-green bg-light px-2 py-1 shadow-lg hover:shadow-inner-custom md:text-sm lg:text-base dark:border-dm-light-green ${profileData.skillsToLearn.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-          {errorMessage && (
-            <div
-              className="mt-3 rounded-lg px-6 py-1 text-sm font-bold text-red-600 dark:bg-light"
-              dangerouslySetInnerHTML={{ __html: errorMessage }}
-            />
-          )}
+        </section>
+        <div className="text-center">
           <input
             type="submit"
             value="Guardar Mi perfil"
-            className="text-decoration-none mt-5 w-full cursor-pointer rounded-3xl border-2 border-transparent bg-dark-green px-6 py-1 font-bold text-white md:hover:scale-105 dark:bg-dm-medium-green md:dark:bg-dark"
+            className="text-decoration-none mx-auto mt-5 w-fit cursor-pointer rounded-3xl border-2 border-transparent bg-dark-green px-6 py-1 font-bold text-white md:hover:scale-105 dark:bg-dm-medium-green md:dark:bg-dark"
           />
-        </form>
-      </section>
+        </div>
+      </form>
     </main>
   );
 };

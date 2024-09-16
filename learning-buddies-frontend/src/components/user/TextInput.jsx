@@ -1,4 +1,11 @@
-export const TextInput = ({ label, name, placeholder, value, error, onChange }) => {
+export const TextInput = ({
+  label,
+  name,
+  placeholder,
+  value,
+  error,
+  onChange,
+}) => {
   if (value == null) value = "";
   if (placeholder == null) placeholder = "";
 
