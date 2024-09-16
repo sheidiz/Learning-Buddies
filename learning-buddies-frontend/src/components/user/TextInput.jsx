@@ -1,32 +1,24 @@
-export const TextInput = ({
-  label,
-  value,
-  inputName,
-  inputPlaceholder,
-  className,
-  required,
-  onChangeAction,
-}) => {
+export const TextInput = ({ label, name, placeholder, value, error, onChange }) => {
   if (value == null) value = "";
-  if (inputPlaceholder == null) inputPlaceholder = "";
+  if (placeholder == null) placeholder = "";
 
   return (
-    <div className={`${className} w-full`}>
-      <label htmlFor={inputName} className="w-full font-semibold">
+    <div className="w-full">
+      <label htmlFor={name} className="w-full font-semibold">
         {label}
       </label>
       <div className="border-b-2 border-b-dark-grey pb-2 pt-1 dark:border-b-light">
         <input
           type="text"
-          name={inputName}
-          id={inputName}
-          placeholder={inputPlaceholder}
-          required={required}
-          onChange={onChangeAction}
+          name={name}
+          id={name}
+          placeholder={placeholder}
           defaultValue={value}
+          onChange={onChange}
           className="w-full bg-transparent focus-visible:outline-light-green/50 active:outline-light-green/50"
         />
       </div>
+      {error && <p className="text-red-600">{error}</p>}
     </div>
   );
 };

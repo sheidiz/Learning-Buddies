@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import skillsService from "../services/skillsService";
 import profilesService from "../services/profilesService";
 import { useNavigate } from "react-router-dom";
-import ImageSelector from "../components/user/ImageSelector";
+import AvatarSelector from "../components/user/AvatarSelector";
 import { TextInput } from "../components/user/TextInput";
 import { TextareaInput } from "../components/user/TextareaInput";
 import { CountrySelector } from "../components/user/CountrySelector";
@@ -112,55 +112,51 @@ export const ProfileEdition = () => {
           <h1 className="mb-2 text-2xl font-bold">Edita tu perfil</h1>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 mb-3 flex items-center justify-center">
-              <ImageSelector
-                currentIndex={profileData.profilePicture.slice(-5, -4)}
+              <AvatarSelector
+                currentIndex={0}
                 onImageSelect={handleImageSelect}
                 bgColor={bgColor}
-              />
-              <input
-                type="color"
-                value={bgColor}
-                onChange={(e) => setBgColor(e.target.value)}
+                setBgColor={setBgColor}
               />
             </div>
             <TextInput
               label="Nombre Completo"
-              inputName="name"
+              name="name"
               value={profileData.name}
               className="col-span-1"
               required={true}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <CountrySelector
               value={profileData.country}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <GenderSelect
               value={profileData.gender}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextInput
               label="Pronombres"
-              inputName="pronouns"
+              name="pronouns"
               value={profileData.pronouns}
               className="col-span-1"
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextInput
               label="Rol / Puesto Laboral"
-              inputName="jobPosition"
+              name="jobPosition"
               value={profileData.jobPosition}
               required={true}
               className="col-span-2"
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextareaInput
               label="Biografia"
-              inputName="bio"
+              name="bio"
               value={profileData.bio}
               className="col-span-2"
               required={true}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
           </div>
           <h3 className="mt-3 text-xl font-bold">Datos de contacto</h3>
@@ -170,27 +166,27 @@ export const ProfileEdition = () => {
           <div className="mt-2 grid grid-cols-2 gap-4">
             <TextInput
               label="Discord"
-              inputName="discordUrl"
+              name="discordUrl"
               value={profileData.discordUrl}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextInput
               label="GitHub"
-              inputName="githubUrl"
+              name="githubUrl"
               value={profileData.githubUrl}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextInput
               label="LinkedIn"
-              inputName="linkedinUrl"
+              name="linkedinUrl"
               value={profileData.linkedinUrl}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
             <TextInput
               label="Email"
-              inputName="contactEmail"
+              name="contactEmail"
               value={profileData.contactEmail}
-              onChangeAction={handleInputChange}
+              onChange={handleInputChange}
             />
           </div>
           <h2 className="mt-4 text-2xl font-bold lg:mb-4">

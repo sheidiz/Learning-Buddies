@@ -1,7 +1,7 @@
 import React from "react";
 import Countries from "../../utils/countries.json";
 
-export const CountrySelector = ({ value, onChangeAction }) => {
+export const CountrySelector = ({ value, onChange, error }) => {
   if (value == null) value = "";
 
   return (
@@ -13,7 +13,7 @@ export const CountrySelector = ({ value, onChangeAction }) => {
         className="w-full border-b-2 border-b-dark-grey bg-transparent pb-2 pt-1 dark:border-b-light"
         name="country"
         id="country"
-        onChange={onChangeAction}
+        onChange={onChange}
         defaultValue={value || "-"}
         required
       >
@@ -30,6 +30,7 @@ export const CountrySelector = ({ value, onChangeAction }) => {
           </option>
         ))}
       </select>
+      {error && <p className="text-red-600">{error}</p>}
     </div>
   );
 };

@@ -1,19 +1,19 @@
 import React from "react";
 import Countries from "../../utils/countries.json";
 
-export const GenderSelect = ({ value, onChangeAction }) => {
+export const GenderSelect = ({ value, onChange, error }) => {
   if (value == null) value = "";
 
   return (
     <div className="col-span-1 bg-transparent">
       <label htmlFor="gender" className="w-full font-semibold">
-        País
+        Género
       </label>
       <select
         className="w-full border-b-2 border-b-dark-grey bg-transparent pb-2 pt-1 dark:border-b-light"
         name="gender"
         id="gender"
-        onChange={onChangeAction}
+        onChange={onChange}
         defaultValue={value || "-"}
         required
       >
@@ -42,6 +42,7 @@ export const GenderSelect = ({ value, onChangeAction }) => {
           Prefiero no decir
         </option>
       </select>
+      {error && <p className="text-red-600">{error}</p>}
     </div>
   );
 };

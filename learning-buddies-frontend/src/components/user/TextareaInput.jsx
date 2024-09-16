@@ -1,29 +1,21 @@
-export const TextareaInput = ({
-  label,
-  value,
-  inputName,
-  inputPlaceholder,
-  className,
-  required,
-  onChangeAction,
-}) => {
+export const TextareaInput = ({ label, name, placeholder, value, error, onChange }) => {
   if (value == null) value = "";
-  if (inputPlaceholder == null) inputPlaceholder = "";
+  if (placeholder == null) placeholder = "";
 
   return (
-    <div className={`${className} w-full`}>
-      <label htmlFor={inputName} className="w-full font-semibold">
+    <div className="w-full">
+      <label htmlFor={name} className="w-full font-semibold">
         {label}
       </label>
       <textarea
-        name={inputName}
-        id={inputName}
-        placeholder={inputPlaceholder}
-        required={required}
-        onChange={onChangeAction}
+        name={name}
+        id={name}
+        placeholder={placeholder}
         defaultValue={value}
+        onChange={onChange}
         className="mt-1 min-h-20 w-full rounded-lg border-2 border-dark-grey bg-transparent p-2 focus-visible:outline-light-green/50 active:outline-light-green/50 dark:border-light"
       ></textarea>
+      {error && <p className="text-red-600">{error}</p>}
     </div>
   );
 };
