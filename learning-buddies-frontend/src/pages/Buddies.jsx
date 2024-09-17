@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { MdClose, MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { Filters } from "../components/buddies/Filters";
 import {
@@ -66,17 +67,28 @@ export default function Buddies() {
   }
 
   const handleSentRequest = async (id, name) => {
+    const responseToast = toast.loading("Enviando solicitud...");
     try {
       await friendshipService.sendFriendshipRequest(id, token);
-      alert("se envio la solicitud a" + name);
+      toast.success("Solicitud a " + name + " enviada!", {
+        id: responseToast,
+      });
       navigate("/buddies");
     } catch (error) {
       console.log(error);
+      toast.error(
+        "No se pudo enviar solicitud a " +
+          name +
+          ". Intentelo luego nuevamente.",
+        {
+          id: responseToast,
+        },
+      );
     }
   };
 
   return (
-    <main className="my-3 p-4 font-raleway md:p-2 lg:mx-auto lg:max-w-screen-xl">
+    <main className="relative my-3 p-4 font-raleway md:p-2 lg:mx-auto lg:max-w-screen-xl">
       <h2
         className={`text-center text-2xl font-semibold text-medium-green md:mb-1 dark:text-dm-light-green ${openFiltersModal && "blur-sm"}`}
       >

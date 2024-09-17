@@ -117,7 +117,10 @@ export const ProfileEdition = () => {
 
   return (
     <main className="mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:max-w-7xl md:gap-x-4 dark:text-light">
-      <form onSubmit={handleSubmit} className="px-3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:max-w-6xl lg:px-10 md:dark:bg-dm-dark-green">
+      <form
+        onSubmit={handleSubmit}
+        className="px-3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:max-w-6xl lg:px-10 md:dark:bg-dm-dark-green"
+      >
         <section className="flex flex-col md:flex-row md:gap-10">
           <div className="md:w-1/2">
             <h1 className="mb-2 text-2xl font-bold">Edita tu perfil</h1>

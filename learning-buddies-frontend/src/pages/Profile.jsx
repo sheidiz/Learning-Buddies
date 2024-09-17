@@ -12,22 +12,22 @@ export default function Profile() {
   const [friends, setFriends] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const [profileData, friendshipsData] = await Promise.all([
-          profilesService.getProfile(token),
-          friendshipService.getFriendships(token),
-        ]);
-        setProfile(profileData);
-        setFriends(friendshipsData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchProfile = async () => {
+    try {
+      const [profileData, friendshipsData] = await Promise.all([
+        profilesService.getProfile(token),
+        friendshipService.getFriendships(token),
+      ]);
+      setProfile(profileData);
+      setFriends(friendshipsData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProfile();
   }, []);
 
@@ -53,7 +53,7 @@ export default function Profile() {
   const { friendships, pendingRequests, receivedRequests } = friends;
 
   return (
-    <main className="mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:max-w-7xl md:gap-x-4 dark:text-light">
+    <main className="relative mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:max-w-7xl md:gap-x-4 dark:text-light">
       <section className="px-3 md:w-2/3 md:rounded-md md:bg-white md:p-6 lg:mx-auto lg:w-1/2 lg:max-w-5xl lg:px-10 md:dark:bg-dm-dark-green">
         <div className="mb-2 flex flex-col items-center justify-center">
           <div className="overflow-hidden rounded-full">
@@ -126,7 +126,12 @@ export default function Profile() {
         <div className="my-4 flex flex-col gap-4">
           {receivedRequests.length > 0 ? (
             receivedRequests.map((profile, index) => (
-              <FriendRequest key={index} profile={profile} type="Received" />
+              <FriendRequest
+                key={index}
+                profile={profile}
+                type="Received"
+                onUpdate={fetchProfile}
+              />
             ))
           ) : (
             <p>Sin solicitudes pendientes.</p>
@@ -136,7 +141,12 @@ export default function Profile() {
         <div className="my-4 flex flex-col gap-4">
           {pendingRequests.length > 0 ? (
             pendingRequests.map((profile, index) => (
-              <FriendRequest key={index} profile={profile} type="Sent" />
+              <FriendRequest
+                key={index}
+                profile={profile}
+                type="Sent"
+                onUpdate={fetchProfile}
+              />
             ))
           ) : (
             <p>Sin solicitudes pendientes de respuesta.</p>

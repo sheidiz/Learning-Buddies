@@ -1,4 +1,4 @@
-export const BuddyCard = ({ profile, contactable, onClick }) => {
+export const BuddyCard = ({ profile, isAlreadyContact, onClick }) => {
   const {
     id,
     name,
@@ -69,12 +69,12 @@ export const BuddyCard = ({ profile, contactable, onClick }) => {
         )}
       </div>
       <div className="mt-3 w-full text-center">
-        {contactable && (
+        {!isAlreadyContact && (
           <button
             onClick={handleContactButton}
             className="rounded-3xl bg-dark px-10 py-1 font-extrabold text-light hover:scale-110"
           >
-            Contactar
+            Conectar
           </button>
         )}
       </div>

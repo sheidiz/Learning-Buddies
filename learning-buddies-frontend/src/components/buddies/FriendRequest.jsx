@@ -1,11 +1,12 @@
 import React from "react";
+import toast from "react-hot-toast";
 import { BiTrash } from "react-icons/bi";
 import { MdCheck } from "react-icons/md";
 import { useAuth } from "../../contexts/AuthContext";
 import friendshipService from "../../services/friendshipService";
 import { useNavigate } from "react-router-dom";
 
-export const FriendRequest = ({ index, profile, type }) => {
+export const FriendRequest = ({ index, profile, type, onUpdate }) => {
   const { token } = useAuth();
   const {
     id,
@@ -27,7 +28,8 @@ export const FriendRequest = ({ index, profile, type }) => {
   const handleDeleteRequest = async () => {
     try {
       await friendshipService.removeFriendshipRequest(id, token);
-      window.location.reload();
+      toast("Solicitud de amistad eliminada.");
+      onUpdate();
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +38,8 @@ export const FriendRequest = ({ index, profile, type }) => {
   const handleAcceptRequest = async () => {
     try {
       await friendshipService.acceptFriendshipRequest(id, token);
-      window.location.reload();
+      toast("Solicitud de amistad aceptada.");
+      onUpdate();
     } catch (error) {
       console.log(error);
     }
