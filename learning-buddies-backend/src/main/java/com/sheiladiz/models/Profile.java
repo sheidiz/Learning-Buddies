@@ -1,10 +1,10 @@
 package com.sheiladiz.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotBlank;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,10 +55,10 @@ public class Profile {
 
     private String pronouns;
 
-    @NotEmpty(message = "País requerido.")
+    @NotBlank(message = "País requerido.")
     private String country;
 
-    @NotEmpty
+    @NotBlank
     @Size(max = 100, message = "Posición de trabajo tiene un limite de 100 caracteres.")
     private String jobPosition;
 
@@ -82,20 +82,18 @@ public class Profile {
     private Set<Skill> skillsToLearn = new HashSet<>();
 
     @Column(updatable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new Date();
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = new Date();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Profile(User user, String name, String profilePicture, String profilePictureBackground, String gender, String country, String jobPosition, String bio) {

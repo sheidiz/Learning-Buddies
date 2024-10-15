@@ -2,20 +2,20 @@ package com.sheiladiz.services;
 
 import java.util.List;
 
-import com.sheiladiz.dtos.ProfileDTO;
-import com.sheiladiz.models.Profile;
+import com.sheiladiz.dtos.profile.RequestProfileDto;
+import com.sheiladiz.dtos.profile.ResponseProfileDto;
+import com.sheiladiz.dtos.profile.ResponseProtectedProfileDto;
 import com.sheiladiz.models.User;
 
 public interface ProfileService {
-	
-	Profile saveProfile(ProfileDTO newProfile, User user);
-	List<Profile> allProfiles();
-	Profile getProfileByUser(User user);
-	Profile getProfileByUserId(Long id);
-	Profile getProfileByUserEmail(String email);
-	Profile getProfileById(Long id);
-	List<ProfileDTO> getProfilesBySkills(List<String> skillsLearned, List<String> skillsToLearn);
-	Profile updateProfile(Profile existingProfile, ProfileDTO profileDTO);
+
+	ResponseProfileDto saveProfile(RequestProfileDto newProfile, User user);
+	List<ResponseProtectedProfileDto> allProtectedProfiles();
+	List<ResponseProfileDto> allProfiles();
+	ResponseProfileDto getProfileByUser(User user);
+	ResponseProfileDto getProfileById(Long id);
+	List<ResponseProtectedProfileDto> getProfilesBySkills(List<String> skillsLearned, List<String> skillsToLearn);
+	ResponseProfileDto updateProfile(Long profileId, RequestProfileDto requestProfileDto);
+	ResponseProfileDto updateProfileSkills(String type, Long profileId, List<String> skillNames);
 	void deleteProfile(Long userId);
-	void isProfileExistsByUser(User user);
 }

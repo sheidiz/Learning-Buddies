@@ -1,5 +1,5 @@
 package com.sheiladiz.controllers;
-
+/*
 import com.sheiladiz.dtos.FriendshipsResponse;
 import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.mappers.FriendshipMapper;
@@ -117,3 +117,4 @@ public class FriendshipController {
     }
 
 }
+*/

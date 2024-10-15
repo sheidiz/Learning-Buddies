@@ -1,5 +1,5 @@
 package com.sheiladiz.mappers;
-
+/*
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.FriendshipDTO;
 import com.sheiladiz.dtos.FriendshipsResponse;
-import com.sheiladiz.dtos.ProfileDTO;
+import com.sheiladiz.dtos.profile.RequestProfileDto;
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.Profile;
 import com.sheiladiz.services.ProfileService;
@@ -57,16 +57,18 @@ public class FriendshipMapper {
     public List<Friendship> toEntities(List<FriendshipDTO> friendships) {
         return friendships.stream().map(this::toEntity).collect(Collectors.toList());
     }
-
+/*
     public FriendshipsResponse toFriendshipResponse(List<Profile> friends, List<Profile> receivedRequests, List<Profile> sentRequests){
-        List<ProfileDTO> friendsDTO = profileMapper.profilesToProfileDTOs(friends);
-        List<ProfileDTO> receivedRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(receivedRequests); //this avoids having personal info shown off
-        List<ProfileDTO> sentRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(sentRequests); //this avoids having personal info shown off
+        List<RequestProfileDto> friendsDTO = profileMapper.profilesToProfileDTOs(friends);
+        List<RequestProfileDto> receivedRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(receivedRequests); //this avoids having personal info shown off
+        List<RequestProfileDto> sentRequestsDTO = profileMapper.profilesToProtectedProfileDTOs(sentRequests); //this avoids having personal info shown off
 
         return FriendshipsResponse.builder()
                 .friendships(friendsDTO)
                 .receivedRequests(receivedRequestsDTO)
                 .pendingRequests(sentRequestsDTO)
                 .build();
-    }
+
 }
+    */
+

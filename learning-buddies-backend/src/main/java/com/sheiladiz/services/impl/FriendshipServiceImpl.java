@@ -1,5 +1,5 @@
 package com.sheiladiz.services.impl;
-
+/*
 import com.sheiladiz.exceptions.InvalidDataException;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
@@ -118,4 +118,4 @@ public class FriendshipServiceImpl implements FriendshipService {
                 .map(profileMapper)
                 .collect(Collectors.toList());
     }
-}
+}*/

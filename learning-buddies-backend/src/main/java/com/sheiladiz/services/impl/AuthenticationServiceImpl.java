@@ -1,5 +1,6 @@
 package com.sheiladiz.services.impl;
 
+import com.sheiladiz.dtos.profile.ResponseProfileDto;
 import com.sheiladiz.dtos.user.RequestLoginDto;
 import com.sheiladiz.dtos.user.RequestRegisterDto;
 import com.sheiladiz.dtos.user.ResponseLoginDto;
@@ -7,8 +8,11 @@ import com.sheiladiz.dtos.user.ResponseUserDto;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
 import com.sheiladiz.exceptions.InvalidUserCredentialsException;
+import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.mappers.UserMapper;
+import com.sheiladiz.models.Profile;
 import com.sheiladiz.models.User;
+import com.sheiladiz.repositories.ProfileRepository;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.AuthenticationService;
 
@@ -22,12 +26,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ProfileRepository profileRepository;
+    private final ProfileMapper profileMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -67,9 +75,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String jwtToken = jwtService.generateToken(user);
         ResponseUserDto userDto = userMapper.userToUserDto(user);
-        //ADD PROFILE TO RESPONSE
 
-        return new ResponseLoginDto(jwtToken, jwtService.getExpirationTime(), userDto);
+        ResponseProfileDto profileDto = null;
+        if (userDto.profileId() != null) {
+            Optional<Profile> profile = profileRepository.findById(userDto.profileId());
+            if (profile.isPresent()) profileDto = profileMapper.profileToProfileDto(profile.get());
+        }
+
+        return new ResponseLoginDto(jwtToken, jwtService.getExpirationTime(), userDto, profileDto);
     }
 
     @Override

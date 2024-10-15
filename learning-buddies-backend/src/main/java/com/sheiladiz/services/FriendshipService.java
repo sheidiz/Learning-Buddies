@@ -1,5 +1,5 @@
 package com.sheiladiz.services;
-
+/*
 import com.sheiladiz.models.Friendship;
 import com.sheiladiz.models.Profile;
 
@@ -16,3 +16,4 @@ public interface FriendshipService {
 	Friendship acceptFriendRequest(Profile profile, Profile friendProfile);
 	void removeFriendship(Friendship friendship);
 }
+*/
