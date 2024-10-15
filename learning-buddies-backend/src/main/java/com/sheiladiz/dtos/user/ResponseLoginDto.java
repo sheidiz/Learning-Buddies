@@ -5,8 +5,9 @@ import lombok.Builder;
 
 @Builder
 public record ResponseLoginDto(
-    String token,
-    long expiresIn,
-    ResponseUserDto user,
-    ResponseProfileDto profileDto
-){}
+        String token,
+        long expiresIn,
+        ResponseUserDto user,
+        ResponseProfileDto profileDto
+) {
+}

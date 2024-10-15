@@ -7,13 +7,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record RequestLoginDto (
-	@NotEmpty(message = "Email requerido.")
-	@Email(message = "Email invalido.")
-	@Column(unique = true)
-	String email,
+public record RequestLoginDto(
+        @NotEmpty(message = "Email requerido.")
+        @Email(message = "Email invalido.")
+        @Column(unique = true)
+        String email,
 
-	@NotEmpty(message = "Contraseña requerida.")
-	@Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
-	String password
-){}
+        @NotEmpty(message = "Contraseña requerida.")
+        @Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
+        String password
+) {
+}

@@ -6,10 +6,10 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ResponseUserDto (
-	Long id,
-	String email,
-	String authProvider,
-	Long profileId
-){
+public record ResponseUserDto(
+        Long id,
+        String email,
+        String authProvider,
+        Long profileId
+) {
 }

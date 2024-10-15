@@ -1,23 +1,24 @@
 package com.sheiladiz.mappers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
+import com.sheiladiz.dtos.skill.ResponseSkillCategoryDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import com.sheiladiz.dtos.SkillCategoryDTO;
+import com.sheiladiz.dtos.skill.RequestSkillCategoryDto;
 import com.sheiladiz.models.SkillCategory;
 
-@Component
-public class SkillCategoryMapper {
+@Mapper(componentModel = "spring")
+public interface SkillCategoryMapper {
 
-	public SkillCategoryDTO toDTO(SkillCategory category) {
-		return SkillCategoryDTO.builder().id(category.getId()).name(category.getName())
-				.build();
-	}
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    SkillCategory requestCategoryDtoToCategory(RequestSkillCategoryDto category);
 
-	public List<SkillCategoryDTO> skillCategoriesToSkillCategoryDTOs(List<SkillCategory> categories) {
-		return categories.stream().map(this::toDTO).collect(Collectors.toList());
-	}
+    ResponseSkillCategoryDto categoryToResponseCategoryDto(SkillCategory category);
+
+    List<ResponseSkillCategoryDto> categoriesToSkillCategoryDtos(List<SkillCategory> categories);
 
 }

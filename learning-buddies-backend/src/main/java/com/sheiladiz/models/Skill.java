@@ -2,7 +2,9 @@ package com.sheiladiz.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,7 +22,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,12 +41,12 @@ public class Skill {
 
 	private String skillType; // programacion u otros
 
-	@NotNull(message = "Categorías requeridas.")
+	@NotNull
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "skills_have_categories", joinColumns = @JoinColumn(name = "skill_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private List<SkillCategory> categories;
+	private Set<SkillCategory> categories;
 
-	@NotEmpty(message = "Nombre requerido.")
+	@NotBlank
 	private String name;
 
 	@JsonBackReference(value = "skills-learned-json")
@@ -77,7 +78,7 @@ public class Skill {
 		this.name = name;
 	}
 
-	public Skill(String name, List<SkillCategory> categories) {
+	public Skill(String name, Set<SkillCategory> categories) {
 		this.name = name;
 		this.categories = categories;
 	}

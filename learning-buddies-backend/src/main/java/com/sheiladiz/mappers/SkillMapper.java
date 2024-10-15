@@ -1,35 +1,46 @@
 package com.sheiladiz.mappers;
 
+import com.sheiladiz.dtos.skill.ResponseSkillDto;
+import com.sheiladiz.models.Profile;
+import com.sheiladiz.models.SkillCategory;
+import org.mapstruct.Mapper;
+
+import com.sheiladiz.dtos.skill.RequestSkillDto;
+import com.sheiladiz.models.Skill;
+import org.mapstruct.Mapping;
+
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
+@Mapper(componentModel = "spring")
+public interface SkillMapper {
 
-import com.sheiladiz.dtos.SkillDTO;
-import com.sheiladiz.models.Profile;
-import com.sheiladiz.models.Skill;
-import com.sheiladiz.models.SkillCategory;
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "categories", ignore = true)
+	@Mapping(target = "profilesWhoLearnedThisSkill", ignore = true)
+	@Mapping(target = "profilesLearningThisSkill", ignore = true)
+	@Mapping(target = "createdAt", ignore = true)
+	@Mapping(target = "updatedAt", ignore = true)
+	Skill requestSkillDtoToSkill(RequestSkillDto requestSkillDto);
 
-@Component
-public class SkillMapper {
+	@Mapping(target = "categories", expression = "java(mapCategories(skill.getCategories()))")
+	@Mapping(target = "profilesWhoLearnedThisSkillIds", expression = "java(mapProfilesIds(skill.getProfilesWhoLearnedThisSkill()))")
+	@Mapping(target = "profilesLearningThisSkillIds", expression = "java(mapProfilesIds(skill.getProfilesLearningThisSkill()))")
+	ResponseSkillDto skillToResponseSkillDto(Skill skill);
 
-	public SkillDTO toDTO(Skill skill) {
-		return SkillDTO.builder().id(skill.getId()).skillType(skill.getSkillType()).name(skill.getName())
-				.categories(mapCategories(skill.getCategories()))
-				.profilesWhoLearnedThisSkillIds(mapUsers(skill.getProfilesWhoLearnedThisSkill()))
-				.profilesLearningThisSkillIds(mapUsers(skill.getProfilesLearningThisSkill())).build();
+	default List<String> mapCategories(Set<SkillCategory> skills) {
+		return skills.stream()
+				.map(SkillCategory::getName)
+				.collect(Collectors.toList());
 	}
 
-	public List<String> mapCategories(List<SkillCategory> categories) {
-		return categories.stream().map(SkillCategory::getName).collect(Collectors.toList());
+	default List<Long> mapProfilesIds(List<Profile> profiles) {
+		return profiles.stream()
+				.map(Profile::getId)
+				.collect(Collectors.toList());
 	}
 
-	private List<Long> mapUsers(List<Profile> profiles) {
-		return profiles.stream().map(Profile::getId).collect(Collectors.toList());
-	}
-
-	public List<SkillDTO> skillsToSkillDTOs(List<Skill> skills) {
-		return skills.stream().map(this::toDTO).collect(Collectors.toList());
-	}
+	List<ResponseSkillDto> skillsToResponseSkillDtos(List<Skill> skills);
 
 }

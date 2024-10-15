@@ -1,38 +1,33 @@
 package com.sheiladiz.controllers;
 
-import com.sheiladiz.dtos.SkillCategoryDTO;
-import com.sheiladiz.dtos.SkillDTO;
+import com.sheiladiz.dtos.skill.RequestSkillCategoryDto;
+import com.sheiladiz.dtos.skill.RequestSkillDto;
+import com.sheiladiz.dtos.skill.ResponseSkillCategoryDto;
+import com.sheiladiz.dtos.skill.ResponseSkillDto;
 import com.sheiladiz.exceptions.ErrorResponse;
-import com.sheiladiz.mappers.SkillCategoryMapper;
-import com.sheiladiz.mappers.SkillMapper;
-import com.sheiladiz.models.Skill;
-import com.sheiladiz.models.SkillCategory;
+import com.sheiladiz.services.SkillCategoryService;
 import com.sheiladiz.services.SkillService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/admin/skills")
 public class AdminSkillController {
-    private final SkillService skillService;
-    private final SkillMapper skillMapper;
-    private final SkillCategoryMapper categoryMapper;
 
-    public AdminSkillController(SkillService skillService, SkillMapper skillMapper, SkillCategoryMapper categoryMapper) {
-        this.skillService = skillService;
-        this.skillMapper = skillMapper;
-        this.categoryMapper = categoryMapper;
-    }
+    private final SkillService skillService;
+    private final SkillCategoryService categoryService;
 
     @ApiResponses({
             @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = SkillDTO.class))}),
+                    schema = @Schema(implementation = ResponseSkillDto.class))}),
             @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
@@ -44,14 +39,14 @@ public class AdminSkillController {
                             schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping
-    public ResponseEntity<SkillDTO> createSkill(@Valid @RequestBody SkillDTO skillDTO) {
-        Skill savedSkill = skillService.saveSkill(skillDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(skillMapper.toDTO(savedSkill));
+    public ResponseEntity<ResponseSkillDto> createSkill(@Valid @RequestBody RequestSkillDto requestSkillDto) {
+        ResponseSkillDto savedSkill = skillService.saveSkill(requestSkillDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedSkill);
     }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = SkillDTO.class))}),
+                    schema = @Schema(implementation = ResponseSkillDto.class))}),
             @ApiResponse(responseCode = "404", description = "Habilidad con id {id} no encontrada",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
@@ -60,9 +55,9 @@ public class AdminSkillController {
                             schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<SkillDTO> updateSkill(@PathVariable("id") Long id, @RequestBody SkillDTO skillDTO) {
-        Skill updatedSkill = skillService.updateSkill(id, skillDTO);
-        return ResponseEntity.ok(skillMapper.toDTO(updatedSkill));
+    public ResponseEntity<ResponseSkillDto> updateSkill(@PathVariable("id") Long id, @RequestBody RequestSkillDto requestSkillDto) {
+        ResponseSkillDto updatedSkill = skillService.updateSkill(id, requestSkillDto);
+        return ResponseEntity.ok(updatedSkill);
     }
 
     @ApiResponses({
@@ -80,7 +75,7 @@ public class AdminSkillController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "201", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = SkillCategoryDTO.class))}),
+                    schema = @Schema(implementation = ResponseSkillCategoryDto.class))}),
             @ApiResponse(responseCode = "400", description = "Datos necesarios faltantes/inválidos.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))}),
@@ -89,20 +84,20 @@ public class AdminSkillController {
                             schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping("/categories")
-    public ResponseEntity<SkillCategoryDTO> createCategory(@Valid @RequestBody SkillCategoryDTO skillCategoryDTO) {
-        SkillCategory savedCategory = skillService.saveCategory(skillCategoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryMapper.toDTO(savedCategory));
+    public ResponseEntity<ResponseSkillCategoryDto> createCategory(@Valid @RequestBody RequestSkillCategoryDto requestSkillCategoryDto) {
+        ResponseSkillCategoryDto savedCategory = categoryService.saveCategory(requestSkillCategoryDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = SkillCategoryDTO.class))}),
+                    schema = @Schema(implementation = ResponseSkillCategoryDto.class))}),
             @ApiResponse(responseCode = "404", description = "Categoría de habilidad con id {id} no encontrada",
                     content = @Content)})
     @PutMapping("/categories/{id}")
-    public ResponseEntity<SkillCategoryDTO> updateCategory(@PathVariable("id") Long id, @RequestBody SkillCategoryDTO skillCategoryDTO) {
-        SkillCategory updatedCategory = skillService.updateCategory(id, skillCategoryDTO);
-        return ResponseEntity.ok(categoryMapper.toDTO(updatedCategory));
+    public ResponseEntity<ResponseSkillCategoryDto> updateCategory(@PathVariable("id") Long id, @RequestBody RequestSkillCategoryDto requestSkillCategoryDto) {
+        ResponseSkillCategoryDto updatedCategory = categoryService.updateCategory(id, requestSkillCategoryDto);
+        return ResponseEntity.ok(updatedCategory);
     }
 
     @ApiResponses({
@@ -114,7 +109,7 @@ public class AdminSkillController {
     })
     @DeleteMapping("/categories/{categoryId}")
     public ResponseEntity<?> deleteCategoryById(@PathVariable("categoryId") Long id) {
-        skillService.deleteCategoryById(id);
+        categoryService.deleteCategoryById(id);
         return ResponseEntity.ok("Categoría de habilidad eliminada exitosamente");
     }
 }
