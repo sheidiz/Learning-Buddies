@@ -1,7 +1,5 @@
 package com.sheiladiz.dtos;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -19,5 +17,4 @@ public class SkillCategoryDTO {
 	private Long id;
 	@NotEmpty(message = "Nombre requerido.")
 	private String name;
-	private List<String> skillNames;
 }

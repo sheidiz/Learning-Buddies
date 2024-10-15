@@ -15,4 +15,6 @@ public interface SkillRepository extends CrudRepository<Skill, Long> {
 	
 	Optional<Skill> findByName(String name);
 	
+	List<Skill> findByNameIn(List<String> names);
+	
 }

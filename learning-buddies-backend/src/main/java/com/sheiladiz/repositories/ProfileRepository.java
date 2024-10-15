@@ -12,9 +12,13 @@ import com.sheiladiz.models.User;
 @Repository
 public interface ProfileRepository extends CrudRepository<Profile, Long> {
 	List<Profile> findAll();
+
 	boolean existsByUser(User user);
+
 	Optional<Profile> findByUser(User user);
+
 	Optional<Profile> findByUserId(Long userId);
+
 	Optional<Profile> findByUserEmail(String email);
-	List<Profile> findByJobPositionContaining(String job);
+
 }

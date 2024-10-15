@@ -1,7 +1,6 @@
 package com.sheiladiz.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sheiladiz.dtos.ProfileDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +16,6 @@ public class UserDTO {
 	private Long id;
 	private String email;
 	private String authProvider;
-	private ProfileDTO profile;
+	private Long profileId;
 
-	public UserDTO(Long id, String email, String authProvider) {
-		this.id = id;
-		this.email = email;
-		this.authProvider = authProvider;
-	}
 }

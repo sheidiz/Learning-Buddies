@@ -1,11 +1,12 @@
 package com.sheiladiz.mappers;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.sheiladiz.dtos.ProfileDTO;
@@ -14,11 +15,10 @@ import com.sheiladiz.models.Skill;
 import com.sheiladiz.services.SkillService;
 
 @Component
+@RequiredArgsConstructor
 public class ProfileMapper {
 
-	@Autowired
-	@Lazy
-	private SkillService skillService;
+	private final SkillService skillService;
 
 	public ProfileDTO toDTO(Profile profile) {
 		ProfileDTO profileDTO = toProtectedDTO(profile);
@@ -52,12 +52,16 @@ public class ProfileMapper {
 			builder.pronouns(profile.getPronouns());
 		}
 
-		if (profile.getSkillsLearned() != null) {
+		if (profile.getSkillsLearned() != null && !profile.getSkillsLearned().isEmpty()) {
 			builder.skillsLearned(mapSkills(profile.getSkillsLearned()));
+		} else {
+			builder.skillsLearned(Collections.emptyList());
 		}
 
-		if (profile.getSkillsToLearn() != null) {
+		if (profile.getSkillsToLearn() != null && !profile.getSkillsToLearn().isEmpty()) {
 			builder.skillsToLearn(mapSkills(profile.getSkillsToLearn()));
+		} else {
+			builder.skillsToLearn(Collections.emptyList());
 		}
 
 		return builder.build();
@@ -92,24 +96,24 @@ public class ProfileMapper {
 		if (profileDTO.getSkillsLearned() != null) {
 			builder.skillsLearned(mapSkillNames(profileDTO.getSkillsLearned()));
 		} else {
-			builder.skillsLearned(new ArrayList<Skill>());
+			builder.skillsLearned(new HashSet<>());
 		}
 
 		if (profileDTO.getSkillsToLearn() != null) {
 			builder.skillsToLearn(mapSkillNames(profileDTO.getSkillsToLearn()));
 		} else {
-			builder.skillsToLearn(new ArrayList<Skill>());
+			builder.skillsToLearn(new HashSet<>());
 		}
 
 		return builder.build();
 	}
 
-	private List<String> mapSkills(List<Skill> skills) {
+	private List<String> mapSkills(Set<Skill> skills) {
 		return skills.stream().map(Skill::getName).collect(Collectors.toList());
 	}
 
-	public List<Skill> mapSkillNames(List<String> skillNames) {
-		return skillNames.stream().map(skillService::getSkillByName).collect(Collectors.toList());
+	public Set<Skill> mapSkillNames(List<String> skillNames) {
+	    return skillService.getSkillsByNames(skillNames);
 	}
 
 	public List<ProfileDTO> profilesToProfileDTOs(List<Profile> profiles) {

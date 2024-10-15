@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sheiladiz.dtos.ProfileDTO;
@@ -29,17 +31,13 @@ import com.sheiladiz.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/profiles")
 public class ProfileController {
+
 	private final ProfileService profileService;
 	private final UserService userService;
 	private final ProfileMapper profileMapper;
-
-	public ProfileController(ProfileService profileService, UserService userService, ProfileMapper profileMapper) {
-		this.profileService = profileService;
-		this.userService = userService;
-		this.profileMapper = profileMapper;
-	}
 
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", content = {
@@ -77,12 +75,12 @@ public class ProfileController {
 			@ApiResponse(responseCode = "404", description = "Perfiles no encontrados", content = {
 					@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)) }) })
 	@GetMapping
-	public ResponseEntity<List<ProfileDTO>> getProfiles(Authentication authentication) {
-		String email = authentication.getName();
+	public ResponseEntity<List<ProfileDTO>> getProfiles(
+			@RequestParam(required = false) List<String> skillsLearned,
+		    @RequestParam(required = false) List<String> skillsToLearn) {
+		List<ProfileDTO> profiles = profileService.getProfilesBySkills(skillsLearned, skillsToLearn);
 		
-		List<Profile> profiles = profileService.allProfiles();
-		
-		return ResponseEntity.ok(profileMapper.profilesToProtectedProfileDTOs(profiles));
+		return ResponseEntity.ok(profiles);
 	}
 
 	@ApiResponses({

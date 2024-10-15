@@ -1,12 +1,10 @@
 package com.sheiladiz.models;
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -73,20 +71,15 @@ public class Profile {
     private String linkedinUrl;
     private String contactEmail;
 
-    @JsonManagedReference(value = "skills-learned-json")
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "profile_has_learnedskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List<Skill> skillsLearned;
+    @JoinTable(name = "profile_skills_learned", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @Builder.Default
+    private Set<Skill> skillsLearned = new HashSet<>();
 
-    @JsonManagedReference(value = "skills-to-learn-json")
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "profile_has_tolearnskills", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    private List<Skill> skillsToLearn;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "profile_friends", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "friend_profile_id"))
-    private List<Profile> friends;
+    @JoinTable(name = "profile_skills_learning", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @Builder.Default
+    private Set<Skill> skillsToLearn = new HashSet<>();
 
     @Column(updatable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")

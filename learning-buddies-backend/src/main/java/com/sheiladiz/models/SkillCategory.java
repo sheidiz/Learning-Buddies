@@ -1,7 +1,6 @@
 package com.sheiladiz.models;
 
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,9 +24,6 @@ public class SkillCategory {
 
 	@NotEmpty(message = "Nombre requerido.")
 	private String name;
-
-	@ManyToMany(mappedBy = "categories")
-	private List<Skill> skills;
 
 	@Column(updatable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")

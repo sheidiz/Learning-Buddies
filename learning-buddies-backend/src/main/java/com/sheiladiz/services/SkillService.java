@@ -1,6 +1,7 @@
 package com.sheiladiz.services;
 
 import java.util.List;
+import java.util.Set;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
 import com.sheiladiz.dtos.SkillDTO;
@@ -23,4 +24,5 @@ public interface SkillService {
 	Skill updateSkill(Long skillId, SkillDTO newSkillDTO);
 	void deleteSkillById(Long id);
 	List<SkillCategory> getCategoriesFromNames(SkillDTO newSkill);
+	Set<Skill> getSkillsByNames(List<String> names);
 }

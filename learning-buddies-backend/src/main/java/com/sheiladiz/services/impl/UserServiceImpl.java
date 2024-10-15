@@ -5,19 +5,19 @@ import java.util.List;
 import com.sheiladiz.dtos.user.UserDTO;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
+
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public List<User> allUsers() {
         return userRepository.findAll();

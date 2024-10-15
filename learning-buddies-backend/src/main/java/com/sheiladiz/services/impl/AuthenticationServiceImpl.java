@@ -8,6 +8,9 @@ import com.sheiladiz.exceptions.InvalidUserCredentialsException;
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.UserRepository;
 import com.sheiladiz.services.AuthenticationService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,16 +18,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+	
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-
-    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-    }
 
     public User signUp(RegisterRequest registerUserDto) {
         User user = User.builder()

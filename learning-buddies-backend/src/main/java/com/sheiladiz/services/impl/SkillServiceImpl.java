@@ -3,9 +3,11 @@ package com.sheiladiz.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.sheiladiz.dtos.SkillCategoryDTO;
@@ -17,27 +19,23 @@ import com.sheiladiz.repositories.SkillRepository;
 import com.sheiladiz.services.SkillService;
 
 @Service
+@RequiredArgsConstructor
 public class SkillServiceImpl implements SkillService {
+
     private final SkillRepository skillRepository;
     private final SkillCategoryRepository categoryRepository;
-
-    public SkillServiceImpl(SkillRepository skillRepository, SkillCategoryRepository categoryRepository) {
-        this.skillRepository = skillRepository;
-        this.categoryRepository = categoryRepository;
-    }
 
     public SkillCategory saveCategory(SkillCategoryDTO newCategory) {
         Optional<SkillCategory> existingCategory = categoryRepository.findByName(newCategory.getName());
         if (existingCategory.isPresent()) {
-            throw new ResourceAlreadyExistsException("Ya existe una categoria de habilidad con ese nombre");
+            throw new ResourceAlreadyExistsException("Ya existe una categoría de habilidad con ese nombre");
         }
 
-        List<Skill> skills = new ArrayList<>();
         SkillCategory category = SkillCategory
                 .builder()
                 .id(newCategory.getId())
                 .name(newCategory.getName())
-                .skills(skills).build();
+                .build();
 
         return categoryRepository.save(category);
     }
@@ -98,7 +96,7 @@ public class SkillServiceImpl implements SkillService {
         List<SkillCategory> categories = new ArrayList<>();
         for (String name : newSkill.getCategories()) {
             SkillCategory category = categoryRepository.findByName(name).orElseThrow(
-                    () -> new ResourceNotFoundException("Categoria de habilidad [" + name + "] no encontrada"));
+                    () -> new ResourceNotFoundException("Categoría de habilidad [" + name + "] no encontrada"));
             categories.add(category);
         }
         return categories;
@@ -112,6 +110,10 @@ public class SkillServiceImpl implements SkillService {
             skills.add(category);
         }
         return skills;
+    }
+    @SuppressWarnings("unchecked")
+	public Set<Skill> getSkillsByNames(List<String> names) {
+        return (Set<Skill>) skillRepository.findByNameIn(names);
     }
 
     public List<Skill> allSkills() {
