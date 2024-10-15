@@ -1,57 +1,29 @@
 package com.sheiladiz.mappers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-import com.sheiladiz.dtos.user.RegisterRequest;
-import com.sheiladiz.dtos.user.UserDTO;
+import com.sheiladiz.dtos.user.RequestRegisterDto;
+import com.sheiladiz.dtos.user.ResponseUserDto;
 import com.sheiladiz.models.User;
+import org.mapstruct.Mapping;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-	public UserDTO toDTO(User user) {
-		UserDTO.UserDTOBuilder builder = UserDTO.builder()
-				.id(user.getId())
-				.email(user.getEmail())
-				.authProvider(user.getAuthProvider());
-		
-		if (user.getProfileId()!= null) {
-			builder.profileId(user.getProfileId());
-		}
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "profileId", ignore = true)
+	@Mapping(target = "enabled", ignore = true)
+	@Mapping(target = "accountNonExpired", ignore = true)
+	@Mapping(target = "accountNonLocked", ignore = true)
+	@Mapping(target = "credentialsNonExpired", ignore = true)
+	@Mapping(target = "createdAt", ignore = true)
+	@Mapping(target = "updatedAt", ignore = true)
+	User registerUsertoUser(RequestRegisterDto requestRegisterDto);
 
-		return builder.build();
-	}
+	ResponseUserDto userToUserDto(User user);
 
-	public User toEntity(UserDTO userDTO) {
-		User.UserBuilder builder = User.builder()
-				.id(userDTO.getId() != null ? userDTO.getId() : null)
-				.email(userDTO.getEmail())
-				.authProvider(userDTO.getAuthProvider());
-		
-		 if (userDTO.getProfileId() != null) {
-			 builder.profileId(userDTO.getProfileId());
-	      }
-		 
-		return builder.build();
-	}
-
-	public User registerRequestToEntity(RegisterRequest registerRequest) {
-		return User.builder()
-				.email(registerRequest.getEmail())
-				.password(registerRequest.getPassword())
-				.authProvider(registerRequest.getAuthProvider())
-				.build();
-	}
-
-	public List<UserDTO> userEntitiesToUserDTOs(List<User> userEntities) {
-		return userEntities.stream().map(this::toDTO).collect(Collectors.toList());
-	}
-
-	public List<User> userDTOsToUserEntities(List<UserDTO> userDTOs) {
-		return userDTOs.stream().map(this::toEntity).collect(Collectors.toList());
-	}
+	List<ResponseUserDto> usersToUserDtos(List<User> users);
 
 }

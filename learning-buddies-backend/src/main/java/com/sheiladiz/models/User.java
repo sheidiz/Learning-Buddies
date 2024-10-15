@@ -1,10 +1,8 @@
 package com.sheiladiz.models;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,40 +47,14 @@ public class User implements UserDetails {
     private Long profileId;
 
     @Column(updatable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     private boolean enabled;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
-
-    public User(Long id, String email, String password, String authProvider) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.authProvider = authProvider;
-    }
-
-    public User(String email, String password, String authProvider) {
-        this.email = email;
-        this.password = password;
-        this.authProvider = authProvider;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = new Date();
-
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = new Date();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -94,6 +66,19 @@ public class User implements UserDetails {
         return this.email;
     }
 
+    public User(String email, String password, String authProvider) {
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+    }
+
+    public User(Long id, String email, String password, String authProvider) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+    }
+
     public User(String email, String password, String authProvider, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
         this.email = email;
         this.password = password;
@@ -102,5 +87,15 @@ public class User implements UserDetails {
         this.accountNonExpired = accountNonExpired;
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

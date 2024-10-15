@@ -2,7 +2,7 @@ package com.sheiladiz.controllers;
 
 import java.util.List;
 
-import com.sheiladiz.dtos.user.UserDTO;
+import com.sheiladiz.dtos.user.ResponseUserDto;
 import com.sheiladiz.exceptions.ErrorResponse;
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.User;
@@ -34,36 +34,36 @@ public class AdminUserController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(type = "array", implementation = UserDTO.class))})
+                    schema = @Schema(type = "array", implementation = ResponseUserDto.class))})
     })
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+    public ResponseEntity<List<ResponseUserDto>> getAllUsers() {
         List<User> users = userService.allUsers();
-        return ResponseEntity.ok(userMapper.userEntitiesToUserDTOs(users));
+        return ResponseEntity.ok(userMapper.usersToUserDtos(users));
     }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = UserDTO.class))}),
+                    schema = @Schema(implementation = ResponseUserDto.class))}),
             @ApiResponse(responseCode = "404", description = "Usuario con id {id} no encontrado.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseUserDto> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
-        return ResponseEntity.ok(userMapper.toDTO(user));
+        return ResponseEntity.ok(userMapper.userToUserDto(user));
     }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = UserDTO.class))}),
+                    schema = @Schema(implementation = ResponseUserDto.class))}),
             @ApiResponse(responseCode = "404", description = "Usuario con id {id} no encontrado.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
-        User updatedUser = userService.updateUser(id, userDTO);
-        return ResponseEntity.ok(userMapper.toDTO(updatedUser));
+    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable("id") Long id, @RequestBody ResponseUserDto responseUserDto) {
+        User updatedUser = userService.updateUser(id, responseUserDto);
+        return ResponseEntity.ok(userMapper.userToUserDto(updatedUser));
     }
 
     @ApiResponses({

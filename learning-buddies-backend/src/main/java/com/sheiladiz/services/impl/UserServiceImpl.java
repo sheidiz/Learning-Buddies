@@ -2,7 +2,7 @@ package com.sheiladiz.services.impl;
 
 import java.util.List;
 
-import com.sheiladiz.dtos.user.UserDTO;
+import com.sheiladiz.dtos.user.ResponseUserDto;
 import com.sheiladiz.exceptions.ResourceAlreadyExistsException;
 import com.sheiladiz.exceptions.ResourceNotFoundException;
 
@@ -38,16 +38,16 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con id [" + id + "] no encontrado"));
     }
 
-    public User updateUser(Long id, UserDTO userDTO) {
+    public User updateUser(Long id, ResponseUserDto responseUserDto) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con id [" + id + "] no encontrado"));
 
-        if (userDTO.getEmail() != null) {
-            existingUser.setEmail(userDTO.getEmail());
+        if (responseUserDto.email() != null) {
+            existingUser.setEmail(responseUserDto.email());
         }
 
-        if (userDTO.getAuthProvider() != null) {
-            existingUser.setAuthProvider(userDTO.getAuthProvider());
+        if (responseUserDto.authProvider() != null) {
+            existingUser.setAuthProvider(responseUserDto.authProvider());
         }
 
         return userRepository.save(existingUser);
