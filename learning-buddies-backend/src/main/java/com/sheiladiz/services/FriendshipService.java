@@ -1,19 +1,15 @@
 package com.sheiladiz.services;
-/*
-import com.sheiladiz.models.Friendship;
-import com.sheiladiz.models.Profile;
 
-import java.util.List;
+import com.sheiladiz.dtos.friendship.ResponseFriendshipLists;
 
 public interface FriendshipService {
 
-	void sendFriendRequest(Profile profile, Profile friendProfile);
-	Friendship findFriendshipBetween(Profile profile, Profile friendProfile);
-	Friendship findFriendship(Profile profile, Profile friendProfile);
-	List<Profile> getFriendsProfiles(Profile profile);
-	List<Profile> getPendingFriendshipProfiles(Profile profile);
-	List<Profile> getPendingReceivedFriendshipProfiles(Profile friendProfile);
-	Friendship acceptFriendRequest(Profile profile, Profile friendProfile);
-	void removeFriendship(Friendship friendship);
+    void sendFriendRequest(Long profileId, Long friendProfileId);
+
+    void acceptFriendRequest(Long profileId, Long friendProfileId);
+
+    void rejectFriendRequest(Long profileId, Long friendProfileId);
+
+    ResponseFriendshipLists getAllFriendshipsAndRequests(Long profileId);
+
 }
-*/

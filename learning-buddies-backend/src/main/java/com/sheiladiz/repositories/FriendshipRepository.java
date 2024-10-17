@@ -14,9 +14,19 @@ import com.sheiladiz.models.Profile;
 
 @Repository
 public interface FriendshipRepository extends CrudRepository<Friendship, Long> {
-	List<Friendship> findByProfileAndStatus(Profile profile, FriendshipStatus status);
-	List<Friendship> findByFriendProfileAndStatus(Profile friendProfile, FriendshipStatus status);
-	Optional<Friendship> findByProfileAndFriendProfile(Profile profile, Profile friendProfile);
-	@Query("SELECT f FROM Friendship f WHERE (f.profile = :profile AND f.friendProfile = :friendProfile) OR (f.profile = :friendProfile AND f.friendProfile = :profile)")
-	Optional<Friendship> findFriendshipBetweenProfiles(@Param("profile") Profile profile, @Param("friendProfile") Profile friendProfile);
+
+    Optional<Friendship> findByProfileAndFriendProfile(Profile profile, Profile friendProfile);
+
+    @Query("SELECT f FROM Friendship f WHERE (f.profile = :profile AND f.friendProfile = :friendProfile) OR (f.profile = :friendProfile AND f.friendProfile = :profile)")
+    Optional<Friendship> findFriendshipBetweenProfiles(@Param("profile") Profile profile, @Param("friendProfile") Profile friendProfile);
+
+    @Query("SELECT f FROM Friendship f WHERE (f.profile = :profile OR f.friendProfile = :profile) AND f.status = :status")
+    List<Friendship> findFriendshipsByProfileAndStatus(@Param("profile") Profile profile, @Param("status") FriendshipStatus status);
+
+    @Query("SELECT f FROM Friendship f WHERE f.profile = :profile AND f.status = :status")
+    List<Friendship> findOutgoingRequests(@Param("profile") Profile profile, @Param("status") FriendshipStatus status);
+
+    @Query("SELECT f FROM Friendship f WHERE f.friendProfile = :profile AND f.status = :status")
+    List<Friendship> findIncomingRequests(@Param("profile") Profile profile, @Param("status") FriendshipStatus status);
+
 }
