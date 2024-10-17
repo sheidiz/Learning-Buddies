@@ -1,9 +1,8 @@
 package com.sheiladiz.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -18,31 +17,29 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "skill_categories")
 public class SkillCategory {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotEmpty(message = "Nombre requerido.")
-	private String name;
+    @NotEmpty(message = "Nombre requerido.")
+    private String name;
 
-	@Column(updatable = false)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date updatedAt;
+    private LocalDateTime updatedAt;
 
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = new Date();
-	}
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.updatedAt = new Date();
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
-	public SkillCategory(String name) {
-		this.name = name;
-	}
+    public SkillCategory(String name) {
+        this.name = name;
+    }
 }

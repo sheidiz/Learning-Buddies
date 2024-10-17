@@ -1,12 +1,11 @@
 package com.sheiladiz.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -35,51 +34,45 @@ import lombok.NoArgsConstructor;
 @Table(name = "skills")
 public class Skill {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String skillType; // programacion u otros
+    private String skillType; // programacion u otros
 
-	@NotNull
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "skills_have_categories", joinColumns = @JoinColumn(name = "skill_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private Set<SkillCategory> categories;
+    @NotNull
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "skills_have_categories", joinColumns = @JoinColumn(name = "skill_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Set<SkillCategory> categories;
 
-	@NotBlank
-	private String name;
+    @NotBlank
+    private String name;
 
-	@JsonBackReference(value = "skills-learned-json")
-	@ManyToMany(mappedBy = "skillsLearned", fetch = FetchType.LAZY)
-	private List<Profile> profilesWhoLearnedThisSkill;
+    @JsonBackReference(value = "skills-learned-json")
+    @ManyToMany(mappedBy = "skillsLearned", fetch = FetchType.LAZY)
+    private List<Profile> profilesWhoLearnedThisSkill;
 
-	@JsonBackReference(value = "skills-to-learn-json")
-	@ManyToMany(mappedBy = "skillsToLearn", fetch = FetchType.LAZY)
-	private List<Profile> profilesLearningThisSkill;
+    @JsonBackReference(value = "skills-to-learn-json")
+    @ManyToMany(mappedBy = "skillsToLearn", fetch = FetchType.LAZY)
+    private List<Profile> profilesLearningThisSkill;
 
-	@Column(updatable = false)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date updatedAt;
+    private LocalDateTime updatedAt;
 
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = new Date();
-	}
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.updatedAt = new Date();
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
-	public Skill(String name) {
-		this.name = name;
-	}
-
-	public Skill(String name, Set<SkillCategory> categories) {
-		this.name = name;
-		this.categories = categories;
-	}
+    public Skill(String name, Set<SkillCategory> categories) {
+        this.name = name;
+        this.categories = categories;
+    }
 }

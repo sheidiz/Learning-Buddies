@@ -1,8 +1,6 @@
 package com.sheiladiz.models;
 
-import java.util.Date;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,43 +27,41 @@ import lombok.NoArgsConstructor;
 @Table(name = "friendships")
 public class Friendship {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "profile_id")
-	private Profile profile;
+    @ManyToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
-	@ManyToOne
-	@JoinColumn(name = "friend_profile_id")
-	private Profile friendProfile;
+    @ManyToOne
+    @JoinColumn(name = "friend_profile_id")
+    private Profile friendProfile;
 
-	@Enumerated(EnumType.STRING)
-	private FriendshipStatus status;
+    @Enumerated(EnumType.STRING)
+    private FriendshipStatus status;
 
-	@Column(updatable = false)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date updatedAt;
+    private LocalDateTime updatedAt;
 
-	public Friendship(Profile profile, Profile friendProfile, FriendshipStatus status) {
-		super();
-		this.profile = profile;
-		this.friendProfile = friendProfile;
-		this.status = status;
-	}
+    public Friendship(Profile profile, Profile friendProfile, FriendshipStatus status) {
+        super();
+        this.profile = profile;
+        this.friendProfile = friendProfile;
+        this.status = status;
+    }
 
-	@PrePersist
-	protected void onCreate() {
-		this.createdAt = new Date();
-	}
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-	@PreUpdate
-	protected void onUpdate() {
-		this.updatedAt = new Date();
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
