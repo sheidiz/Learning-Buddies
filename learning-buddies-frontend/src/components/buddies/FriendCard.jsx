@@ -1,6 +1,6 @@
 import React from "react";
 
-export const FriendCard = ({ index, profile }) => {
+export const FriendCard = ({ index, profile, openModal, selectProfile }) => {
   const {
     id,
     name,
@@ -31,12 +31,15 @@ export const FriendCard = ({ index, profile }) => {
       <div className="flex flex-col justify-evenly">
         <p className="text-lg font-semibold">{name}</p>
         <p className="mb-1 font-semibold">{jobPosition}</p>
-        <a
-          href={`/perfil/${id}`}
+        <button
+          onClick={() => {
+            openModal(true);
+            selectProfile(profile);
+          }}
           className="text-decoration-none block w-fit select-none rounded-3xl border-2 border-transparent bg-dark-green px-10 py-1 text-sm font-semibold text-white md:hover:scale-105 dark:bg-dm-medium-green md:dark:bg-dm-light-green/40"
         >
           Ver info
-        </a>
+        </button>
       </div>
     </div>
   );

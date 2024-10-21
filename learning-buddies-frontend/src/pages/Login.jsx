@@ -17,7 +17,7 @@ export default function Login() {
     try {
       const { token, user } = await authService.login(email, password);
       login(token, user);
-      if (user.profile) {
+      if (user.profileId) {
         navigate("/mi-perfil");
       } else {
         navigate("/creacion-perfil");
