@@ -1,88 +1,91 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { MdClose, MdFilterAlt, MdFilterAltOff } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { Filters } from "../components/buddies/Filters";
 import {
   loadFromLocalStorage,
   saveToLocalStorage,
 } from "../utils/storageUtils";
-import profilesService from "../services/profilesService";
 import { BuddyCard } from "../components/buddies/BuddyCard";
-import { useAuth } from "../contexts/AuthContext";
+import profilesService from "../services/profilesService";
 import friendshipService from "../services/friendshipService";
-import { useNavigate } from "react-router-dom";
+import skillsService from "../services/skillsService";
+import toast from "react-hot-toast";
+import { MdClose, MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 
 export default function Buddies() {
-  const navigate = useNavigate();
   const { user, token } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
-  const [skills1, setSkills1] = useState(
-    () => loadFromLocalStorage("skills1") || [],
-  );
-  const [skills2, setSkills2] = useState(
-    () => loadFromLocalStorage("skills2") || [],
-  );
+  const [friends, setFriends] = useState();
+  const [skills, setSkills] = useState([]);
+  const [skills1, setSkills1] = useState(loadFromLocalStorage("skills1") || []);
+  const [skills2, setSkills2] = useState(loadFromLocalStorage("skills2") || []);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   useEffect(() => {
     saveToLocalStorage("skills1", skills1);
     saveToLocalStorage("skills2", skills2);
-  }, [skills1, skills2]);
+  }, [friends, skills1, skills2]);
 
-  const handleRemoveSkill1 = (skill) => {
-    setSkills1((prev) => prev.filter((item) => item !== skill));
+  const fetchBuddiesAndFriendships = async () => {
+    try {
+      setIsLoading(true);
+      const [profilesData, friendshipsData] = await Promise.all([
+        profilesService.getAllProfiles(token, skills1, skills2),
+        friendshipService.getFriendships(token),
+      ]);
+      setFriends(friendshipsData);
+      setProfiles(profilesData);
+    } catch (error) {
+      console.error("Error fetching profiles", error);
+      toast.error("No se pudo cargar los perfiles.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRemoveSkill2 = (skill) => {
-    setSkills2((prev) => prev.filter((item) => item !== skill));
-  };
-
-  const handleRemoveFilters = () => {
-    setSkills1([]);
-    setSkills2([]);
-  };
-
-  const openModal = () => {
-    setOpenFiltersModal(true);
+  const fetchSkills = async () => {
+    try {
+      const skillsData = await skillsService.getSkills(token);
+      setSkills(skillsData);
+    } catch (error) {
+      console.error("Error fetching skills", error);
+      toast.error("No se pudo cargar las habilidades.");
+    }
   };
 
   useEffect(() => {
-    const fetchBuddies = async () => {
-      try {
-        const profilesData = await profilesService.getAllProfiles(token);
-        setProfiles(profilesData);
-      } catch (error) {
-        console.error("Error fetching profiles", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBuddies();
-  }, [isLoading]);
+    fetchBuddiesAndFriendships();
+    fetchSkills();
+  }, [skills1, skills2, token]);
 
   if (isLoading) {
     return <p>Cargando perfiles...</p>;
   }
 
+  const getConnectionStatus = (profileId) => {
+    const { friendships, sentRequests, receivedRequests } = friends || {};
+    if (friendships?.some((friend) => friend.id === profileId))
+      return "Conectado";
+    if (sentRequests?.some((request) => request.id === profileId))
+      return "Pendiente.";
+    if (receivedRequests?.some((request) => request.id === profileId))
+      return "Pendiente de aprobación";
+    return "Sin conectar";
+  };
+
   const handleSentRequest = async (id, name) => {
     const responseToast = toast.loading("Enviando solicitud...");
     try {
       await friendshipService.sendFriendshipRequest(id, token);
-      toast.success("Solicitud a " + name + " enviada!", {
-        id: responseToast,
-      });
-      navigate("/buddies");
+      toast.success(`Solicitud a ${name} enviada!`, { id: responseToast });
+      fetchBuddiesAndFriendships();
     } catch (error) {
       console.log(error);
       toast.error(
-        "No se pudo enviar solicitud a " +
-          name +
-          ". Intentelo luego nuevamente.",
-        {
-          id: responseToast,
-        },
+        `No se pudo enviar solicitud a ${name}. Inténtelo más tarde.`,
+        { id: responseToast },
       );
     }
   };
@@ -108,60 +111,59 @@ export default function Buddies() {
               className="w-full rounded-3xl px-5 py-1 text-center"
               placeholder="Buscar por rol"
             />
-            <button type="button" onClick={openModal}>
+            <button type="button" onClick={() => setOpenFiltersModal(true)}>
               <MdFilterAlt className="mb-1 text-3xl text-dark dark:text-light" />{" "}
             </button>
           </form>
-          <p className="mt-2 font-medium text-brown dark:text-dm-light-brown">
-            CONOCIMIENTOS:
-          </p>
-          <div className="flex flex-wrap gap-3 py-1">
-            {skills1.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-1 rounded-md border-2 border-brown bg-light-brown px-2 font-medium text-dark dark:border-dm-brown dark:bg-light"
-              >
-                {item}
-                <MdClose
-                  className="ml-1 cursor-pointer text-sm"
-                  onClick={() => handleRemoveSkill1(item)}
+          <div>
+            <p className="mt-2 font-medium text-brown dark:text-dm-light-brown">
+              CONOCIMIENTOS:
+            </p>
+            <div className="flex flex-wrap gap-3 py-1">
+              {skills1.map((item) => (
+                <SkillBadge
+                  key={item}
+                  skill={item}
+                  onRemove={() =>
+                    setSkills1(skills1.filter((skill) => skill !== item))
+                  }
                 />
-              </div>
-            ))}
-          </div>
-          <p className="mt-2 font-medium text-brown dark:text-dm-light-brown">
-            APRENDIENDO:
-          </p>
-          <div className="flex flex-wrap gap-3 py-1">
-            {skills2.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-1 rounded-md border-2 border-brown bg-light-brown px-2 font-medium text-dark dark:border-dm-brown dark:bg-light"
-              >
-                {item}
-                <MdClose
-                  className="ml-1 cursor-pointer text-sm"
-                  onClick={() => handleRemoveSkill2(item)}
+              ))}
+            </div>
+            <p className="mt-2 font-medium text-brown dark:text-dm-light-brown">
+              APRENDIENDO:
+            </p>
+            <div className="flex flex-wrap gap-3 py-1">
+              {skills2.map((item) => (
+                <SkillBadge
+                  key={item}
+                  skill={item}
+                  onRemove={() =>
+                    setSkills2(skills2.filter((skill) => skill !== item))
+                  }
                 />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
           <button
-            onClick={handleRemoveFilters}
+            onClick={() => {
+              setSkills1([]);
+              setSkills2([]);
+            }}
             className="mt-2 flex items-center gap-1 font-bold text-brown dark:text-dm-brown"
           >
-            Quitar Filtros <MdFilterAltOff />{" "}
+            Quitar Filtros <MdFilterAltOff />
           </button>
         </div>
         <div className="grid grid-cols-1 justify-center gap-6 p-5 md:grid-cols-2">
           {profiles &&
             profiles.map(
               (item, index) =>
-                item.id != user.profile.id && (
+                item.id != user.profileId && (
                   <BuddyCard
                     key={index}
                     profile={item}
-                    contactable={true}
+                    status={getConnectionStatus(item.id)}
                     onClick={handleSentRequest}
                   />
                 ),
@@ -175,8 +177,16 @@ export default function Buddies() {
           skills2={skills2}
           setSkills1={setSkills1}
           setSkills2={setSkills2}
+          skills={skills}
         />
       )}
     </main>
   );
 }
+
+const SkillBadge = ({ skill, onRemove }) => (
+  <div className="flex items-center gap-1 rounded-md border-2 border-brown bg-light-brown px-2 font-medium text-dark dark:border-dm-brown dark:bg-light">
+    {skill}
+    <MdClose className="ml-1 cursor-pointer text-sm" onClick={onRemove} />
+  </div>
+);

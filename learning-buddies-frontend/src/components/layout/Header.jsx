@@ -110,7 +110,7 @@ export const Header = () => {
                       <>
                         <MenuItem>
                           {({ focus }) =>
-                            user.profile == null ? (
+                            user.profileId == null ? (
                               <a
                                 href="/creacion-perfil"
                                 className={classNames(
@@ -205,7 +205,7 @@ export const Header = () => {
               ))}
               {user != null ? (
                 <>
-                  {user.profile == null ? (
+                  {user.profileId == null ? (
                     <a
                       href="/creacion-perfil"
                       className="mt-2 block border-t border-light-green px-3 py-2 text-base font-medium text-light-green"

@@ -5,6 +5,7 @@ import profilesService from "../services/profilesService";
 import friendshipService from "../services/friendshipService";
 import { FriendCard } from "../components/buddies/FriendCard";
 import { FriendRequest } from "../components/buddies/FriendRequest";
+import { getProfilePictureId } from "../utils/functions";
 
 export default function Profile() {
   const { token } = useAuth();
@@ -50,7 +51,7 @@ export default function Profile() {
     linkedinUrl,
     contactEmail,
   } = profile;
-  const { friendships, pendingRequests, receivedRequests } = friends;
+  const { friendships, sentRequests, receivedRequests } = friends;
 
   return (
     <main className="relative mb-5 w-full px-2 pt-2 font-raleway text-dark md:mx-auto md:flex md:max-w-7xl md:gap-x-4 dark:text-light">
@@ -139,8 +140,8 @@ export default function Profile() {
         </div>
         <h2 className="pt-2 text-2xl font-bold">Tus solicitudes enviadas</h2>
         <div className="my-4 flex flex-col gap-4">
-          {pendingRequests.length > 0 ? (
-            pendingRequests.map((profile, index) => (
+          {sentRequests.length > 0 ? (
+            sentRequests.map((profile, index) => (
               <FriendRequest
                 key={index}
                 profile={profile}

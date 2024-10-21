@@ -11,28 +11,35 @@ export const getProfile = async (token) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response) {
-      throw new Error(error.response.data || "Error al obtener el perfil");
-    } else {
-      throw new Error("Ocurrio un error obteniendo el perfil.");
-    }
+    handleError(error, "Error al obtener el perfil");
   }
 };
 
-export const getAllProfiles = async (token) => {
+export const getAllProfiles = async (
+  token,
+  skillsLearned = [],
+  skillsToLearn = [],
+) => {
   try {
+    const params = new URLSearchParams();
+    if (skillsLearned.length > 0) {
+      console.log(skillsLearned);
+      params.append("skillsLearned", skillsLearned.join(","));
+    }
+    if (skillsToLearn.length > 0) {
+      console.log(skillsToLearn);
+      params.append("skillsToLearn", skillsToLearn.join(","));
+    }
+
     const response = await axios.get(`${API_URL}/profiles`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: params,
     });
     return response.data;
   } catch (error) {
-    if (error.response) {
-      throw new Error(error.response.data || "Error al obtener los perfiles");
-    } else {
-      throw new Error("Ocurrio un error obteniendo los perfiles.");
-    }
+    handleError(error, "Error al obtener los perfiles");
   }
 };
 
@@ -45,13 +52,7 @@ export const saveProfile = async (profileData, token) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response) {
-      throw new Error(
-        error.response.data || "Error en la creación del perfil.",
-      );
-    } else {
-      throw new Error("Ocurrio un error al crear el perfil.");
-    }
+    handleError(error, "Error en la creación del perfil");
   }
 };
 
@@ -64,11 +65,17 @@ export const editProfile = async (profileData, token) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response) {
-      throw new Error(error.response.data || "Error en la edición del perfil.");
-    } else {
-      throw new Error("Ocurrio un error al crear el perfil.");
-    }
+    handleError(error, "Error en la edición del perfil");
+  }
+};
+
+const handleError = (error, defaultMessage) => {
+  if (error.response) {
+    throw new Error(error.response.data.message || defaultMessage);
+  } else if (error.request) {
+    throw new Error("No se recibió respuesta del servidor.");
+  } else {
+    throw new Error(defaultMessage);
   }
 };
 

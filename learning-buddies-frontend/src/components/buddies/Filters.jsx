@@ -2,38 +2,13 @@ import { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { saveToLocalStorage } from "../../utils/storageUtils";
 
-const skills = [
-  "HTML",
-  "CSS",
-  "JavaScript",
-  "SQL",
-  "C / C++",
-  ".NET",
-  "Java",
-  "Spring",
-  "Python",
-  "NodeJs",
-  "NextJs",
-  "React",
-  "Angular",
-  "Vue",
-  "TypeScript",
-  "PHP",
-  "MongoDB",
-  "Go",
-  "Swift",
-  "Kotlin",
-  "Rust",
-  "Ruby",
-  "COBOL",
-];
-
 export const Filters = ({
   setOpenModal,
   skills1,
   skills2,
   setSkills1,
   setSkills2,
+  skills,
 }) => {
   const [localSkills1, setLocalSkills1] = useState(skills1);
   const [localSkills2, setLocalSkills2] = useState(skills2);
@@ -80,7 +55,7 @@ export const Filters = ({
   };
 
   return (
-    <div className="absolute left-1/2 top-1/2 flex w-5/6 max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col gap-3 rounded-lg border border-dark-green bg-light p-3 shadow-lg md:w-3/4 lg:w-2/4 lg:p-6 dark:border-dm-light-green dark:bg-dark">
+    <div className="fixed left-1/2 top-[10vh] flex w-5/6 max-w-3xl -translate-x-1/2 flex-col gap-3 rounded-lg border border-dark-green bg-light p-3 shadow-lg md:w-3/4 lg:w-2/4 lg:p-6 dark:border-dm-light-green dark:bg-dark">
       <button
         onClick={closeModal}
         className="absolute right-5 top-5 self-end hover:scale-125"
@@ -93,10 +68,10 @@ export const Filters = ({
           {skills.map((item, index) => (
             <div
               key={index}
-              onClick={() => handleSkill1(item)}
-              className={`rounded-md bg-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom md:py-2 dark:bg-dm-light-green ${localSkills1.includes(item) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
+              onClick={() => handleSkill1(item.name)}
+              className={`rounded-md bg-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom md:py-2 dark:bg-dm-light-green ${localSkills1.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
             >
-              {item}
+              {item.name}
             </div>
           ))}
         </div>
@@ -105,10 +80,10 @@ export const Filters = ({
           {skills.map((item, index) => (
             <div
               key={index}
-              onClick={() => handleSkill2(item)}
-              className={`rounded-md border-2 border-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom dark:border-dm-light-green dark:text-light ${localSkills2.includes(item) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
+              onClick={() => handleSkill2(item.name)}
+              className={`rounded-md border-2 border-light-green px-2 py-1 shadow-lg hover:shadow-inner-custom dark:border-dm-light-green dark:text-light ${localSkills2.includes(item.name) && "border-2 border-medium-green py-1 font-bold dark:border-dm-medium-green"}`}
             >
-              {item}
+              {item.name}
             </div>
           ))}
         </div>

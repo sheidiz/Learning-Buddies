@@ -5,3 +5,9 @@ export const normalizeError = (error) => {
 
   return message.toString();
 };
+
+export const getProfilePictureId = (path) => {
+  const regex = /\/users\/(\d+)\.png/;
+  const match = path.match(regex);
+  return match ? match[1] : null;
+};

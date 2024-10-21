@@ -9,6 +9,7 @@ import { TextareaInput } from "../components/user/TextareaInput";
 import { CountrySelector } from "../components/user/CountrySelector";
 import { GenderSelect } from "../components/user/GenderSelect";
 import { validateProfileData } from "../utils/validationUtils";
+import { getProfilePictureId } from "../utils/functions";
 
 export const ProfileEdition = () => {
   const navigate = useNavigate();
@@ -127,7 +128,9 @@ export const ProfileEdition = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2 mb-3 flex items-center justify-center">
                 <AvatarSelector
-                  currentIndex={0}
+                  currentIndex={
+                    getProfilePictureId(profileData.profilePicture) - 1
+                  }
                   onImageSelect={handleImageSelect}
                   bgColor={bgColor}
                   setBgColor={setBgColor}
