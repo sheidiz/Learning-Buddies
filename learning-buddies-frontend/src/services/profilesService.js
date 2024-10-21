@@ -19,15 +19,14 @@ export const getAllProfiles = async (
   token,
   skillsLearned = [],
   skillsToLearn = [],
+  search,
 ) => {
   try {
     const params = new URLSearchParams();
     if (skillsLearned.length > 0) {
-      console.log(skillsLearned);
       params.append("skillsLearned", skillsLearned.join(","));
     }
     if (skillsToLearn.length > 0) {
-      console.log(skillsToLearn);
       params.append("skillsToLearn", skillsToLearn.join(","));
     }
 
@@ -37,7 +36,18 @@ export const getAllProfiles = async (
       },
       params: params,
     });
-    return response.data;
+
+    let profiles = response.data;
+
+    if (search) {
+      profiles = profiles.filter(
+        (profile) =>
+          profile.bio.toLowerCase().includes(search.toLowerCase()) ||
+          profile.jobPosition.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    return profiles;
   } catch (error) {
     handleError(error, "Error al obtener los perfiles");
   }

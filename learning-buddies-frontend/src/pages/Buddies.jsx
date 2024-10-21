@@ -18,6 +18,7 @@ export default function Buddies() {
   const [isLoading, setIsLoading] = useState(true);
   const [profiles, setProfiles] = useState([]);
   const [friends, setFriends] = useState();
+  const [search, setSearch] = useState();
   const [skills, setSkills] = useState([]);
   const [skills1, setSkills1] = useState(loadFromLocalStorage("skills1") || []);
   const [skills2, setSkills2] = useState(loadFromLocalStorage("skills2") || []);
@@ -32,7 +33,7 @@ export default function Buddies() {
     try {
       setIsLoading(true);
       const [profilesData, friendshipsData] = await Promise.all([
-        profilesService.getAllProfiles(token, skills1, skills2),
+        profilesService.getAllProfiles(token, skills1, skills2, search),
         friendshipService.getFriendships(token),
       ]);
       setFriends(friendshipsData);
@@ -90,6 +91,11 @@ export default function Buddies() {
     }
   };
 
+  const handleSearch = async () => {
+    fetchBuddiesAndFriendships();
+    console.log(search);
+  };
+
   return (
     <main className="relative my-3 p-4 font-raleway md:p-2 lg:mx-auto lg:max-w-screen-xl">
       <h2
@@ -104,12 +110,17 @@ export default function Buddies() {
           <h3 className="hidden text-xl font-semibold text-dark md:block dark:text-light">
             Filtros
           </h3>
-          <form className="flex items-center gap-2 py-3 md:py-2">
+          <form
+            className="flex items-center gap-2 py-3 md:py-2"
+            onSubmit={handleSearch}
+          >
             <input
+              defaultValue={search}
               type="text"
               name="inputSearch"
               className="w-full rounded-3xl px-5 py-1 text-center"
               placeholder="Buscar por rol"
+              onChange={(e) => setSearch(e.target.value)}
             />
             <button type="button" onClick={() => setOpenFiltersModal(true)}>
               <MdFilterAlt className="mb-1 text-3xl text-dark dark:text-light" />{" "}
@@ -149,6 +160,7 @@ export default function Buddies() {
             onClick={() => {
               setSkills1([]);
               setSkills2([]);
+              setSearch(null);
             }}
             className="mt-2 flex items-center gap-1 font-bold text-brown dark:text-dm-brown"
           >
