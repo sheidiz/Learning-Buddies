@@ -143,7 +143,7 @@ public class ProfileServiceImpl implements ProfileService {
         return profileMapper.profileToProfileDto(updatedProfile);
     }
 
-    public void deleteProfile(Long userId) {
+    public void deleteProfile(String userId) {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para usuario con id " + userId));
         profileRepository.delete(profile);

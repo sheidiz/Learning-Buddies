@@ -66,7 +66,7 @@ public class AuthenticationController {
 
             return ResponseEntity.ok("Contraseña actualizada correctamente.");
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrio un error al actualizar la contraseña");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error al actualizar la contraseña");
         }
     }
 

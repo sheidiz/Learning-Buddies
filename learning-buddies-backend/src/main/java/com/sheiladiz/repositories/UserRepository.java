@@ -9,14 +9,14 @@ import org.springframework.stereotype.Repository;
 import com.sheiladiz.models.User;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<User, String> {
 	
 	List<User> findAll();
 	
 	boolean existsByEmail(String email);
 	
-	Optional<User> findByProfileId(Long id);
-	
 	Optional<User> findByEmail(String email);
+
+	Optional<User> findByUsername(String username);
 	
 }

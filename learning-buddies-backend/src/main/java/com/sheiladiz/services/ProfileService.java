@@ -16,6 +16,5 @@ public interface ProfileService {
 	ResponseProfileDto getProfileById(Long id);
 	List<ResponseProtectedProfileDto> getProfilesBySkills(List<String> skillsLearned, List<String> skillsToLearn);
 	ResponseProfileDto updateProfile(Long profileId, RequestProfileDto requestProfileDto);
-	ResponseProfileDto updateProfileSkills(String type, Long profileId, List<String> skillNames);
-	void deleteProfile(Long userId);
+	void deleteProfile(String userId);
 }

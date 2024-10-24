@@ -25,13 +25,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @NotEmpty()
     @Email()
     @Column(unique = true)
     private String email;
+
+    @Column(unique = true, nullable = false)
+    private String username;
 
     @NotEmpty()
     private String password;
@@ -74,10 +77,11 @@ public class User implements UserDetails {
         this.authProvider = authProvider;
     }
 
-    public User(String email, String password, String authProvider, Set<Role> roles, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
+    public User(String email, String username, String password,  Set<Role> roles, boolean enabled, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
         this.email = email;
+        this.username = username;
         this.password = password;
-        this.authProvider = authProvider;
+        this.authProvider = "local";
         this.roles = roles;
         this.enabled = enabled;
         this.accountNonExpired = accountNonExpired;

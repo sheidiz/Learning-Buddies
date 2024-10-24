@@ -14,6 +14,10 @@ public record RequestRegisterDto(
         @Column(unique = true)
         String email,
 
+        @NotEmpty(message = "Usuario requerido.")
+        @Column(unique = true)
+        String username,
+
         @NotEmpty(message = "Contraseña requerida.")
         @Size(min = 6, message = "Contraseña debe contener al menos 6 caracteres.")
         String password,

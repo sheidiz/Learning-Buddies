@@ -22,10 +22,12 @@ public class DataInitializationConfig implements CommandLineRunner {
     private final SkillRepository skillRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public void run(String... args) {
         if (userRepository.findByEmail("admin1@example.com").isEmpty()) {
             User admin = User.builder()
                     .email("admin1@example.com")
+                    .username("admin1")
                     .password(passwordEncoder.encode("SecurePassword123"))
                     .enabled(true)
                     .accountNonExpired(true)
@@ -35,7 +37,22 @@ public class DataInitializationConfig implements CommandLineRunner {
                     .build();
             userRepository.save(admin);
         }
+        if (userRepository.count() <= 1) {
+            List<User> users = List.of(
+                    new User("juanamendoza@gmail.com", "juana-mendoza", passwordEncoder.encode("123456"), Set.of(Role.ROLE_USER), true, true, true, true),
+                    new User("juansuarez@gmail.com", "juan-suarez", passwordEncoder.encode("123456"), Set.of(Role.ROLE_USER), true, true, true, true),
+                    new User("maria.barrios@gmail.com", "maria-dev", passwordEncoder.encode("123456"), Set.of(Role.ROLE_USER), true, true, true, true)
+            );
+            users.get(0).setProfileId(1L);
+            users.get(1).setProfileId(2L);
+            userRepository.saveAll(users);
 
+            List<Profile> profiles = List.of(
+                    new Profile(userRepository.findByEmail("juanamendoza@gmail.com").get(), "Juana Mendoza", "/src/assets/users/1.png", "#FF8A8A", "Mujer", "Argentina", "Estudiante Front-end", "Soy una estudiante de Frontend.", "/juana_m"),
+                    new Profile(userRepository.findByEmail("juansuarez@gmail.com").get(), "Juan Suarez", "/src/assets/users/6.png", "#3795BD", "Hombre", "Argentina", "Estudiante Back-end", "Soy un estudiante de programación. Estoy estudiando en Edu123.", "/juan123")
+            );
+            profileRepository.saveAll(profiles);
+        }
         if (skillRepository.count() == 0) {
             List<SkillCategory> categories = List.of(
                     new SkillCategory("Programación"),
@@ -73,22 +90,6 @@ public class DataInitializationConfig implements CommandLineRunner {
                     new Skill("C++", Set.of(categories.get(0), categories.get(6)))
             );
             skillRepository.saveAll(skills);
-        }
-        if (userRepository.count() <= 1) {
-            List<User> users = List.of(
-                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true),
-                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true),
-                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true)
-            );
-            users.get(0).setProfileId(1L);
-            users.get(1).setProfileId(2L);
-            userRepository.saveAll(users);
-
-            List<Profile> profiles = List.of(
-                    new Profile(users.get(0), "Juana Mendoza", "/src/assets/users/1.png", "#FF8A8A", "Mujer", "Argentina", "Estudiante Front-end", "Soy una estudiante de Frontend.", "/juana_m"),
-                    new Profile(users.get(1), "Juan Suarez", "/src/assets/users/6.png", "#3795BD", "Hombre", "Argentina", "Estudiante Back-end", "Soy un estudiante de programación. Estoy estudiando en Edu123.", "/juan123")
-            );
-            profileRepository.saveAll(profiles);
         }
     }
 }
