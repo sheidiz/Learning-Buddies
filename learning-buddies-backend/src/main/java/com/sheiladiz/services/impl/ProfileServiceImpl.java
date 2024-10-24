@@ -53,6 +53,30 @@ public class ProfileServiceImpl implements ProfileService {
         return profileMapper.profileToProfileDto(savedProfile);
     }
 
+    public ResponseProfileDto saveProfileByUserId(RequestProfileDto newProfile, String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
+
+        if (profileRepository.existsByUser(user)) {
+            throw new ResourceAlreadyExistsException("Perfil ya existe");
+        }
+        Profile profile = profileMapper.requestProfileToProfile(newProfile);
+        profile.setUser(user);
+        if (newProfile.skillsLearned() != null) {
+            profile.setSkillsLearned(getSkillsFromNames(newProfile.skillsLearned()));
+        }
+        if (newProfile.skillsToLearn() != null) {
+            profile.setSkillsToLearn(getSkillsFromNames(newProfile.skillsToLearn()));
+        }
+
+        Profile savedProfile = profileRepository.save(profile);
+
+        user.setProfileId(savedProfile.getId());
+        userRepository.save(user);
+
+        return profileMapper.profileToProfileDto(savedProfile);
+    }
+
     public List<ResponseProtectedProfileDto> allProtectedProfiles() {
         List<Profile> profiles = profileRepository.findAll();
         return profileMapper.profilesToProtectedProfileDtos(profiles);

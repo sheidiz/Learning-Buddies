@@ -2,10 +2,9 @@ package com.sheiladiz.controllers.admin;
 
 import java.util.List;
 
+import com.sheiladiz.dtos.user.RequestUpdateUserDto;
 import com.sheiladiz.dtos.user.ResponseUserDto;
 import com.sheiladiz.exceptions.ErrorResponse;
-import com.sheiladiz.mappers.UserMapper;
-import com.sheiladiz.models.User;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +26,6 @@ import com.sheiladiz.services.UserService;
 @RequestMapping("/api/admin/users")
 public class AdminUserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
@@ -35,8 +33,8 @@ public class AdminUserController {
     })
     @GetMapping
     public ResponseEntity<List<ResponseUserDto>> getAllUsers() {
-        List<User> users = userService.allUsers();
-        return ResponseEntity.ok(userMapper.usersToUserDtos(users));
+        List<ResponseUserDto> users = userService.allUsers();
+        return ResponseEntity.ok(users);
     }
 
     @ApiResponses({
@@ -45,10 +43,22 @@ public class AdminUserController {
             @ApiResponse(responseCode = "404", description = "Usuario con id {id} no encontrado.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseUserDto> getUserById(@PathVariable("id") Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(userMapper.userToUserDto(user));
+    @GetMapping("/id/{id}")
+    public ResponseEntity<ResponseUserDto> getUserById(@PathVariable("id") String id) {
+        ResponseUserDto user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseUserDto.class))}),
+            @ApiResponse(responseCode = "404", description = "Usuario con username {username} no encontrado.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))})})
+    @GetMapping("/username/{username}")
+    public ResponseEntity<ResponseUserDto> getUserByUsername(@PathVariable("username") String username) {
+        ResponseUserDto user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
     }
 
     @ApiResponses({
@@ -58,9 +68,9 @@ public class AdminUserController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class))})})
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable("id") Long id, @RequestBody ResponseUserDto responseUserDto) {
-        User updatedUser = userService.updateUser(id, responseUserDto);
-        return ResponseEntity.ok(userMapper.userToUserDto(updatedUser));
+    public ResponseEntity<ResponseUserDto> updateUser(@PathVariable("id") String id, @RequestBody RequestUpdateUserDto requestUpdateUserDto) {
+        ResponseUserDto updatedUser = userService.updateUser(id, requestUpdateUserDto);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @ApiResponses({
@@ -69,7 +79,7 @@ public class AdminUserController {
             @ApiResponse(responseCode = "404", description = "Usuario con id {id} no encontrado",
                     content = @Content)})
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") String id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("Usuario eliminado exitosamente.");
     }
