@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.user;
 
 import com.sheiladiz.dtos.friendship.ResponseFriendshipLists;
 import com.sheiladiz.exceptions.ErrorResponse;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/friendships")
+@RequestMapping("/api/user/friendships")
 public class FriendshipController {
     private final FriendshipService friendshipService;
     private final UserService userService;

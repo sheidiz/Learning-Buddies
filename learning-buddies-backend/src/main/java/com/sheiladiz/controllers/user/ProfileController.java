@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.user;
 
 import com.sheiladiz.dtos.profile.ResponseProfileDto;
 import com.sheiladiz.dtos.profile.ResponseProtectedProfileDto;
@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/profiles")
+@RequestMapping("/api/user/profiles")
 public class ProfileController {
 
     private final ProfileService profileService;

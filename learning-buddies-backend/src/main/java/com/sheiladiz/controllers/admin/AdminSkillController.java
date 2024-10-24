@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.admin;
 
 import com.sheiladiz.dtos.skill.RequestSkillCategoryDto;
 import com.sheiladiz.dtos.skill.RequestSkillDto;

@@ -34,12 +34,12 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/skills").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/skills/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/skills/categories").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/skills/categories/**").permitAll()
+                        .requestMatchers("/api/user/authentication/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/skills", "/api/user/skills/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/user/skills/categories", "/api/user/skills/categories/**").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

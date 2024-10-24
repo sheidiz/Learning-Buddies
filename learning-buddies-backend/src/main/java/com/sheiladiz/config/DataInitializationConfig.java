@@ -1,9 +1,6 @@
 package com.sheiladiz.config;
 
-import com.sheiladiz.models.Profile;
-import com.sheiladiz.models.Skill;
-import com.sheiladiz.models.SkillCategory;
-import com.sheiladiz.models.User;
+import com.sheiladiz.models.*;
 import com.sheiladiz.repositories.ProfileRepository;
 import com.sheiladiz.repositories.SkillCategoryRepository;
 import com.sheiladiz.repositories.SkillRepository;
@@ -25,7 +22,20 @@ public class DataInitializationConfig implements CommandLineRunner {
     private final SkillRepository skillRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
+        if (userRepository.findByEmail("admin1@example.com").isEmpty()) {
+            User admin = User.builder()
+                    .email("admin1@example.com")
+                    .password(passwordEncoder.encode("SecurePassword123"))
+                    .enabled(true)
+                    .accountNonExpired(true)
+                    .accountNonLocked(true)
+                    .credentialsNonExpired(true)
+                    .roles(Set.of(Role.ROLE_ADMIN))
+                    .build();
+            userRepository.save(admin);
+        }
+
         if (skillRepository.count() == 0) {
             List<SkillCategory> categories = List.of(
                     new SkillCategory("Programación"),
@@ -64,12 +74,14 @@ public class DataInitializationConfig implements CommandLineRunner {
             );
             skillRepository.saveAll(skills);
         }
-        if (userRepository.count() == 0) {
+        if (userRepository.count() <= 1) {
             List<User> users = List.of(
-                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true),
-                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true),
-                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"), "local", true, true, true, true)
+                    new User("juanamendoza@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true),
+                    new User("juansuarez@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true),
+                    new User("maria.barrios@gmail.com", passwordEncoder.encode("123456"), "local", Set.of(Role.ROLE_USER), true, true, true, true)
             );
+            users.get(0).setProfileId(1L);
+            users.get(1).setProfileId(2L);
             userRepository.saveAll(users);
 
             List<Profile> profiles = List.of(

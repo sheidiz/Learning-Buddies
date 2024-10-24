@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.user;
 
 import com.sheiladiz.dtos.skill.ResponseSkillCategoryDto;
 import com.sheiladiz.dtos.skill.ResponseSkillDto;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/skills")
+@RequestMapping("/api/user/skills")
 public class SkillController {
 
     private final SkillService skillService;

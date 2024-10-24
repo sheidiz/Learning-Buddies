@@ -11,6 +11,7 @@ import com.sheiladiz.exceptions.InvalidUserCredentialsException;
 import com.sheiladiz.mappers.ProfileMapper;
 import com.sheiladiz.mappers.UserMapper;
 import com.sheiladiz.models.Profile;
+import com.sheiladiz.models.Role;
 import com.sheiladiz.models.User;
 import com.sheiladiz.repositories.ProfileRepository;
 import com.sheiladiz.repositories.UserRepository;
@@ -52,8 +53,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
-        User savedUser = userRepository.save(user);
+        user.getRoles().add(Role.ROLE_USER);
 
+        User savedUser = userRepository.save(user);
         return userMapper.userToUserDto(savedUser);
     }
 

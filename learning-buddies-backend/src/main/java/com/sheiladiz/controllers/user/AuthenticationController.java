@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.user;
 
 import com.sheiladiz.dtos.user.*;
 import com.sheiladiz.exceptions.ErrorResponse;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user/authentication")
 @RestController
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

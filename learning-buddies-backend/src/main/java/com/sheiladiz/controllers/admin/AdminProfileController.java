@@ -1,4 +1,4 @@
-package com.sheiladiz.controllers;
+package com.sheiladiz.controllers.admin;
 
 import com.sheiladiz.dtos.profile.ResponseProfileDto;
 import com.sheiladiz.services.ProfileService;
