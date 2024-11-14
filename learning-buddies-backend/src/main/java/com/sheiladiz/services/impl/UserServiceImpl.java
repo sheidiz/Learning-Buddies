@@ -41,12 +41,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.userToUserDto(user);
     }
 
-    public ResponseUserDto getUserDtoByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario con email [" + email + "] no encontrado"));
-        return userMapper.userToUserDto(user);
-    }
-
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con email [" + email + "] no encontrado"));
@@ -82,11 +76,5 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con id [" + id + "] no encontrado"));
         userRepository.delete(user);
-    }
-
-    public void isUserExistsByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new ResourceAlreadyExistsException("Email ya registrado: " + email);
-        }
     }
 }

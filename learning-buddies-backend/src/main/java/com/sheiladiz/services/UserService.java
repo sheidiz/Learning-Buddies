@@ -9,10 +9,8 @@ import com.sheiladiz.models.User;
 public interface UserService {
 	List<ResponseUserDto> allUsers();
 	ResponseUserDto getUserById(String id);
-    ResponseUserDto getUserDtoByEmail(String email);
     User getUserByEmail(String email);
     ResponseUserDto getUserByUsername(String username);
     ResponseUserDto updateUser(String id, RequestUpdateUserDto requestUpdateUserDto);
 	void deleteUser(String id);
-	void isUserExistsByEmail(String email);
 }
