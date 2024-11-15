@@ -33,7 +33,7 @@ public class AdminProfileController {
     @PostMapping("/{userId}")
     public ResponseEntity<ResponseProfileDto> createMyProfile(@PathVariable("userId") String userId,
                                                               @Valid @RequestBody RequestProfileDto requestProfileDto) {
-        ResponseProfileDto savedProfile = profileService.saveProfileByUserId(requestProfileDto, userId);
+        ResponseProfileDto savedProfile = profileService.saveProfile(requestProfileDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }
 

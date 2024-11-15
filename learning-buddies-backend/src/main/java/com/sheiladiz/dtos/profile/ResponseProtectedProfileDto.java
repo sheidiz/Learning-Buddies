@@ -7,7 +7,7 @@ import java.util.List;
 @Builder
 public record ResponseProtectedProfileDto(
         Long id,
-        Long userId,
+        String userId,
         String name,
         String profilePicture,
         String profilePictureBackground,

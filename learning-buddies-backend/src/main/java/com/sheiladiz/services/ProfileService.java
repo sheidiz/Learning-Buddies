@@ -9,8 +9,7 @@ import com.sheiladiz.models.User;
 
 public interface ProfileService {
 
-	ResponseProfileDto saveProfile(RequestProfileDto newProfile, User user);
-	ResponseProfileDto saveProfileByUserId(RequestProfileDto newProfile, String userId);
+	ResponseProfileDto saveProfile(RequestProfileDto newProfile, String userId);
 	List<ResponseProtectedProfileDto> allProtectedProfiles();
 	List<ResponseProfileDto> allProfiles();
 	ResponseProfileDto getProfileByUser(User user);

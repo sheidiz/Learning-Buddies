@@ -50,7 +50,7 @@ public class ProfileController {
                                                               @Valid @RequestBody RequestProfileDto requestProfileDto) {
         User user = getUser(authentication);
 
-        ResponseProfileDto savedProfile = profileService.saveProfile(requestProfileDto, user);
+        ResponseProfileDto savedProfile = profileService.saveProfile(requestProfileDto, user.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }
 

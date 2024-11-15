@@ -32,28 +32,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserRepository userRepository;
     private final ProfileMapper profileMapper;
 
-    public ResponseProfileDto saveProfile(RequestProfileDto newProfile, User user) {
-        if (profileRepository.existsByUser(user)) {
-            throw new ResourceAlreadyExistsException("Perfil ya existe");
-        }
-        Profile profile = profileMapper.requestProfileToProfile(newProfile);
-        profile.setUser(user);
-        if (newProfile.skillsLearned() != null) {
-            profile.setSkillsLearned(getSkillsFromNames(newProfile.skillsLearned()));
-        }
-        if (newProfile.skillsToLearn() != null) {
-            profile.setSkillsToLearn(getSkillsFromNames(newProfile.skillsToLearn()));
-        }
-
-        Profile savedProfile = profileRepository.save(profile);
-
-        user.setProfileId(savedProfile.getId());
-        userRepository.save(user);
-
-        return profileMapper.profileToProfileDto(savedProfile);
-    }
-
-    public ResponseProfileDto saveProfileByUserId(RequestProfileDto newProfile, String userId) {
+    public ResponseProfileDto saveProfile(RequestProfileDto newProfile, String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
 
@@ -148,23 +127,6 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.save(existingProfile);
 
         return profileMapper.profileToProfileDto(profile);
-    }
-
-    public ResponseProfileDto updateProfileSkills(String type, Long profileId, List<String> skillNames) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(
-                () -> new ResourceNotFoundException("Perfil no encontrado."));
-
-        if (type.equals("learned")) {
-            Set<Skill> newSkillsLearned = addSkillsFromNames(profile.getSkillsLearned(), skillNames);
-            profile.setSkillsLearned(newSkillsLearned);
-
-        } else {
-            Set<Skill> newSkillsToLearn = addSkillsFromNames(profile.getSkillsToLearn(), skillNames);
-            profile.setSkillsToLearn(newSkillsToLearn);
-        }
-        Profile updatedProfile = profileRepository.save(profile);
-
-        return profileMapper.profileToProfileDto(updatedProfile);
     }
 
     public void deleteProfile(String userId) {
